@@ -20,7 +20,7 @@ function groupAnagrams(strs) {
   return Object.values(map);
 }
 
-//* O(26) -> O(1)
+//* O(m) - Where m is the length of the word
 function getFreq(word) {
   const freq = new Array(26).fill(0);
 
@@ -31,6 +31,7 @@ function getFreq(word) {
 
   return freq;
 }
+
 console.log(groupAnagrams(["hey", "yeh", "no"]));
 console.log(groupAnagrams(["eat", "tea", "tan", "ate", "nat", "bat"])); // [["bat"],["nat","tan"],["ate","eat","tea"]]
 console.log(groupAnagrams([""])); // [[""]]
@@ -40,4 +41,6 @@ console.log(groupAnagrams(["a"])); // [["a"]]
 //* It takes O(26) time to get the freqency of a word, but that simplifies to constant time
 //* It also takes O(m) time where "m" is the number of unique anagrams to get the result
 
-//* Space: O(m) - The space usage of "map"
+//* Space: O(n) - The space usage of "map" scales with the size of the input array
+//* If you have 1 million keys and all of those keys equate to the same anagram
+//* The result would also have 1 million elements, just in anagram groups (separate arrays)
