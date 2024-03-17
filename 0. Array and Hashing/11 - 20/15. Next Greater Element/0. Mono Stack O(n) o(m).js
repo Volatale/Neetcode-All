@@ -1,3 +1,8 @@
+//* Use a strictly decreasing monotonic stack
+//* This lets add a while loop that isn't bounded by the length of nums2
+//* We may still have a nested loop, but the inner while loop only processes each element at most once
+//* If we add an element that is greater than what is currently on top of the stack, pop it
+//* This is our next greater element; cache it
 function nextGreaterElement(nums1, nums2) {
   const map = new Map();
   const stack = []; //* Monotonically Decreasing
