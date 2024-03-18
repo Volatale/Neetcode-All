@@ -1,3 +1,8 @@
+//* Use a nested for loop
+//* Find the NGE using a second for loop (j)
+//* Then find which elements do not exist in the cache
+//* If a key doesn't exist, there was no NGE for it
+//* Therefore use -1 as the value
 function nextGreaterElement(nums1, nums2) {
   const map = new Map();
 
