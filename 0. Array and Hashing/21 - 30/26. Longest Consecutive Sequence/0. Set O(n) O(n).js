@@ -1,6 +1,6 @@
 //* Add every element to a set for fast lookup
 //* Track the length of the longest sequence
-//* Iterate through each element in nums to check for sequences
+//* Iterate through each element in set (removes duplicates) to check for sequences
 //* For each number, check if it is the start of a sequence by subtracting 1 from it and checking the set
 //*     - If num - 1 does NOT exist in the set, it is the start of a sequence
 //* While the next number exists in the set, keep looping (increment length)
@@ -10,7 +10,7 @@ function longestConsecutiveSequence(nums) {
 
   let longest = 0;
 
-  for (let num of nums) {
+  for (let num of set) {
     //* Check if this number is the start of a sequence (no left neighbor)
     if (!set.has(num - 1)) {
       let length = 0;
