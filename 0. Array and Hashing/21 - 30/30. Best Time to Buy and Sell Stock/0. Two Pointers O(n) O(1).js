@@ -3,16 +3,20 @@
 //* Sell Price should be higher than buy price
 //* If prices[left] > prices[right], you need to find a new buy day
 function maxProfit(prices) {
-  if (prices.length <= 1) return 0;
-
   let maxProfit = 0;
 
-  for (let i = 1; i < prices.length; i++) {
-    let profit = prices[i] - prices[i - 1];
+  let left = 0; //* Left = Buy Day
+  let right = 1; //* Right = Sell Day
 
-    if (profit > 0) {
-      maxProfit += profit;
+  while (right < prices.length) {
+    if (prices[left] < prices[right]) {
+      let newPrice = prices[right] - prices[left];
+      maxProfit = Math.max(maxProfit, newPrice);
+    } else {
+      left = right; //* Left price was > right price, which means no profit
     }
+
+    right++; //* Right always progresses
   }
 
   return maxProfit;
