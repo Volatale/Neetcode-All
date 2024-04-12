@@ -22,8 +22,11 @@ function nonDecreasingArray(nums) {
 
       //* Adjust current element to make it non-decreasing
       if (i - 2 < 0 || nums[i] >= nums[i - 2]) {
-        nums[i - 1] = nums[i]; //*
+        //* Guaranteed that the [i-2]th value won't invalidate the left values
+        nums[i - 1] = nums[i];
       } else {
+        //* Forced to update current to [i - 1] because [i] < [i - 2]
+        //* So setting [i-1] to [i] would result in a failed array
         nums[i] = nums[i - 1];
       }
     }
