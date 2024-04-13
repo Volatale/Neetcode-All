@@ -6,7 +6,6 @@ function arrayIntersection(nums1, nums2) {
   for (let i = 0; i < nums2.length; i++) {
     if (values.has(nums2[i])) {
       result.add(nums2[i]);
-      values.delete(nums2[i]);
     }
   }
 

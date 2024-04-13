@@ -8,7 +8,7 @@ function firstMissingPositive(nums) {
 
   //* Find the first out of place value
   for (let i = 0; i <= nums.length; i++) {
-    if (nums[i] !== i + 1) return i + 1;
+    if (nums[i] !== i + 1 && nums[i] > 0) return i + 1;
   }
 }
 
