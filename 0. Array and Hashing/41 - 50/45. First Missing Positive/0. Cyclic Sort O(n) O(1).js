@@ -17,15 +17,20 @@ function firstMissingPositive(nums) {
 
     //* Ignore 0s, ignore [i] > n. Loop while out of place
     while (num > 0 && num <= n && nums[num - 1] !== num) {
-      [nums[num - 1], nums[i]] = [nums[i], nums[num - 1]];
+      const temp = nums[num - 1];
+      nums[num - 1] = nums[i];
+      nums[i] = temp;
       num = nums[i]; //* In case this value is still out of place
     }
   }
 
   //* Find first missing positive
-  for (let i = 0; i <= n; i++) {
+  for (let i = 0; i < n; i++) {
     if (nums[i] !== i + 1) return i + 1;
   }
+
+  //* In cases such as [1, 2, 3], n = 3, but we need to return 4
+  return n + 1;
 }
 
 console.log(firstMissingPositive([6, 4, 5, 1, 2])); //* 3
