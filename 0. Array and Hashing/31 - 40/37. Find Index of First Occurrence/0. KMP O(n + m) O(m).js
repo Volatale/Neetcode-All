@@ -37,13 +37,12 @@ function KMP(s, p) {
   return -1;
 }
 
-console.log(KMP("aaabaab", "aab")); //* [1, 4]
-
-console.log(KMP("aasonic", "sonic")); //* [2]
-console.log(KMP("abc", "aab")); //* []
-console.log(KMP("xyzxyzaabaab", "aab")); //* [6, 9]
-console.log(KMP("my name is mario", "mario")); //* [11]
-console.log(KMP("mississippi", "issip")); //* [4]
+console.log(KMP("aaabaab", "aab")); //* 1
+console.log(KMP("aasonic", "sonic")); //* 2
+console.log(KMP("abc", "aab")); //* -1
+console.log(KMP("xyzxyzaabaab", "aab")); //* 6
+console.log(KMP("my name is mario", "mario")); //* 11
+console.log(KMP("mississippi", "issip")); //* 4
 
 //* Time: O(n + m) - It takes O(m) time to build the failure function
 //* Then it takes O(n) time to iterate over "s"
