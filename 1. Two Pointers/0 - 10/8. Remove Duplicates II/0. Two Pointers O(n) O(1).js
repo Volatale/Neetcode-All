@@ -1,6 +1,7 @@
 //* Use Two Pointers
 //* Left is the index we need to put the next unique duplicate
 //* We need to count how many occurrences of the same element we have in a row
+//* Left ONLY moves forward if count <= 2, this ensures we can't have 3 of the same element in a row
 //* That is where right comes in
 //* If the count of duplicates is <= 2, then set nums[left] = nums[right]
 function removeDuplicatesII(nums) {
