@@ -2,6 +2,10 @@
 //* Area of Rectangle = W*L
 //* W = Difference between right and left
 //* L = Minimum of the two values, the smaller will bottleneck the other
+//* We start at both ends because we want to maximize the WIDTH of the container (right - left)
+//* After each calculation, try to adjust the bottleneck (this is a tradeoff)
+//* The tradeoff being that the minimum height has a chance to increase at the cost of the width
+//* But since we already calculated the area with THIS width, that is a fine choice to make
 function containerMostWater(height) {
   let maxWater = 0;
 
