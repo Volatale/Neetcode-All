@@ -12,7 +12,7 @@ function rearrangeArray(nums) {
   }
 
   //* Fix triplets going backwards
-  for (let i = nums.length - 1; i > 0; i--) {
+  for (let i = nums.length - 2; i > 0; i--) {
     if ((nums[i - 1] + nums[i + 1]) / 2 === nums[i]) {
       swap(nums, i - 1, i);
     }
