@@ -10,7 +10,7 @@ function longestSubstringWithoutRepeatingChars(s) {
   let end = 0;
   let maxLength = 0;
 
-  const set = new Set();
+  const set = new Set(); //* Contains the elements in the window
 
   while (end < s.length) {
     //* Remove all elements going left -> right until duplicate is non-existant
