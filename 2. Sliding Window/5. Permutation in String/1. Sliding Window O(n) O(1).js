@@ -12,29 +12,30 @@ function permutationInString(s1, s2) {
   const freq1 = new Array(26).fill(0);
   const freq2 = new Array(26).fill(0);
 
-  //* Generate both windows at once
+  //* Get the frequency of s1
   for (let i = 0; i < s1.length; i++) {
     freq1[s1[i].charCodeAt(0) - 97]++;
-    freq2[s2[i].charCodeAt(0) - 97]++;
+  }
+
+  while (end < s2.length) {
+    freq2[s2[end].charCodeAt(0) - 97]++; //* Add the new char to the window
+
+    //* If there are enough characters in the window
+    if (end - start + 1 === s1.length) {
+      if (isAnagram(freq1, freq2)) return true;
+
+      freq2[s2[start++].charCodeAt(0) - 97]--; //* Remove leftmost char from the window
+    }
+
     end++;
   }
 
-  if (isAnagram(freq1, freq2)) return true;
-
-  while (end < s2.length) {
-    freq2[s2[end++].charCodeAt(0) - 97]++;
-
-    //* Remove leftmost char from the window
-    freq2[s2[start++].charCodeAt(0) - 97]--;
-
-    if (isAnagram(freq1, freq2)) return true;
-  }
   return false;
 }
 
 //* O(26)
 function isAnagram(arr1, arr2) {
-  for (let i = 0; i < 25; i++) {
+  for (let i = 0; i < 26; i++) {
     if (arr1[i] !== arr2[i]) return false;
   }
 
@@ -47,7 +48,7 @@ console.log(permutationInString("zw", "wz")); //* true
 console.log(permutationInString("w", "z")); //* false
 console.log(permutationInString("law", "lae")); //* false
 
-//* Time: O(n) - We have to process each character in both strings
+//* Time: O(s1 + s2) - We have to process each character in both strings
 //* We also have an O(26) call in isAnagram, but this always takes the same amount of time
 
 //* Space: O(26) -> O(1) - We have two frequency arrays that always have 26 indices

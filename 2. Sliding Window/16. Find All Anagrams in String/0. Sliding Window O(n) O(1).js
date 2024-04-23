@@ -34,7 +34,7 @@ function findAllAnagrams(s, p) {
 }
 
 function isAnagram(arr1, arr2) {
-  for (let i = 0; i < 25; i++) {
+  for (let i = 0; i < 26; i++) {
     if (arr1[i] !== arr2[i]) return false;
   }
 
