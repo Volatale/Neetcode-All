@@ -21,6 +21,8 @@ function maxFrequency(nums, k) {
   while (end < nums.length) {
     sum += nums[end];
 
+    //* windowSize * nums[end] is the sum of the window WITH the increments
+    //* sum + k is the maxValue + the extra increments
     while ((end - start + 1) * nums[end] > sum + k) {
       sum -= nums[start++];
     }
