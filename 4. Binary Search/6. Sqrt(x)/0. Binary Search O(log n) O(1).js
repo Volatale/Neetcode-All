@@ -5,7 +5,8 @@
 //* In cases like sqrt(8), we need to subtract 1, because left would be 3
 //* 3 - 1 = 2
 function sqrtX(x) {
-  if (x === 1) return 1;
+  //* 0 * 0 = 0, 1 * 1 = 1
+  if (x <= 1) return x;
 
   //* The search space is from 1 to x
   let left = 1;
@@ -23,7 +24,7 @@ function sqrtX(x) {
     }
   }
 
-  //* In cases where we want the sqrt(7), we'd be left with 3, so subtract 1
+  //* "left" is always 1 greater than what we need, so subtract 1, handles every case
   return left - 1;
 }
 
