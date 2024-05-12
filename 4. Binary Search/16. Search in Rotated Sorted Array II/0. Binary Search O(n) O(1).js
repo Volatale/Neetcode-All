@@ -52,7 +52,9 @@ console.log(searchInRotatedSortedArrayII([1], 1)); //* True
 console.log(searchInRotatedSortedArrayII([1, 0], 0)); //* True
 console.log(searchInRotatedSortedArrayII([1, 0, 1, 1, 1], 0)); //* True
 
-//* Time: O(log n) - Binary search halves the search space each iteration
-//* All of the operations done within the loop are constant time
+//* Time: O(n) - Binary search itself halves the search space each iteration
+//* But take an array like [1, 1, 1, 1, 1, 1] and target = 4
+//* nums[left] === nums[right] the whole way through, which means left++, right--
+//* Essentially, we process each element in the array and the search space reductions don't happen at all
 
 //* Space: O(1) - The space usage remains constant regardless of the input size
