@@ -1,25 +1,23 @@
 //* This is just a regular binary search
 //* The search space is halved each iteration
 function binarySearch(nums, target) {
-  //* Start at both ends of the array
+  //* The search space is the array itself
   let left = 0;
-  let right = nums.length - 1;
+  let right = nums.length;
 
-  while (left <= right) {
-    //* Avoid overflow by subtracting first
+  while (left < right) {
+    //* Mid represents the index of the element we are testing
     let mid = left + ((right - left) >> 1);
 
-    if (nums[mid] === target) {
-      return mid;
-    } else if (nums[mid] < target) {
-      left = mid + 1;
+    if (nums[mid] >= target) {
+      right = mid; //* Don't eliminate mid, this could be our value
     } else {
-      right = mid - 1;
+      left = mid + 1; //* Element is too small
     }
   }
 
-  //* Target does not exist in the array
-  return -1;
+  //* Index of the found element, or where it SHOULD be
+  return left;
 }
 
 console.log(binarySearch([1, 2, 3, 4, 5], 3)); //* 2

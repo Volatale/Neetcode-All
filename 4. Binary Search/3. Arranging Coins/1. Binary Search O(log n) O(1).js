@@ -13,9 +13,11 @@ function arrangingCoins(n) {
   let left = 1;
   let right = n;
 
-  while (left < right) {
+  let rows = 0;
+
+  while (left <= right) {
     //* Represents the number of rows we want to fit the coins into
-    let mid = left + ((right - left + 1) >> 1);
+    let mid = left + ((right - left) >> 1);
 
     //* How many coins it would take to create "mid" complete rows
     let coins = (mid * (mid + 1)) / 2;
@@ -24,11 +26,12 @@ function arrangingCoins(n) {
     if (coins > n) {
       right = mid - 1; //* Try a smaller number of rows
     } else {
-      left = mid; //* Try a larger number of rows (see if you can beat rows)
+      rows = Math.max(rows, mid); //* See if we found a new "max" for number of rows
+      left = mid + 1; //* Try a larger number of rows (see if you can beat rows)
     }
   }
 
-  return left;
+  return rows;
 }
 
 console.log(arrangingCoins(1)); //* 1

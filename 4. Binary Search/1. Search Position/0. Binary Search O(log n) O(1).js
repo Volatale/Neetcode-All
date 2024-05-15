@@ -3,22 +3,22 @@
 //* It is possible that you have an array like [1, 2, 3], and target = 4
 //* That means we need to return 3
 function searchInsertPosition(nums, target) {
-  //* Index could be the last ([1, 2, 3], target = 4 -> [1, 2, 3, 4])
+  //* The search space is the array itself
   let left = 0;
   let right = nums.length;
 
   while (left < right) {
-    let mid = left + ((right - left) >> 1); //* >> Divides by 2 and truncates
+    //* Mid represents the index of the element we are testing
+    let mid = left + ((right - left) >> 1);
 
-    //* We don't elimiate the mid element in this case
     if (nums[mid] >= target) {
-      right = mid;
+      right = mid; //* Don't eliminate mid, this could be our value
     } else {
-      left = mid + 1;
+      left = mid + 1; //* Element is too small
     }
   }
 
-  //* Either the correct position, or the index target WOULD be at
+  //* Index of the found element, or where it SHOULD be
   return left;
 }
 

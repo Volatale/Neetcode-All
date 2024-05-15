@@ -60,7 +60,8 @@ console.log(findKthSmallestPairDistance([1, 1, 1], 2)); //* 0
 console.log(findKthSmallestPairDistance([1, 6, 1], 2)); //* 5
 console.log(findKthSmallestPairDistance([1, 8, 2, 4], 3)); //* 3
 
-//* Time: O(n log k) - Where "k" is the difference between the max and min element in the array
+//* Time: O(n log k) + O(n log n) - Where "k" is the difference between the max and min element in the array
+//* It takes O(n log n) to sort the input array
 //* We do a binary search O(log k), then within each iteration, we call a function
 //* That function does an O(n) iteration through the nums array
 
