@@ -6,16 +6,20 @@
 //* Mid represents the number of elements that need to be <= k
 //* At best, each row cannot have > n elements
 function kthSmallestNumberInTable(m, n, k) {
-  function enoughLessThan(x) {
+  function tooManyLessThan(x) {
     let count = 0;
 
+    //* For each row, x / i: That gives us the number of elements that "x" is less than
     for (let i = 1; i <= m; i++) {
-      count += Math.min(x / i, n); //* Can't count more elements than we have columns
+      //* Take the minimum because we can't count more elements than we have columns
+      count += Math.min(Math.floor(x / i), n);
     }
 
-    return count <= k;
+    return count >= k;
   }
 
+  //* 1 is the MINIMUM number in the table
+  //* m * n is the MAXIMUM number in the table
   let left = 1;
   let right = m * n;
 
@@ -24,10 +28,10 @@ function kthSmallestNumberInTable(m, n, k) {
     let mid = left + ((right - left) >> 1);
 
     //* Check if there are <= k numbers < mid
-    if (enoughLessThan(mid)) {
-      left = mid + 1; //* Not enough numbers are less than "mid"
+    if (tooManyLessThan(mid)) {
+      right = mid; //* Too many numbers >= mid
     } else {
-      right = mid - 1; //* Too many numbers < mid
+      left = mid + 1; //* Not enough numbers are less than "mid"
     }
   }
 
