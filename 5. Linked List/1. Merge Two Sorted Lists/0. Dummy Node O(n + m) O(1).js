@@ -29,7 +29,7 @@ function mergeTwoSortedLists(list1, list2) {
       curr.next = left; //* Attach the node to "curr"
       left = left.next; //* Move to the next node in the list
     } else {
-      curr = curr.next;
+      curr.next = right;
       right = right.next;
     }
 
