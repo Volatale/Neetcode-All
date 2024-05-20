@@ -40,3 +40,8 @@ function copyRandomList(head) {
   //* Returns the head of the "new" list
   return cache.get(head);
 }
+
+//* Time: O(n) - It takes O(n) time to iterate through the whole linked list
+//* Then it takes O(n) time to iterate again to create the links
+
+//* Space: O(n) - The new list also has "n" nodes
