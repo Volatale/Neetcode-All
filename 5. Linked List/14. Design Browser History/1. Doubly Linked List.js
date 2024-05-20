@@ -16,14 +16,10 @@ class DoublyLinkedList {
   appendRight(val) {
     const newNode = new ListNode(val);
 
-    if (this.head === null && this.tail === null) {
-      this.head = newNode;
-      this.tail = newNode;
-    } else {
-      this.tail.next = newNode;
-      newNode.prev = this.tail;
-      this.tail = newNode;
-    }
+    //* Add the node to the tail
+    this.tail.next = newNode;
+    newNode.prev = this.tail;
+    this.tail = newNode;
 
     this.size++;
   }
@@ -31,10 +27,8 @@ class DoublyLinkedList {
   popRight() {
     if (this.size === 0) return;
 
-    if (this.size === 1) {
-      this.head = null;
-      this.tail = null;
-    } else {
+    //* Remove the node from the right
+    if (this.size > 1) {
       this.tail = this.tail.prev;
       this.tail.next = null;
     }
@@ -46,45 +40,50 @@ class DoublyLinkedList {
 class BrowserHistory {
   constructor(homepage) {
     this.history = new DoublyLinkedList(homepage);
-    this.url = this.history.head;
+    this.url = this.history.head; //* Current page
   }
 
   visit(url) {
-    //* We need to delete all the nodes on the right
+    //* Remove all the nodes to the right
     while (this.url.next) {
       this.history.popRight();
     }
 
+    //* Add the new url to the right
     this.history.appendRight(url);
-    this.url = this.history.tail; //* The last node
+
+    //* Update the current url
+    this.url = this.url.next;
   }
 
   forward(steps) {
-    let curr = this.url; //* The current position
+    let curr = this.url;
     let count = 0;
 
-    //* Travel backward "steps" nodes
+    //* Move forward "steps" steps
     while (curr && curr.next && count < steps) {
       curr = curr.next;
       count++;
     }
 
+    //* Update the current url
     this.url = curr;
-    return curr.val;
+    return this.url.val;
   }
 
   back(steps) {
-    let curr = this.url; //* The current position
+    let curr = this.url;
     let count = 0;
 
-    //* Travel forward "steps" nodes
+    //* Move back "steps" steps
     while (curr && curr.prev && count < steps) {
       curr = curr.prev;
       count++;
     }
 
+    //* Update the current url
     this.url = curr;
-    return curr.val;
+    return this.url.val;
   }
 }
 
@@ -98,6 +97,5 @@ console.log(history.back(1)); //* google
 console.log(history.forward(1)); //* facebook
 history.visit("linkedin.com");
 console.log(history.forward(2)); //* linkedin.com
-
 console.log(history.back(2)); //* google.com
 console.log(history.back(7)); //* leetcode
