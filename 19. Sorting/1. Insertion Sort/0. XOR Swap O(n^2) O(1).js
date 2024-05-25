@@ -6,8 +6,9 @@
 //* After each inner iteration, decrement j (to follow the element to completion)
 function insertionSort(nums) {
   for (let i = 0; i < nums.length; i++) {
-    let j = i;
+    let j = i + 1;
 
+    //* Drag the element to the left
     while (j > 0 && nums[j] < nums[j - 1]) {
       nums[j] ^= nums[j - 1];
       nums[j - 1] ^= nums[j];
