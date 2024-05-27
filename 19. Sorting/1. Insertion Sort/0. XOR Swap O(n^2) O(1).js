@@ -5,7 +5,7 @@
 //* Keep doing that until this is true, or j = 0 (because j - 1 puts you out of bounds)
 //* After each inner iteration, decrement j (to follow the element to completion)
 function insertionSort(nums) {
-  for (let i = 0; i < nums.length; i++) {
+  for (let i = 0; i < nums.length - 1; i++) {
     let j = i + 1;
 
     //* Drag the element to the left
