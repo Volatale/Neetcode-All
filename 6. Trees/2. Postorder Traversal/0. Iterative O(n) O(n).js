@@ -72,9 +72,7 @@ console.log(postorderTraversal(root3));
 console.log(postorderTraversal(root4));
 console.log(postorderTraversal(null));
 
-//* Time: O(n) - We have to process every node in the tree
+//* Time: O(n) - The time taken to process every node scales with "n", where n is the number of nodes
 
-//* Space: O(n) - In the worst case, the tree resembles a linked list
-//* The results array holds the values of all "n" nodes
-//* The stack holds up to "h" nodes at once (where h is the height of the tree)
-//* But "n" will always be >= h, so it dominates "h"
+//* Space: O(n) - The stack will hold at most "h" nodes at once, where "h" is the height of the tree
+//* The results array holds every node value, so that scales with the number of nodes (n)
