@@ -8,27 +8,28 @@ class TreeNode {
 
 //* At each level, check if the current node is "null"
 //* If it is, return curr
-//* Otherwise, push curr.val to the results array (N)
-//* Then recursively call preorder on curr.left (L)
-//* Finally, recursively call preorder on curr.right (R)
+//* Otherwise recursively call preorder on curr.left (L)
+//* Then, recursively call preorder on curr.right (R)
+//* Eventually we hit a base case of a null node
+//* So we pop the call stack
+//* push curr.val to the results array (N)
 //* At the end, return results
 //* This works because objects are pass by reference
 //* So we are essentially passing around the memory address of "results"
-function preorderTraversal(root) {
+function postorderTraversal(root) {
   if (root === null) return [];
 
   const results = [];
-  return preorder(root, results);
+  return postorder(root, results);
 }
 
-//* N L R
-function preorder(curr, results) {
+function postorder(curr, results) {
   //* Base Case
   if (curr === null) return curr;
 
+  postorder(curr.left, results); //* L
+  postorder(curr.right, results); //* R
   results.push(curr.val); //* N
-  preorder(curr.left, results); //* L
-  preorder(curr.right, results); //* R
 
   return results;
 }
@@ -49,11 +50,11 @@ root4.left.left = new TreeNode(15);
 root4.left.left.left = new TreeNode(20);
 root4.left.left.left.left = new TreeNode(25);
 
-console.log(preorderTraversal(root1));
-console.log(preorderTraversal(root2));
-console.log(preorderTraversal(root3));
-console.log(preorderTraversal(root4));
-console.log(preorderTraversal(null));
+console.log(postorderTraversal(root1));
+console.log(postorderTraversal(root2));
+console.log(postorderTraversal(root3));
+console.log(postorderTraversal(root4));
+console.log(postorderTraversal(null));
 
 //* Time: O(n) - We have to process every node in the tree
 
