@@ -60,15 +60,20 @@ class MyQueue {
   }
 }
 
-//* Find the max depth of the left and right subtrees recursively
-//* The depth is the number of nodes along the longest path
-//* To find the depth of the root node, we need the children's depths, then we add 1
+//* We need to count the number of levels we have
+//* If we do BFS, we could just increment maxDepth for each while loop iteration
+//* But the children would result in more depth than necessary
+//* In other words, the depth would be "n" because each child would increment maxDepth
+//* Instead, we have to limit the number of dequeues at each level
+//* So we track the size BEFORE starting the next iteration
+//* Then do a for loop so that we dequeue everything on the level
+//* Before starting the next level
 function maxDepth(root) {
   if (root === null) return 0;
 
   let maxDepth = 0;
 
-  const queue = new MyQueue();
+  const queue = new MyQueue(); //* For BFS / Level-Order Traversal
   queue.enqueue(root);
 
   while (!queue.isEmpty()) {
@@ -76,7 +81,7 @@ function maxDepth(root) {
     //* Where "L" is the level we are on
     let size = queue.size;
 
-    //* Level-Order Traversal
+    //* Level-Order Traversal; dequeue everything in the level before continuing
     for (let i = 0; i < size; i++) {
       const curr = queue.dequeue();
 
