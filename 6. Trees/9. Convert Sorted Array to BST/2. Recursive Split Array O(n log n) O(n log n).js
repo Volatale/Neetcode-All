@@ -28,8 +28,9 @@ console.log(sortedArrayToBST([10, 20, 30]));
 console.log(sortedArrayToBST([50]));
 console.log(sortedArrayToBST([1, 2, 3, 4, 5, 6, 7]));
 
-//* Time: O(n) - Each element in the array is processed once
+//* Time: O(n log n) - Each element in the array is processed once
 //* The number of elements in the array halves with each subsequent recursive call
+//* But we still have to create two new arrays that scale with "n" in each iteration
 
 //* Space: O(n log n) - If the array has 8 nodes, we split the array in half each call
 //* 8 > 4 -> 2 -> 1, so the depth of the call stack is O(log n)
