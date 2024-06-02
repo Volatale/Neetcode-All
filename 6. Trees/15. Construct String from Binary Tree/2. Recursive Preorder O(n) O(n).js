@@ -6,6 +6,15 @@ class TreeNode {
   }
 }
 
+//* Use preorder DFS to traverse to every node
+//* Keep track of the node values using an array
+//* Doing tons of string concatenations is slow
+//* Instead, we'll convert the array into a string at the end
+//* Push the current node to the array
+//* If there is a left child, append a "("
+//* Then travel left, when we return from the recursion, append a ")"
+//* Do the same for the right subtree, but check for the absence of a left child
+//* If there is no left but there IS a right, push "()" before processing the right node
 function stringFromBinaryTree(root) {
   //* Pushing to an array and converting later is more performant
   const string = [];
