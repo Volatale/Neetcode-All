@@ -9,7 +9,7 @@ class TreeNode {
 class ListNode {
   constructor(val, next = null) {
     this.val = val;
-    this.next = null;
+    this.next = next;
   }
 }
 
