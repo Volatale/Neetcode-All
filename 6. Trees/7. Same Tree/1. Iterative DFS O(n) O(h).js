@@ -6,13 +6,13 @@ class TreeNode {
   }
 }
 
-//* There are four different cases to consider at each node
-//* p and q are BOTH null, in which case the structure is the same
-//* p OR q are null, in which case the structures are DIFFERENT
-//* p.val !== q.val, in which case the values are different
-//* p.val === q.val, in which case the values are the same and so is the structure
-//* Recursively perform these checks for every node until every node is processed
-//* We can use DFS or BFS
+//* Perform a DFS on both trees at the same time
+//* There are only a few cases we have to consider
+//* Case 1: Both nodes are null -> Return true (same structure)
+//* Case 2: Either node is null -> Return false (different structure)
+//* Case 3: Values are different -> Return false (different values)
+//* Otherwise, the structures of both trees (up to this point) are the same
+//* So check left nodes with left nodes and right nodes with right nodes
 function sameTree(p, q) {
   if (p === null && q === null) return true; //* Structure is the same
   if (p === null || q === null) return false; //* Different structures
@@ -71,7 +71,9 @@ console.log(sameTree(null, q3)); //* False, structures are different
 console.log(sameTree(p3, null)); //* False, structures are different
 console.log(sameTree(null, null)); //* True
 
-//* Time: O(n) - The time taken to process every node in both trees scales with "n"
-//* If both trees are the same, then we process the same number of nodes in both
+//* Time: O(n)) - The worst case occurs when both trees are identical
+//* In that case, we have to check every node in both trees
+//* Pushing to an array is amortized O(1), and we do this "n" times
 
-//* Space: O(h) - The space used by the stack scales with the height of the trees
+//* Space: O(h) - The size of the stack scales with the height of the deepest tree
+//* If the trees are balanced, the space usage is O(log n)

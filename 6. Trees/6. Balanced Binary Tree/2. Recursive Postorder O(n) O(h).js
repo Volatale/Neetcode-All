@@ -64,6 +64,7 @@ console.log(balancedBinaryTree(root3)); //* False
 console.log(balancedBinaryTree(null)); //* True
 
 //* Time: O(n) - The time taken scales with the number of nodes
-//* We process every node in the tree
+//* We have to process every node in the tree regardless
 
 //* Space: O(h) - The space usage scales with the height of the tree
+//* If the tree is balanced, the depth of the call stack is O(log n)
