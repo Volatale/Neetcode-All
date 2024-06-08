@@ -60,13 +60,12 @@ class MyQueue {
   }
 }
 
-//* Perform a preorder traversal
-//* But process the RIGHT node BEFORE the left
-//* We only want to push ONE node for each level
-//* So by processing the RIGHT node first
-//* We ensure that we don't add the blocked left nodes
-//* Only push if results.length === level
-//* That way any higher nodes on the left are blocked (not added)
+//* Perform a BFS Level Order Traversal
+//* Track the level we are currently at
+//* Don't process more than necessary per level
+//* We only want to push the FIRST element we find at that level
+//* And we also want to ensure the RIGHT nodes are processed first
+//* This guarantees that nodes on the right side are pushed first
 function binaryTreeRightSideView(root) {
   //* We have no nodes
   if (root === null) return [];
