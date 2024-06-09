@@ -6,37 +6,24 @@ class TreeNode {
   }
 }
 
-//* Postorder DFS
-//* If the node is a leaf, return the value
-//* Check the left and right subtrees at each step
-//* If root.val === 2, this is an OR operator
-//* If left OR right are 1, then return true, else false
-//* Otherwise, return true if left AND right are 1
+//* Use Postorder Traversal
+//* We need to process the children before the current node
+//* There are 3 (4) cases to handle in each recursive call
+//* If root.val === 0 or 1, return the evaluation
+//* If root.val === 2, evaluate left || right
+//* If root.val === 3, evaluate left && root
+//* The "true" value will be propagated up to the caller
 function evaluateTree(root) {
-  function evaluate(curr) {
-    let left = false;
-    let right = false;
+  //* Base Case
+  if (root === null) return false;
 
-    if (curr.left !== null) {
-      left = evaluate(curr.left);
-    }
+  const left = evaluateTree(root.left);
+  const right = evaluateTree(root.right);
 
-    if (curr.right !== null) {
-      right = evaluate(curr.right);
-    }
+  if (root.val === 2) return left || right; //* Evaluate OR
+  if (root.val === 3) return left && right; //* Evaluate AND
 
-    if (curr.val === 2) {
-      return left || right;
-    }
-
-    if (curr.val === 3) {
-      return left && right;
-    }
-
-    return curr.val === 1;
-  }
-
-  return evaluate(root);
+  return root.val === 1; //* Returns true or false
 }
 
 const root = new TreeNode(2);

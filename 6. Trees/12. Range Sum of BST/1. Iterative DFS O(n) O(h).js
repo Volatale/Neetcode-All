@@ -24,11 +24,12 @@ function rangeSumOfBST(root, low, high) {
       sum += curr.val;
     }
 
-    //* Perform the same checks for the left and right subtrees
+    //* We can keep going left, don't go left if val === low
     if (curr.val > low && curr.left) {
       stack.push(curr.left);
     }
 
+    //* We can keep going right, don't go right if val === high
     if (curr.val < high && curr.right) {
       stack.push(curr.right);
     }

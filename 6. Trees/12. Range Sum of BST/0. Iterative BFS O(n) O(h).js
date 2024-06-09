@@ -79,12 +79,12 @@ function rangeSumOfBST(root, low, high) {
       sum += curr.val;
     }
 
-    //* Utilize the BST property, we need a smaller value
+    //* We can keep going left, don't go left if val === low
     if (curr.val > low && curr.left) {
       queue.enqueue(curr.left);
     }
 
-    //* We need a larger value
+    //* We can keep going right, don't go right if val === high
     if (curr.val < high && curr.right) {
       queue.enqueue(curr.right);
     }
