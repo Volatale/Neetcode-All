@@ -81,6 +81,9 @@ function maxWidthOfBinaryTree(root) {
     for (let i = 0; i < size; i++) {
       const [curr, index] = queue.dequeue();
 
+      //! Stops overflows; effectively, "index" starts at 0 for each level
+      index -= start;
+
       //* Index of left child is: 2 * i + 1
       if (curr.left) {
         queue.enqueue([curr.left, 2 * index + 1]);
