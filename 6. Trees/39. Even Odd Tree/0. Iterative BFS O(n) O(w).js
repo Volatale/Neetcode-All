@@ -1,14 +1,3 @@
-/**
- ** - Binary Tree is Even-Odd if:
- **     - Root of tree is at level 0, children are on the next levels down
- **     - For every EVEN indexed level:
- **         - All nodes should have ODD values
- **         - Be in STRICTLY INCREASING order
- **     - For every ODD indexed level:
- **         - All nodes should have EVEN values
- **         - Be in STRICTLY DECREASING order
- */
-
 class TreeNode {
   constructor(val, left = null, right = null) {
     this.val = val;
