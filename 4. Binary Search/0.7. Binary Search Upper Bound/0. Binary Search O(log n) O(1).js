@@ -11,7 +11,7 @@ function upperBound(nums, target) {
     if (nums[mid] <= target) {
       left = mid;
     } else {
-      right = mid + 1; //* Don't eliminate "mid", it could be the correct value
+      right = mid - 1; //* Don't eliminate "mid", it could be the correct value
     }
   }
 
