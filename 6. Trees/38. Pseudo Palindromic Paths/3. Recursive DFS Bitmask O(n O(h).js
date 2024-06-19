@@ -17,8 +17,11 @@ class TreeNode {
 //* If you find a number that already exists in the bitmask, you FLIP the bits OFF
 //* Otherwise, they get toggled on
 //* Then we just need to check if the current node is a leaf
-//* If it IS a leaf, check if there is only 1 element in the bitmask
-//* bitmask & (bitmask - 1) clears the LSB
+//* If it IS a leaf, check if there is only 1 set bit in the bitmask
+//* This works because: 2^n in binary is 1 followed by "n" 0s
+//* So, 2^n - 1 is: 0 followed by "n" 1s
+//* If we perform 2^n & 2^n-1, we get 0 IF the bitmask was a POWER OF TWO
+//* 4 & 3 = 0, so we know the bitmask had ONE set bit
 function pseudoPalindromicPaths(root) {
   function dfs(curr, bitmask) {
     if (curr === null) return 0;
