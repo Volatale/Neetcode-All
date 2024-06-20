@@ -6,23 +6,24 @@
 //* "mid" represents the current integer we are using as the test subject
 //* If mid * mid === num, "num" IS a perfect square
 //* Otherwise, adjust the search space in the correct direction
-function isPerfectSquare(num, left = 1, right = num) {
-  //* Base Case
-  if (left > right) return false;
+function isPerfectSquare(num) {
+  //* num's minimum value is 1, so the smallest square is 1 (1 * 1)
+  //* The largest possible square would be num * num, so know the bounds
+  let left = 1;
+  let right = Math.floor(num / 2);
 
-  //* "mid" represents the integer we want to square
-  let mid = left + ((right - left) >> 1);
+  while (left < right) {
+    //* Mid represents the root of the number we want to test
+    let mid = left + ((right - left) >> 1);
 
-  //* So we don't have to calculate it twice
-  const square = mid * mid;
-
-  if (square === num) {
-    return true;
-  } else if (square > num) {
-    return isPerfectSquare(num, left, mid - 1); //* Eliminate the right portion
-  } else {
-    return isPerfectSquare(num, mid + 1, right); //* Eliminate the left portion
+    if (mid * mid >= num) {
+      right = mid; //* Square is either perfect or too large
+    } else {
+      left = mid + 1; //* Square is too small
+    }
   }
+
+  return left * left === num;
 }
 
 console.log(isPerfectSquare(16)); //* True (4 * 4)
@@ -35,5 +36,4 @@ console.log(isPerfectSquare(1)); //* True (1 * 1)
 //* Time: O(log n) - We halve the search space each iteration
 //* It takes O(1) to calculate the square
 
-//* Space: O(log n) - At worst, there will be log2(n) recursive calls
-//* So the space usage scales logarithmically with the input size
+//* Space: O(1) - The space we use remains constant regardless of the input

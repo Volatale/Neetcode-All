@@ -13,7 +13,7 @@ function sqrtX(x) {
   let right = x;
 
   while (left < right) {
-    //* Avoid overflow / Truncate Decimals / Divide by 2
+    //* "Mid" represents the root of the square we are trying to make
     let mid = left + ((right - left) >> 1);
 
     //* If mid * mid === x, you found the square root

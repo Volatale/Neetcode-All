@@ -2,16 +2,20 @@
 //* The value we are looking for exists within these bounds
 //* If mid * mid > x, then we need to decrease the search space on the right
 //* Otherwise, narrow it on the left
-//* In cases like sqrt(8), we need to subtract 1, because left would be 3
-//* 3 - 1 = 2
+//* Round the result down if we didn't find the exact value
 function sqrtX(x) {
-  let left = 0;
+  //* 0 * 0 = 0. 1 * 1 = 1
+  if (x <= 1) return x;
+
+  //* The search space is from 1 to x
+  let left = 1;
   let right = x;
-  let res = 0;
 
   while (left <= right) {
+    //* "mid" is the "root" of square we trying
     let mid = left + ((right - left) >> 1);
 
+    //* Find the square of "mid"
     const square = mid * mid;
 
     if (square === x) {
@@ -20,11 +24,11 @@ function sqrtX(x) {
       right = mid - 1;
     } else {
       left = mid + 1;
-      res = mid;
     }
   }
 
-  return res;
+  //* Round the number down
+  return Math.floor(left);
 }
 
 console.log(sqrtX(0)); //* 0
