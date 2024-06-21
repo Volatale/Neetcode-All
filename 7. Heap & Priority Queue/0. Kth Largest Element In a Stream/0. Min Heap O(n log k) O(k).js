@@ -82,20 +82,38 @@ class PriorityQueue {
   }
 }
 
+//* Use a MIN heap - This gives us O(1) access to the SMALLEST element
+//* If we limit the size of the priority queue to "k"
+//* That means that the top element is the Kth Largest
+//* Take this example: [4, 5, 6]. The top element is 4
+//* The array in reverse (sorted) order is [6, 5, 4]
+//* Therefore the 3rd (kth) smallest is 4
+//* Which means if I find a value > 4, I pop 4 and replace it with the new val
+//* Then you'd have [5, 6], after pushing we get [1, 4, 5]
+//* So now the 3rd smallest is 1
 class KthLargest {
   constructor(k, nums) {
     this.k = k;
     this.queue = new PriorityQueue();
 
+    //* Call add for every input element
     for (let num of nums) {
       this.add(num);
     }
   }
 
+  //* Keep adding elements while the length < k
+  //* If length === k, we can't add anymore elements
+  //* Check if the new element > peek()
+  //* If it is, replace the top with the new element
+  //* We want the kth LARGEST elements
+  //* Since we have O(1) access to the minimum
+  //* We can pop the minimum and add the new element
+  //* Therefore, the top element is always the kth largest
   add(val) {
     if (this.queue.length() < this.k) {
       this.queue.insert(val);
-    } else if (this.queue.peek() < val) {
+    } else if (val > this.queue.peek()) {
       this.queue.pop();
       this.queue.insert(val);
     }
@@ -104,9 +122,8 @@ class KthLargest {
   }
 }
 
-//* Time: O(n log k) - We insert "n" elements into the heap to initialize
-//* It takes O(log n) for insertion and deletion and we do this at most "k" times
+//* Time: O(n log k) - We insert "n" elements into the the queue to initialize
+//* It takes O(log k) for insertion and deletion and we do this at most "k" times
 //* O(log k) because the heap is limited to "k" space so there will only be "k" elements at once
 
 //* Space: O(k) - The heap will only contain up to "k" elements at once
-s;
