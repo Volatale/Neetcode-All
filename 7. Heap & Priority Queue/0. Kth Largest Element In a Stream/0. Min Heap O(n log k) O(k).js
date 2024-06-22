@@ -114,6 +114,7 @@ class KthLargest {
     if (this.queue.length() < this.k) {
       this.queue.insert(val);
     } else if (val > this.queue.peek()) {
+      //* Ensures we maintain the "k" LARGEST elements
       this.queue.pop();
       this.queue.insert(val);
     }

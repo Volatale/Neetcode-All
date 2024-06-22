@@ -81,7 +81,7 @@ class KthSmallest {
       this.queue.insert(val);
     } else {
       this.queue.pop();
-      this.queue.add();
+      this.queue.add(val);
     }
 
     return this.queue.peek();
