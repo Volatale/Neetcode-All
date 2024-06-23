@@ -49,3 +49,12 @@ console.log(findKthLargest([3, 2, 1], 2)); //* 2
 console.log(findKthLargest([3, 2, 1, 5, 6, 4], 2)); //* 5
 console.log(findKthLargest([3, 2, 3, 1, 2, 4, 5, 5, 6], 4)); //* 4
 console.log(findKthLargest([5, -10], 1)); //* 5
+
+//* Time: O(n) to O(n^2) - It takes O(n) to iterate through the input array
+//* During each iteration, on average, the elements are split into halves
+//* So the idea is that we reduce the input size so much per iteration
+//* That we deviate away from an O(n^2) time complexity to an O(n)
+//* This assumes a good pivot is chosen consistently
+
+//* Space: O(n) - We split the array up into thirds
+//* All in all, every element is included in the first iteration (recursive call)
