@@ -1,38 +1,42 @@
-//* Red represents the "0" anchor, white the "1" and blue the "2"
-//* Red and White start at 0 - Blue starts at the end of the array
-//* If nums[white] === 0, we swap red and white because the left side should be 0
-//* If nums[white] === 1, we leave the number where it is; its either in the correct position, or will be later
-//* Else, you found a 2, so it should be at the end; swap with blue. White does NOT decrement here
-//* If white decremented after swapping with blue, you are assuming you swapped with a 1 (which would result in white++)
+//* Use three variables to partition the array
+//* Anything to the left of Red should be a 0
+//* Anything to the right of Blue should be a 2
+//* Therefore anything in the middle should be a 1
+//* If white finds a 0, we swap with "red"
+//*     - This places the 0s on the left
+//*     - Then increment red and white because that element is sorted
+//* If white finds a 1, we just increment white
+//*     - White exists to find out of place elements; a 1 is not necessarily out of place
+//* Else, white found a 2, so we swap with "blue"
+//*     - This places the 2s on the right
+//*     - Then decrement blue because this element is sorted
 function sortColors(nums) {
-  let red = 0; //* Leftmost Pointer
-  let white = 0;
-  let blue = nums.length - 1; //* Rightmost Pointer
+  let red = 0; //* Left of "red" should be 0s
+  let white = 0; //* Searches for numbers
+  let blue = nums.length - 1; //* Right of "blue" should be 2s
 
   while (white <= blue) {
     if (nums[white] === 0) {
-      swap(nums, red++, white++);
+      swap(nums, red++, white++); //* Puts the 0s on the left
     } else if (nums[white] === 1) {
-      white++;
+      white++; //* Don't swap; 1s should be in the middle
     } else {
-      swap(nums, white, blue--);
+      swap(nums, white, blue--); //* Puts the 2s on the right
     }
   }
 
   return nums;
 }
 
-function swap(nums, left, right) {
-  const temp = nums[left];
-  nums[left] = nums[right];
-  nums[right] = temp;
-
-  return nums;
+function swap(nums, x, y) {
+  const temp = nums[x];
+  nums[x] = nums[y];
+  nums[y] = temp;
 }
 
-console.log(sortColors([2, 0, 2, 1, 1, 0]));
-console.log(sortColors([2, 1, 0]));
-console.log(sortColors([1, 1, 2, 0, 0, 2]));
+console.log(sortColors([1, 2, 0])); //* [0, 1, 2]
+console.log(sortColors([1, 2, 0, 2, 1, 0])); //* [0, 0, 1, 1, 2, 2]
+console.log(sortColors([1, 2, 0, 2, 1, 0])); //* [0, 0, 1, 1, 2, 2]
 
 //* Time: O(n) - It takes O(n) to iterate through the entire array once
 //* Some elements are processed more than once, but ultimately the time taken scales with the size of the array

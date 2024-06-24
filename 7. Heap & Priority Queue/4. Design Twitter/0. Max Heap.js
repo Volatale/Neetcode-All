@@ -1,10 +1,6 @@
 class MaxHeap {
-  constructor(values = []) {
+  constructor() {
     this.heap = [];
-
-    for (let val of values) {
-      this.enqueue(val);
-    }
   }
 
   isEmpty() {
@@ -22,7 +18,7 @@ class MaxHeap {
   }
 
   peek() {
-    if (this.heap.length === 0) return;
+    if (this.isEmpty()) return;
     return this.heap[0];
   }
 
@@ -34,7 +30,7 @@ class MaxHeap {
   bubbleUp(i) {
     let parent = Math.floor((i - 1) / 2);
 
-    //* Compare the COUNTS of each element
+    //* Compare the "tweet"; whichever is largest goes on top
     while (i !== 0 && this.heap[i][0] > this.heap[parent][0]) {
       this.swap(i, parent);
       i = parent;
@@ -48,7 +44,6 @@ class MaxHeap {
     this.swap(0, this.heap.length - 1);
     const popped = this.heap.pop();
     this.sinkDown(0);
-
     return popped;
   }
 
@@ -57,8 +52,8 @@ class MaxHeap {
     let rightChild = 2 * i + 2;
     let length = this.heap.length;
 
-    //* Compare the COUNTS of the elements
     while (
+      //* Compare the "tweet"; whichever is largest goes on top
       (leftChild < length && this.heap[i][0] < this.heap[leftChild][0]) ||
       (rightChild < length && this.heap[i][0] < this.heap[rightChild][0])
     ) {
@@ -74,60 +69,68 @@ class MaxHeap {
       }
 
       leftChild = 2 * i + 1;
-      rightChild = 2 * i + 2;
+      rightChild = 2 * i + 1;
     }
   }
 }
 
 class Twitter {
   constructor() {
-    this.count = 0;
-    this.tweets = new Map(); //* userId: [count, tweetIds]
-    this.following = new Map(); //* userId: set()
+    this.timestamp = 0; //* Uniquely identify each tweet so we can get the top "10" (something to compare)
+    this.tweets = new Map(); //* userId's tweets are: [[timestamp, tweetId]]
+    this.following = new Map(); //* userId follows -> Set<userId>
   }
 
   postTweet(userId, tweetId) {
-    //* If the user does NOT already have a tweets array
-    if (!this.tweets.get(userId)) {
+    //* "User" must have an array to be able to store their tweets
+    if (!this.tweets.has(userId)) {
       this.tweets.set(userId, []);
     }
 
-    this.tweets.get(userId)?.push([this.count, tweetId]);
-    this.count++;
+    //* timestamp lets us track the most recent tweets (largest value)
+    //* Each tweet has a unique "tweet" count
+    this.tweets.get(userId)?.push([this.timestamp, tweetId]);
+    this.timestamp++;
   }
 
   getNewsFeed(userId) {
     const tweets = [];
-    const maxHeap = new MaxHeap();
+    const priorityQueue = new MaxHeap();
 
-    //* User has to be following themselves technically
+    //* User technically needs to be following themself to see their own tweets
     if (!this.following.has(userId)) {
       this.following.set(userId, new Set());
     }
 
-    //* User's OWN tweets have to be included in the feed
-    this.following.get(userId)?.add(userId);
+    //* User now follows themself
+    this.following.get(userId).add(userId);
 
-    //* Get all of the people that this user follows and destructure the tweet pairs
+    //* Get the users the user follows
     for (let followee of this.following.get(userId)) {
-      //* Ensure the user even has tweets to get
+      //* Ensure the user even has tweets to get (they may not have tweeted)
       if (this.tweets.has(followee)) {
+        //* Take tweets from the BACK because those are the most recent ones
         const index = this.tweets.get(followee).length - 1;
-        const [count, tweetId] = this.tweets.get(followee)[index];
+        const [timestamp, tweetId] = this.tweets.get(followee)[index];
 
-        maxHeap.enqueue([count, tweetId, followee, index - 1]);
+        //* timestamp lets the Max Heap order based on recency (for top k)
+        //* tweetId is so we can push this tweet to the tweets array if needed
+        //* followee is so we can get more tweets from the same user
+        //* index - 1 because we JUST processed THIS tweet, get the next in the list
+        priorityQueue.enqueue([timestamp, tweetId, followee, index - 1]);
       }
     }
 
-    //* Get the top 10 values
-    while (!maxHeap.isEmpty() && tweets.length < 10) {
-      let [count, tweetId, followee, index] = maxHeap.dequeue();
+    //* Get the top 10 recent tweets (max heap)
+    while (!priorityQueue.isEmpty() && tweets.length < 10) {
+      let [timestamp, tweetId, followee, index] = priorityQueue.dequeue();
       tweets.push(tweetId);
 
-      //* Get more of that person's tweets if they exist
+      //* That user may have more tweets, so process them too, in which case index is not - 1
+      //* Get the timestamp/id of the NEXT tweet and add it to the priority queue
       if (index >= 0) {
-        [count, tweetId] = this.tweets.get(followee)[index];
-        maxHeap.enqueue([count, tweetId, followee, index - 1]);
+        [timestamp, tweetId] = this.tweets.get(followee)[index];
+        priorityQueue.enqueue([timestamp, tweetId, followee, index - 1]);
       }
     }
 
@@ -135,14 +138,16 @@ class Twitter {
   }
 
   follow(followerId, followeeId) {
+    //* Ensure that this user has a set to track who they follow
     if (!this.following.has(followerId)) {
       this.following.set(followerId, new Set());
     }
+
+    //* Add the followee to the user's following set
     this.following.get(followerId)?.add(followeeId);
   }
 
   unfollow(followerId, followeeId) {
-    //* If the user is following followee. Get THIS user's follow set
     if (this.following.get(followerId)?.has(followeeId)) {
       this.following.get(followerId)?.delete(followeeId);
     }

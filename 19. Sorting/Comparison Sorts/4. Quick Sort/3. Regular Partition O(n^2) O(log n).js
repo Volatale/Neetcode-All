@@ -54,6 +54,6 @@ console.log(quickSort([1, 2, 3]));
 console.log(quickSort([3, 2, 1]));
 console.log(quickSort([5]));
 
-//* Time: O(n^2)
+//* Time: O(n log n) or O(n^2)
 
-//* Space: O(n)
+//* Space: O(log n)
