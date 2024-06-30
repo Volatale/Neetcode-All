@@ -82,6 +82,17 @@ class MinHeap {
   }
 }
 
+//* Sort based on the "start" time
+//* Use a min heap and compare based on "end" time
+//*     - Trips that end earlier will result in loss of passengers earlier
+//* Track the number of passengers we currently have
+//* Iterate over every "trip" (index in trips)
+//* While pq is NOT empty and the end time <= start of THIS trip
+//*     - Decrement passengers by the number of passengers on the last trip
+//*     - That trip has now ended so the vehicle no longer needs those passengers
+//* Add this trip's passengers to the current count
+//* if currPassengers > capacity, we can't facilitate those people
+//* Enqueue [numPass, end] so we know that this trip is ongoing
 function carPooling(trips, capacity) {
   //* Sort based on FROM (index 1)
   trips.sort((a, b) => a[1] - b[1]);
