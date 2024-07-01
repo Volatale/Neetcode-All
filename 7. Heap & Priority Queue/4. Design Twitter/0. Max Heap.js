@@ -1,6 +1,8 @@
-class MaxHeap {
-  constructor() {
-    this.heap = [];
+class MyMaxHeap {
+  constructor(values, func = (a, b) => b[0] - a[0]) {
+    this.heap = values;
+    this.func = func;
+    this.heapify();
   }
 
   isEmpty() {
@@ -12,13 +14,17 @@ class MaxHeap {
   }
 
   swap(x, y) {
-    const temp = this.heap[x];
-    this.heap[x] = this.heap[y];
-    this.heap[y] = temp;
+    [this.heap[x], this.heap[y]] = [this.heap[y], this.heap[x]];
+  }
+
+  heapify() {
+    for (let i = Math.floor((this.heap.length - 2) / 2); i >= 0; i--) {
+      this.sinkDown(i);
+    }
   }
 
   peek() {
-    if (this.isEmpty()) return;
+    if (this.heap.length === 0) return undefined;
     return this.heap[0];
   }
 
@@ -30,8 +36,7 @@ class MaxHeap {
   bubbleUp(i) {
     let parent = Math.floor((i - 1) / 2);
 
-    //* Compare the "tweet"; whichever is largest goes on top
-    while (i !== 0 && this.heap[i][0] > this.heap[parent][0]) {
+    while (i !== 0 && this.func(this.heap[i], this.heap[parent]) < 0) {
       this.swap(i, parent);
       i = parent;
       parent = Math.floor((i - 1) / 2);
@@ -39,7 +44,7 @@ class MaxHeap {
   }
 
   dequeue() {
-    if (this.heap.length === 0) return;
+    if (this.heap.length === 0) return undefined;
 
     this.swap(0, this.heap.length - 1);
     const popped = this.heap.pop();
@@ -48,28 +53,31 @@ class MaxHeap {
   }
 
   sinkDown(i) {
-    let leftChild = 2 * i + 1;
-    let rightChild = 2 * i + 2;
     let length = this.heap.length;
 
-    while (
-      //* Compare the "tweet"; whichever is largest goes on top
-      (leftChild < length && this.heap[i][0] < this.heap[leftChild][0]) ||
-      (rightChild < length && this.heap[i][0] < this.heap[rightChild][0])
-    ) {
+    while (true) {
+      let leftChild = 2 * i + 1;
+      let rightChild = 2 * i + 2;
+      let swapIndex = i;
+
       if (
-        rightChild >= length ||
-        this.heap[leftChild][0] > this.heap[rightChild][0]
+        leftChild < length &&
+        this.func(this.heap[leftChild], this.heap[swapIndex]) < 0
       ) {
-        this.swap(i, leftChild);
-        i = leftChild;
-      } else {
-        this.swap(i, rightChild);
-        i = rightChild;
+        swapIndex = leftChild;
       }
 
-      leftChild = 2 * i + 1;
-      rightChild = 2 * i + 1;
+      if (
+        rightChild < length &&
+        this.func(this.heap[rightChild], this.heap[swapIndex]) < 0
+      ) {
+        swapIndex = rightChild;
+      }
+
+      if (i === swapIndex) break;
+
+      this.swap(i, swapIndex);
+      i = swapIndex;
     }
   }
 }
@@ -95,7 +103,7 @@ class Twitter {
 
   getNewsFeed(userId) {
     const tweets = [];
-    const priorityQueue = new MaxHeap();
+    const priorityQueue = new MyMaxHeap();
 
     //* User technically needs to be following themself to see their own tweets
     if (!this.following.has(userId)) {

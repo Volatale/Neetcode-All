@@ -1,29 +1,31 @@
-class MaxHeap {
-  constructor(values = []) {
-    this.heap = [];
-
-    for (let val of values) {
-      this.enqueue(val);
-    }
+class MyPriorityQueue {
+  constructor(values = [], func = (a, b) => b - a) {
+    this.heap = values;
+    this.func = func;
+    this.heapify();
   }
 
   isEmpty() {
     return this.heap.length === 0;
   }
 
-  length() {
+  size() {
     return this.heap.length;
   }
 
-  swap(x, y) {
-    const temp = this.heap[x];
-    this.heap[x] = this.heap[y];
-    this.heap[y] = temp;
+  peek() {
+    if (this.heap.length === 0) return undefined;
+    return this.heap[0];
   }
 
-  peek() {
-    if (this.heap.length === 0) return;
-    return this.heap[0];
+  heapify() {
+    for (let i = Math.floor((this.heap.length - 2) / 2); i >= 0; i--) {
+      this.sinkDown(i);
+    }
+  }
+
+  swap(x, y) {
+    [this.heap[x], this.heap[y]] = [this.heap[y], this.heap[x]];
   }
 
   enqueue(val) {
@@ -34,45 +36,49 @@ class MaxHeap {
   bubbleUp(i) {
     let parent = Math.floor((i - 1) / 2);
 
-    while (i !== 0 && this.heap[i] > this.heap[parent]) {
+    while (i !== 0 && this.func(this.heap[i], this.heap[parent]) < 0) {
       this.swap(i, parent);
-
       i = parent;
       parent = Math.floor((i - 1) / 2);
     }
   }
 
   dequeue() {
-    if (this.heap.length === 0) return;
+    if (this.heap.length === 0) return undefined;
 
     this.swap(0, this.heap.length - 1);
     const popped = this.heap.pop();
     this.sinkDown(0);
+
     return popped;
   }
 
   sinkDown(i) {
-    let leftChild = 2 * i + 1;
-    let rightChild = 2 * i + 2;
-    const length = this.heap.length;
+    let length = this.heap.length;
 
-    while (
-      (leftChild < length && this.heap[i] < this.heap[leftChild]) ||
-      (rightChild < length && this.heap[i] < this.heap[rightChild])
-    ) {
+    while (true) {
+      let leftChild = 2 * i + 1;
+      let rightChild = 2 * i + 2;
+      let swapIndex = i;
+
       if (
-        rightChild >= length ||
-        this.heap[leftChild] > this.heap[rightChild]
+        leftChild < length &&
+        this.func(this.heap[leftChild], this.heap[swapIndex]) < 0
       ) {
-        this.swap(i, leftChild);
-        i = leftChild;
-      } else {
-        this.swap(i, rightChild);
-        i = rightChild;
+        swapIndex = leftChild;
       }
 
-      leftChild = 2 * i + 1;
-      rightChild = 2 * i + 2;
+      if (
+        rightChild < length &&
+        this.func(this.heap[rightChild], this.heap[swapIndex]) < 0
+      ) {
+        swapIndex = rightChild;
+      }
+
+      if (i === swapIndex) break;
+
+      this.swap(i, swapIndex);
+      i = swapIndex;
     }
   }
 }
@@ -87,10 +93,10 @@ class MaxHeap {
 //* If that condition is NOT true, there aren't enough stones to smash
 function lastStoneWeight(stones) {
   //* Gives us O(1) access to the top two stones
-  const pq = new MaxHeap(stones);
+  const pq = new MyPriorityQueue(stones);
 
   //* While you have stones to smash (handles 0 or 1 left)
-  while (pq.length() > 1) {
+  while (pq.size() > 1) {
     //* Dequeue the two heaviest stones
     const x = pq.dequeue();
     const y = pq.dequeue();

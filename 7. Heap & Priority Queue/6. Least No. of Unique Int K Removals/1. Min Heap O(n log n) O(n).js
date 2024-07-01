@@ -1,6 +1,8 @@
-class MinHeap {
-  constructor() {
-    this.heap = [];
+class MyMinHeap {
+  constructor(values = [], func = (a, b) => a - b) {
+    this.heap = values;
+    this.func = func;
+    this.heapify();
   }
 
   isEmpty() {
@@ -12,13 +14,17 @@ class MinHeap {
   }
 
   swap(x, y) {
-    const temp = this.heap[x];
-    this.heap[x] = this.heap[y];
-    this.heap[y] = temp;
+    [this.heap[x], this.heap[y]] = [this.heap[y], this.heap[x]];
+  }
+
+  heapify() {
+    for (let i = Math.floor((this.heap.length - 2) / 2); i >= 0; i--) {
+      this.sinkDown(i);
+    }
   }
 
   peek() {
-    if (this.length === 0) return;
+    if (this.heap.length === 0) return undefined;
     return this.heap[0];
   }
 
@@ -30,8 +36,7 @@ class MinHeap {
   bubbleUp(i) {
     let parent = Math.floor((i - 1) / 2);
 
-    //* Compare the FREQUENCIES (index 1)
-    while (i !== 0 && this.heap[i][1] < this.heap[parent][1]) {
+    while (i !== 0 && this.func(this.heap[i], this.heap[parent]) < 0) {
       this.swap(i, parent);
       i = parent;
       parent = Math.floor((i - 1) / 2);
@@ -39,7 +44,7 @@ class MinHeap {
   }
 
   dequeue() {
-    if (this.heap.length === 0) return;
+    if (this.heap.length === 0) return undefined;
 
     this.swap(0, this.heap.length - 1);
     const popped = this.heap.pop();
@@ -48,35 +53,38 @@ class MinHeap {
   }
 
   sinkDown(i) {
-    let leftChild = 2 * i + 1;
-    let rightChild = 2 * i + 2;
     let length = this.heap.length;
 
-    while (
-      //* Compare the FREQUENCIES (index 1)
-      (leftChild < length && this.heap[i][1] > this.heap[leftChild][1]) ||
-      (rightChild < length && this.heap[i][1] > this.heap[rightChild][1])
-    ) {
+    while (true) {
+      let leftChild = 2 * i + 1;
+      let rightChild = 2 * i + 2;
+      let swapIndex = i;
+
       if (
-        rightChild >= length ||
-        this.heap[leftChild][1] < this.heap[rightChild][1]
+        leftChild < length &&
+        this.func(this.heap[leftChild], this.heap[swapIndex]) < 0
       ) {
-        this.swap(i, leftChild);
-        i = leftChild;
-      } else {
-        this.swap(i, rightChild);
-        i = rightChild;
+        swapIndex = leftChild;
       }
 
-      leftChild = 2 * i + 1;
-      rightChild = 2 * i + 2;
+      if (
+        rightChild < length &&
+        this.func(this.heap[rightChild], this.heap[swapIndex]) < 0
+      ) {
+        swapIndex = rightChild;
+      }
+
+      if (i === swapIndex) break;
+
+      this.swap(i, swapIndex);
+      i = swapIndex;
     }
   }
 }
 
 function findLeastNumOfUniqueElements(arr, k) {
   const freqMap = new Map();
-  const pq = new MinHeap();
+  const pq = new MyMinHeap([], (a, b) => a[1] - b[1]);
 
   //* Get the frequency of each number
   for (let i = 0; i < arr.length; i++) {

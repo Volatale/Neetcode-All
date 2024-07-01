@@ -1,29 +1,31 @@
-class MaxHeap {
-  constructor(values = []) {
-    this.heap = [];
-
-    for (let val of values) {
-      this.enqueue(val);
-    }
+class MyMaxHeap {
+  constructor(values = [], func = (a, b) => b - a) {
+    this.heap = values;
+    this.func = func;
+    this.heapify();
   }
 
   isEmpty() {
     return this.heap.length === 0;
   }
 
-  length() {
+  size() {
     return this.heap.length;
   }
 
-  swap(x, y) {
-    let temp = this.heap[x];
-    this.heap[x] = this.heap[y];
-    this.heap[y] = temp;
+  peek() {
+    if (this.heap.length === 0) return undefined;
+    return this.heap[0];
   }
 
-  peek() {
-    if (this.heap.length === 0) return;
-    return this.heap[0];
+  heapify() {
+    for (let i = Math.floor((this.heap.length - 2) / 2); i >= 0; i++) {
+      this.sinkDown(i);
+    }
+  }
+
+  swap(x, y) {
+    [this.heap[x], this.heap[y]] = [this.heap[y], this.heap[x]];
   }
 
   enqueue(val) {
@@ -34,7 +36,7 @@ class MaxHeap {
   bubbleUp(i) {
     let parent = Math.floor((i - 1) / 2);
 
-    while (i !== 0 && this.heap[i][2] > this.heap[parent][2]) {
+    while (i !== 0 && this.func(this.heap[i], this.heap[parent]) < 0) {
       this.swap(i, parent);
       i = parent;
       parent = Math.floor((i - 1) / 2);
@@ -42,36 +44,41 @@ class MaxHeap {
   }
 
   dequeue() {
-    if (this.heap.length === 0) return;
+    if (this.heap.length === 0) return undefined;
 
     this.swap(0, this.heap.length - 1);
     const popped = this.heap.pop();
     this.sinkDown(0);
+
     return popped;
   }
 
   sinkDown(i) {
-    let leftChild = 2 * i + 1;
-    let rightChild = 2 * i + 2;
     let length = this.heap.length;
 
-    while (
-      (leftChild < length && this.heap[i][2] < this.heap[leftChild][2]) ||
-      (rightChild < length && this.heap[i][2] < this.heap[rightChild][2])
-    ) {
+    while (true) {
+      let leftChild = 2 * i + 1;
+      let rightChild = 2 * i + 2;
+      let swapIndex = i;
+
       if (
-        rightChild >= length ||
-        this.heap[leftChild][2] > this.heap[rightChild][2]
+        leftChild < length &&
+        this.func(this.heap[leftChild], this.heap[swapIndex]) < 0
       ) {
-        this.swap(i, leftChild);
-        i = leftChild;
-      } else {
-        this.swap(i, rightChild);
-        i = rightChild;
+        swapIndex = leftChild;
       }
 
-      leftChild = 2 * i + 1;
-      rightChild = 2 * i + 2;
+      if (
+        rightChild < length &&
+        this.func(this.heap[rightChild], this.heap[swapIndex]) < 0
+      ) {
+        swapIndex = rightChild;
+      }
+
+      if (i === swapIndex) break;
+
+      this.swap(i, swapIndex);
+      i = swapIndex;
     }
   }
 }
@@ -92,17 +99,17 @@ function kClosestPointsToOrigin(points, k) {
   const results = [];
 
   //* Add every element to the Max Heap (priority queue)
-  const pq = new MaxHeap();
+  const pq = new MyMaxHeap([], (a, b) => b[2] - a[2]);
 
   //* Get the x and y coordinates of each point
   for (let [x, y] of points) {
     //* Euclidean Distance Algorithm
     const cSquared = x ** 2 + y ** 2;
 
-    if (pq.length() < k) {
+    if (pq.size() < k) {
       //* cSquared gives us something to compare with
       pq.enqueue([x, y, cSquared]);
-    } else if (x ** 2 + y ** 2 < pq.peek()[2]) {
+    } else if (cSquared < pq.peek()[2]) {
       //* Found an element smaller than the top
       pq.dequeue();
       pq.enqueue([x, y, cSquared]);
@@ -148,7 +155,7 @@ console.log(
     ],
     2
   )
-); //* [[-2,2],[2,-2]]
+); //* [[-2, 2], [2, -2]]
 
 //* Time: O(n log k) - Each insertion takes O(log k) time since the size is bounded by "k"
 //* We do this "n" times, so O(n log k)

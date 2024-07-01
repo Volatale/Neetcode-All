@@ -1,83 +1,84 @@
-class PriorityQueue {
-  constructor(values = []) {
-    this.heap = [];
-
-    for (let val of values) {
-      this.insert(val);
-    }
+class MyMinHeap {
+  constructor(values = [], func = (a, b) => a - b) {
+    this.heap = values;
+    this.func = func;
+    this.heapify();
   }
 
   isEmpty() {
     return this.heap.length === 0;
   }
 
-  length() {
+  size() {
     return this.heap.length;
   }
 
-  values() {
-    return this.heap;
-  }
-
   peek() {
+    if (this.heap.length === 0) return undefined;
     return this.heap[0];
   }
 
-  swap(x, y) {
-    let temp = this.heap[x];
-    this.heap[x] = this.heap[y];
-    this.heap[y] = temp;
+  heapify() {
+    for (let i = Math.floor((this.heap.length - 2) / 2); i >= 0; i--) {
+      this.sinkDown(i);
+    }
   }
 
-  insert(val) {
-    this.heap.push(val);
+  swap(x, y) {
+    [this.heap[x], this.heap[y]] = [this.heap[y], this.heap[x]];
+  }
 
-    if (this.heap.length === 1) return this.heap;
+  enqueue(val) {
+    this.heap.push(val);
     this.bubbleUp(this.heap.length - 1);
   }
 
   bubbleUp(i) {
     let parent = Math.floor((i - 1) / 2);
 
-    while (i !== 0 && this.heap[i] < this.heap[parent]) {
+    while (i !== 0 && this.func(this.heap[i], this.heap[parent]) < 0) {
       this.swap(i, parent);
-
       i = parent;
       parent = Math.floor((i - 1) / 2);
     }
   }
 
-  pop() {
-    if (this.heap.length === 0) return;
+  dequeue() {
+    if (this.heap.length === 0) return undefined;
 
     this.swap(0, this.heap.length - 1);
     const popped = this.heap.pop();
     this.sinkDown(0);
+
     return popped;
   }
 
   sinkDown(i) {
-    let leftChild = 2 * i + 1;
-    let rightChild = 2 * i + 2;
     let length = this.heap.length;
 
-    while (
-      (leftChild < length && this.heap[i] > this.heap[leftChild]) ||
-      (rightChild < length && this.heap[i] > this.heap[rightChild])
-    ) {
+    while (true) {
+      let leftChild = 2 * i + 1;
+      let rightChild = 2 * i + 2;
+      let swapIndex = i;
+
       if (
-        rightChild >= length ||
-        this.heap[leftChild] < this.heap[rightChild]
+        leftChild < length &&
+        this.func(this.heap[leftChild], this.heap[swapIndex]) < 0
       ) {
-        this.swap(i, leftChild);
-        i = leftChild;
-      } else {
-        this.swap(i, rightChild);
-        i = rightChild;
+        swapIndex = leftChild;
       }
 
-      leftChild = 2 * i + 1;
-      rightChild = 2 * i + 2;
+      if (
+        rightChild < length &&
+        this.func(this.heap[rightChild], this.heap[swapIndex]) < 0
+      ) {
+        swapIndex = rightChild;
+      }
+
+      if (i === swapIndex) break;
+
+      this.swap(i, swapIndex);
+      i = swapIndex;
     }
   }
 }
@@ -94,11 +95,11 @@ class PriorityQueue {
 class KthLargest {
   constructor(k, nums) {
     this.k = k;
-    this.queue = new PriorityQueue();
+    this.pq = new MyMinHeap();
 
     //* Call add for every input element
-    for (let num of nums) {
-      this.add(num);
+    for (let val of nums) {
+      this.add(val);
     }
   }
 
@@ -111,15 +112,15 @@ class KthLargest {
   //* We can pop the minimum and add the new element
   //* Therefore, the top element is always the kth largest
   add(val) {
-    if (this.queue.length() < this.k) {
-      this.queue.insert(val);
-    } else if (val > this.queue.peek()) {
-      //* Ensures we maintain the "k" LARGEST elements
-      this.queue.pop();
-      this.queue.insert(val);
+    if (this.pq.size() < this.k) {
+      this.pq.enqueue(val);
+    } else if (val > this.pq.peek()) {
+      //* Maintains the "k" largest elements
+      this.pq.dequeue();
+      this.pq.enqueue(val);
     }
 
-    return this.queue.peek();
+    return this.pq.peek();
   }
 }
 

@@ -1,32 +1,30 @@
-class MaxHeap {
-  constructor(values = []) {
-    this.heap = [];
-
-    for (let val of values) {
-      this.enqueue(val);
-    }
+class MyMaxHeap {
+  constructor(values = [], func = (a, b) => b - a) {
+    this.heap = values;
+    this.func = func;
+    this.heapify();
   }
 
   isEmpty() {
     return this.heap.length === 0;
   }
 
-  length() {
+  size() {
     return this.heap.length;
   }
 
-  getValues() {
-    return this.heap;
+  heapify() {
+    for (let i = Math.floor((this.heap.length - 2) / 2); i >= 0; i--) {
+      this.sinkDown(i);
+    }
   }
 
   swap(x, y) {
-    const temp = this.heap[x];
-    this.heap[x] = this.heap[y];
-    this.heap[y] = temp;
+    [this.heap[x], this.heap[y]] = [this.heap[y], this.heap[x]];
   }
 
   peek() {
-    if (this.heap.length === 0) return;
+    if (this.heap.length === 0) return undefined;
     return this.heap[0];
   }
 
@@ -38,8 +36,7 @@ class MaxHeap {
   bubbleUp(i) {
     let parent = Math.floor((i - 1) / 2);
 
-    //* Compare the FREQUENCY (index 1)
-    while (i !== 0 && this.heap[i][1] > this.heap[parent][1]) {
+    while (i !== 0 && this.func(this.heap[i], this.heap[parent]) < 0) {
       this.swap(i, parent);
       i = parent;
       parent = Math.floor((i - 1) / 2);
@@ -47,7 +44,7 @@ class MaxHeap {
   }
 
   dequeue() {
-    if (this.heap.length === 0) return;
+    if (this.heap.length === 0) return undefined;
 
     this.swap(0, this.heap.length - 1);
     const popped = this.heap.pop();
@@ -56,28 +53,31 @@ class MaxHeap {
   }
 
   sinkDown(i) {
-    let leftChild = 2 * i + 1;
-    let rightChild = 2 * i + 2;
     let length = this.heap.length;
 
-    while (
-      //* Compare the FREQUENCY (index 1)
-      (leftChild < length && this.heap[i][1] < this.heap[leftChild][1]) ||
-      (rightChild < length && this.heap[i][1] < this.heap[rightChild][1])
-    ) {
+    while (true) {
+      let leftChild = 2 * i + 1;
+      let rightChild = 2 * i + 2;
+      let swapIndex = i;
+
       if (
-        rightChild >= length ||
-        this.heap[leftChild][1] > this.heap[rightChild][1]
+        leftChild < length &&
+        this.func(this.heap[leftChild], this.heap[swapIndex]) < 0
       ) {
-        this.swap(i, leftChild);
-        i = leftChild;
-      } else {
-        this.swap(i, rightChild);
-        i = rightChild;
+        swapIndex = leftChild;
       }
 
-      leftChild = 2 * i + 1;
-      rightChild = 2 * i + 2;
+      if (
+        rightChild < length &&
+        this.func(this.heap[rightChild], this.heap[swapIndex]) < 0
+      ) {
+        swapIndex = rightChild;
+      }
+
+      if (i === swapIndex) break;
+
+      this.swap(i, swapIndex);
+      i = swapIndex;
     }
   }
 }
@@ -104,7 +104,7 @@ function taskScheduler(tasks, n) {
   //* There is no delay but we still have to process every task
   if (n === 0) return tasks.length;
 
-  const pq = new MaxHeap(); //* Puts the most frequent tasks on top [task, freq]
+  const pq = new MyMaxHeap([], (a, b) => b[1] - a[1]); //* Puts the most frequent tasks on top [task, freq]
   const freq = new Array(26).fill(0); //* Frequency of each task
   const cooldown = new Map(); //* Tracks the tasks that are on cooldown
 
