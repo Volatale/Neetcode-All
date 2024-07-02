@@ -1,6 +1,8 @@
-class MaxHeap {
-  constructor() {
-    this.heap = [];
+class MyMaxHeap {
+  constructor(values = [], func = (a, b) => b - a) {
+    this.heap = values;
+    this.func = func;
+    this.heapify();
   }
 
   isEmpty() {
@@ -11,10 +13,19 @@ class MaxHeap {
     return this.heap.length;
   }
 
+  heapify() {
+    for (let i = Math.floor((this.heap.length - 2) / 2); i >= 0; i--) {
+      this.sinkDown(i);
+    }
+  }
+
   swap(x, y) {
-    const temp = this.heap[x];
-    this.heap[x] = this.heap[y];
-    this.heap[y] = temp;
+    [this.heap[x], this.heap[y]] = [this.heap[y], this.heap[x]];
+  }
+
+  peek() {
+    if (this.heap.length === 0) return undefined;
+    return this.heap[0];
   }
 
   enqueue(val) {
@@ -25,7 +36,7 @@ class MaxHeap {
   bubbleUp(i) {
     let parent = Math.floor((i - 1) / 2);
 
-    while (i !== 0 && this.heap[i] > this.heap[parent]) {
+    while (i !== 0 && this.func(this.heap[i], this.heap[parent]) < 0) {
       this.swap(i, parent);
       i = parent;
       parent = Math.floor((i - 1) / 2);
@@ -33,7 +44,7 @@ class MaxHeap {
   }
 
   dequeue() {
-    if (this.heap.length === 0) return;
+    if (this.heap.length === 0) return undefined;
 
     this.swap(0, this.heap.length - 1);
     const popped = this.heap.pop();
@@ -42,33 +53,37 @@ class MaxHeap {
   }
 
   sinkDown(i) {
-    let leftChild = 2 * i + 1;
-    let rightChild = 2 * i + 2;
     let length = this.heap.length;
 
-    while (
-      (leftChild < length && this.heap[i] < this.heap[leftChild]) ||
-      (rightChild < length && this.heap[i] < this.heap[rightChild])
-    ) {
+    while (true) {
+      let leftChild = 2 * i + 1;
+      let rightChild = 2 * i + 2;
+      let swapIndex = i;
+
       if (
-        rightChild >= length ||
-        this.heap[leftChild] > this.heap[rightChild]
+        leftChild < length &&
+        this.swap(this.heap[leftChild], this.heap[swapIndex]) < 0
       ) {
-        this.swap(i, leftChild);
-        i = leftChild;
-      } else {
-        this.swap(i, rightChild);
-        i = rightChild;
+        swapIndex = leftChild;
       }
 
-      leftChild = 2 * i + 1;
-      rightChild = 2 * i + 2;
+      if (
+        leftChild < length &&
+        this.swap(this.heap[leftChild], this.heap[swapIndex]) < 0
+      ) {
+        leftChild = rightChild;
+      }
+
+      if (i === swapIndex) break;
+
+      this.swap(i, swapIndex);
+      i = swapIndex;
     }
   }
 }
 
 function furthestBuilding(heights, bricks, ladders) {
-  const pq = new MaxHeap(); //* Max Heap of Bricks
+  const pq = new MyMaxHeap([], (a, b) => b - a); //* Max Heap of Bricks
 
   //* Avoid going out of bounds
   for (let i = 0; i < heights.length - 1; i++) {

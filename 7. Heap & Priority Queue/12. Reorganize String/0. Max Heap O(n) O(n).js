@@ -1,8 +1,7 @@
-class MaxHeap {
-  constructor(values = [], func = (a, b) => a[1] - b[1]) {
+class MyMaxHeap {
+  constructor(values = [], func = (a, b) => b - a) {
     this.heap = values;
-    this.compare = func;
-
+    this.func = func;
     this.heapify();
   }
 
@@ -14,23 +13,19 @@ class MaxHeap {
     return this.heap.length;
   }
 
-  swap(x, y) {
-    [this.heap[x], this.heap[y]] = [this.heap[y], this.heap[x]];
+  heapify() {
+    for (let i = Math.floor((this.heap.length - 2) / 2); i >= 0; i--) {
+      this.sinkDown(i);
+    }
   }
 
-  getValues() {
-    return this.heap;
+  swap(x, y) {
+    [this.heap[x], this.heap[y]] = [this.heap[y], this.heap[x]];
   }
 
   peek() {
     if (this.heap.length === 0) return undefined;
     return this.heap[0];
-  }
-
-  heapify() {
-    for (let i = Math.floor((this.heap.length - 2) / 2); i >= 0; i--) {
-      this.sinkDown(i);
-    }
   }
 
   enqueue(val) {
@@ -41,7 +36,7 @@ class MaxHeap {
   bubbleUp(i) {
     let parent = Math.floor((i - 1) / 2);
 
-    while (i !== 0 && this.compare(this.heap[parent], this.heap[i]) < 0) {
+    while (i !== 0 && this.func(this.heap[i], this.heap[parent]) < 0) {
       this.swap(i, parent);
       i = parent;
       parent = Math.floor((i - 1) / 2);
@@ -63,30 +58,29 @@ class MaxHeap {
     while (true) {
       let leftChild = 2 * i + 1;
       let rightChild = 2 * i + 2;
-      let largest = i;
+      let swapIndex = i;
 
       if (
         leftChild < length &&
-        this.compare(this.heap[leftChild], this.heap[largest]) > 0
+        this.func(this.heap[leftChild], this.heap[swapIndex]) < 0
       ) {
-        largest = leftChild;
+        swapIndex = leftChild;
       }
 
       if (
         rightChild < length &&
-        this.compare(this.heap[rightChild], this.heap[largest]) > 0
+        this.func(this.heap[rightChild], this.heap[swapIndex]) < 0
       ) {
-        largest = rightChild;
+        swapIndex = rightChild;
       }
 
-      if (i === largest) break;
+      if (i === swapIndex) break;
 
-      this.swap(i, largest);
-      i = largest;
+      this.swap(i, swapIndex);
+      i = swapIndex;
     }
   }
 }
-
 //* Use a max heap
 //* Consistently take the highest frequency character
 //* This gives us the highest chance to form a valid string
@@ -111,13 +105,14 @@ function reorganizeString(s) {
   }
 
   //* Heapify the array
-  const pq = new MaxHeap(characters);
+  const pq = new MyMaxHeap(characters, (a, b) => b[1] - a[1]);
 
   //* So we don't use the same char twice
   let prev = null;
 
   //* Build the new string
   while (!pq.isEmpty() || prev !== null) {
+    //* There is no other most frequent, and we can't add the previous
     if (prev && pq.isEmpty()) return "";
 
     const [char, freq] = pq.dequeue();

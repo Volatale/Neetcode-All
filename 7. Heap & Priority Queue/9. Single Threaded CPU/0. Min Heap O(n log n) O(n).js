@@ -1,6 +1,8 @@
-class MinHeap {
-  constructor() {
-    this.heap = [];
+class MyMinHeap {
+  constructor(values = [], func = (a, b) => a[0] - b[0]) {
+    this.heap = values;
+    this.func = func;
+    this.heapify();
   }
 
   isEmpty() {
@@ -11,20 +13,19 @@ class MinHeap {
     return this.heap.length;
   }
 
-  swap(x, y) {
-    const temp = this.heap[x];
-    this.heap[x] = this.heap[y];
-    this.heap[y] = temp;
+  heapify() {
+    for (let i = Math.floor((this.heap.length - 2) / 2); i >= 0; i--) {
+      this.sinkDown(i);
+    }
   }
 
-  compare(a, b) {
-    //* If dequeueTimes are the same, compare indices
-    if (a[0] === b[0]) {
-      return a[1] - b[1];
-    }
+  peek() {
+    if (this.heap.length === 0) return undefined;
+    return this.heap[0];
+  }
 
-    //* Otherwise just compare dequeueTimes
-    return a[0] - b[0];
+  swap(x, y) {
+    [this.heap[x], this.heap[y]] = [this.heap[y], this.heap[x]];
   }
 
   enqueue(val) {
@@ -35,7 +36,7 @@ class MinHeap {
   bubbleUp(i) {
     let parent = Math.floor((i - 1) / 2);
 
-    while (i !== 0 && this.compare(this.heap[i], this.heap[parent]) < 0) {
+    while (i !== 0 && this.func(this.heap[i], this.heap[parent]) < 0) {
       this.swap(i, parent);
       i = parent;
       parent = Math.floor((i - 1) / 2);
@@ -57,26 +58,26 @@ class MinHeap {
     while (true) {
       let leftChild = 2 * i + 1;
       let rightChild = 2 * i + 2;
-      let smallest = i;
+      let swapIndex = i;
 
       if (
         leftChild < length &&
-        this.compare(this.heap[leftChild], this.heap[smallest]) < 0
+        this.func(this.heap[leftChild], this.heap[swapIndex]) < 0
       ) {
-        smallest = leftChild;
+        swapIndex = leftChild;
       }
 
       if (
         rightChild < length &&
-        this.compare(this.heap[rightChild], this.heap[smallest]) < 0
+        this.func(this.heap[rightChild], this.heap[swapIndex]) < 0
       ) {
-        smallest = rightChild;
+        swapIndex = rightChild;
       }
 
-      if (i === smallest) break;
+      if (i === swapIndex) break;
 
-      this.swap(i, smallest);
-      i = smallest;
+      this.swap(i, swapIndex);
+      i = swapIndex;
     }
   }
 }
@@ -99,7 +100,7 @@ class MinHeap {
 //*     - index tells us the "id" of the task itself
 function getOrder(tasks) {
   const taskOrder = [];
-  const pq = new MinHeap();
+  const pq = new MyMinHeap([], (a, b) => a[0] - b[0]);
 
   //* Preserve the ORIGINAL index of each task
   for (let i = 0; i < tasks.length; i++) {
