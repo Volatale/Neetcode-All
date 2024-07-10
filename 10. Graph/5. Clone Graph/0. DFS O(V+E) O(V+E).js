@@ -25,8 +25,7 @@ function cloneGraph(node) {
   const cloneMap = new Map();
 
   //* Create a copy for the root node
-  const copy = new Node(node.val, []);
-  cloneMap.set(node, copy);
+  cloneMap.set(node, new Node(node.val));
 
   //* Stack for DFS (holds original nodes)
   const stack = [node];
@@ -40,8 +39,7 @@ function cloneGraph(node) {
     for (let neighbor of curr.neighbors) {
       //* If we haven't visited it, there won't be clone for THIS neighbor
       if (!cloneMap.has(neighbor)) {
-        const neigborClone = new Node(neighbor.val, []);
-        cloneMap.set(neighbor, neigborClone); //* Setup the Original to Clone link
+        cloneMap.set(neighbor, new Node(neighbor.clone)); //* Setup the Original to Clone link
         stack.push(neighbor); //* So we can perform DFS on this node too
       }
 
@@ -50,7 +48,7 @@ function cloneGraph(node) {
     }
   }
 
-  return copy;
+  return cloneMap.get(node);
 }
 
 console.log(
