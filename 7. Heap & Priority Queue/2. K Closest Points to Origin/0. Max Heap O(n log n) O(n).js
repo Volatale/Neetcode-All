@@ -19,7 +19,7 @@ class MyMaxHeap {
   }
 
   heapify() {
-    for (let i = Math.floor((this.heap.length - 2) / 2); i >= 0; i++) {
+    for (let i = Math.floor((this.heap.length - 2) / 2); i >= 0; i--) {
       this.sinkDown(i);
     }
   }

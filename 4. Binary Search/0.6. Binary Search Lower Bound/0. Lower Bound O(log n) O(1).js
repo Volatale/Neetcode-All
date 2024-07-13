@@ -21,7 +21,7 @@ function lowerBound(nums, target) {
 
 console.log(lowerBound([0, 5, 9, 13, 17, 19, 20, 22], 15)); //* 4
 console.log(lowerBound([0, 2, 4, 7, 8], 1)); //* 1
-console.log(lowerBound([5], 5)); //* 5
+console.log(lowerBound([5], 5)); //* 0
 console.log(lowerBound([0, 5, 13, 19, 22, 41, 55, 68, 72, 81, 98], 69)); //* 8
 
 //* Time: O(log n) - The search space halves each iteration of the loop
