@@ -119,3 +119,7 @@ console.log(
     [2, 0],
   ])
 );
+
+//* Time: O(V+E) - It takes O(V+E) time to process every vertex and neighbor
+
+//* Space: O(V+E) - We store every vertex and neighbor in the graph
