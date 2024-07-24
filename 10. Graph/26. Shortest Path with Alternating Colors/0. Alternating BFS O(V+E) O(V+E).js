@@ -82,13 +82,13 @@ function shortestAlternatingPaths(n, redEdges, blueEdges) {
   const red = buildGraph(n, redEdges);
   const blue = buildGraph(n, blueEdges);
 
-  //* [node, distance, prevColor]. Start as null because we took no color to get to 0
+  //* [node, distance, prevColor]. No edge was taken to get to 0
   const queue = new MyQueue([[0, 0, null]]);
 
   //* Assume we can't reach ANY node
   const answer = new Array(n).fill(-1);
 
-  //* Visited tracks the NODE itself and the edge color we took to reach it
+  //* Track the node and the edge taken to reach it
   //* We can visit a node ONCE for EACH COLOR (red and blue = twice)
   const visited = new Set();
   visited.add(`${0}-${null}`);
