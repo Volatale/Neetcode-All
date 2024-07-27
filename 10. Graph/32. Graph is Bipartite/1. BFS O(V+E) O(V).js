@@ -55,52 +55,39 @@ class MyQueue {
   }
 }
 
-//* Use an array to represent the values in each set
-//*     - Use -1 and +1 to identify which nodes are in which set
-//* Perform a BFS because we need go ensure neighbors are processed first
-//* If both vertex and neighbor have been visited (parify[i] !== 0)
-//*     - If the values match, they exist in the same set
-//!     - And they are also adjacent, therefore the graph is NOT bipartite
-//* Set the neighbors of the current node to be the opposite of the current
-//* We aren't guaranteed to have a connected graph
-//*     - So attempt to perform the BFS on every vertex
-//* If ANY BFS returns false, the graph is not bipartite
+//* Perform BFS on every node since we may have a disconnected graph
+//* Assign the source node to set 0
+//* Explore the neighbors and set them to 0 ^ 1
+//*     - Only process the neighbors that have NOT been visited
+//* If color[vertex] === color[neighbor]
+//!     - The graph is not bipartite
+//!     - We have adjacent vertices that are in the same set
 function isBipartite(graph) {
-  function bfs(vertex) {
-    //* It has already been visited, but graph could still be bipartite
-    if (parity[vertex]) return true;
+  const color = {};
 
-    const queue = new MyQueue([vertex]);
-    parity[vertex] = -1; //* Mark as visited
+  for (let vertex = 0; vertex < graph.length; vertex++) {
+    if (color.hasOwnProperty(vertex)) continue;
+
+    //* If vertex is unvisited
+    color[vertex] = 0;
 
     //* Perform BFS
+    const queue = new MyQueue([vertex]);
+
     while (!queue.isEmpty()) {
       const vertex = queue.dequeue();
 
-      //* Explore neighbors
       for (let neighbor of graph[vertex]) {
-        //* Both visited, and they have the same "color"; not bipartite
-        if (parity[vertex] && parity[neighbor] === parity[vertex]) {
-          return false;
-        }
+        //* Graph is not bipartite; adjacent vertices exist in the same set
+        if (color[vertex] === color[neighbor]) return false;
 
-        //* Only do this if the neighbor has NOT been visited
-        if (!parity[neighbor]) {
-          //* Set to the opposite: -1 * -1 = 1 ...  1 * -1 = -1
-          parity[neighbor] = -1 * parity[vertex];
+        //* If the neighbor has not been visited yet
+        if (!color.hasOwnProperty(neighbor)) {
           queue.enqueue(neighbor);
+          color[neighbor] = color[vertex] ^ 1; //* 0 > 1 ... 1 > 0
         }
       }
     }
-
-    return true;
-  }
-
-  const parity = new Array(graph.length).fill(0);
-
-  //* Graph could be disconnected, try BFS from EVERY node
-  for (let i = 0; i < graph.length; i++) {
-    if (!bfs(i)) return false; //* Graph is not bipartite
   }
 
   //* Graph is bipartite
@@ -114,18 +101,9 @@ console.log(
     [1, 3],
     [0, 2],
   ])
-); //* True
+);
 
-console.log(
-  isBipartite([
-    [1, 2, 3],
-    [0, 2],
-    [1, 3],
-    [0, 2],
-  ])
-); //* False
-
-//* Time: O(V+E) - We perform a BFS and traverse every node and edge
+//* Time: O(V+E) - For every vertex, we explore all the edges
 //* So the time taken scales with the number of vertices and edges
 
-//* Space: O(V) - In the worst case, the queue stores every vertex in the graph
+//* Space: O(V) - The color object stores every vertex
