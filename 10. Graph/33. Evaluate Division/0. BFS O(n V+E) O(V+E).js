@@ -8,7 +8,7 @@ class ListNode {
 class MyQueue {
   constructor(values = []) {
     this.front = null;
-    this.tail = null;
+    this.back = null;
     this.length = 0;
 
     for (let val of values) {
@@ -55,66 +55,79 @@ class MyQueue {
   }
 }
 
-//!     - We don't have enough equations
-//* Check if there is a path from point a to point b
-//* if path from a to c exists ... c to a must ALSO exist
-//!     - We need REVERSE EDGES TOO
-
 //* equations[i] = edge from vertex to neighbor
 //* values[i] = weight of equation[i] edge
 //* queries[i] = Find path from u to v
 
-//* n / 0 will not appear
+//* We can't just solve for every variable and answer queries
+//!     - We don't have enough equations
+//* Check if there is a path from point a to point b
+//* If a path from a to c exists ... c to a must ALSO exist
+//!     - Therefore we also need REVERSE EDGES
+
+//* Division by 0 won't appear
 //* x cannot simultaneously be multiple values at once
 //!     - This means no contradictions
 function evaluateDivision(equations, values, queries) {
-  const results = new Array(queries.length).fill(-1);
-  const graph = {};
-
-  let index = 0;
-  for (let [vertex, neighbor] of equations) {
-    if (!graph[vertex]) {
-      graph[vertex] = [];
-    }
-
-    if (!graph[neighbor]) {
-      graph[neighbor] = [];
-    }
-
-    graph[vertex].push([neighbor, values[index]]);
-    graph[neighbor].push([vertex, 1 / values[index]]);
-    index++;
-  }
-
-  function bfs(start, end) {
-    const queue = new MyQueue([[start, 1]]);
+  function bfs(source, dest) {
+    //* [vertex, total]
+    const queue = new MyQueue([[source, 1]]);
     const visited = new Set();
 
     while (!queue.isEmpty()) {
-      const [curr, cost] = queue.dequeue();
-      visited.add(curr);
+      const [vertex, total] = queue.dequeue();
 
-      if (curr === end) return cost;
+      //* Successfully found a path from source to destination
+      if (vertex === dest) return total;
 
-      for (const [neighbor, weight] of graph[curr]) {
+      //* Explore neighbors
+      for (let [neighbor, weight] of graph[vertex]) {
         if (!visited.has(neighbor)) {
-          queue.enqueue([neighbor, cost * weight]);
+          //* Multiply the current total with the edge weight
+          queue.enqueue([neighbor, total * weight]);
+          visited.add(vertex);
         }
       }
     }
 
+    //* No path to destination
     return -1;
   }
 
+  //* Assume no query can be answered
+  const results = new Array(queries.length).fill(-1);
+
+  const graph = {};
+  let index = 0; //* Used to map the equation to the correct value
+
+  for (let [vertex, neighbor] of equations) {
+    //* Stores the regular edges
+    if (!graph[vertex]) {
+      graph[vertex] = [];
+    }
+
+    //* Stores the reverse edges
+    if (!graph[neighbor]) {
+      graph[neighbor] = [];
+    }
+
+    //* Create the forward edge and reverse edge
+    graph[vertex].push([neighbor, values[index]]); //* a / b
+    graph[neighbor].push([vertex, 1 / values[index]]); //* b / a
+    index++; //* Move to the next value
+  }
+
+  //* Answer the queries
   for (let i = 0; i < queries.length; i++) {
-    const [vertex, neighbor] = queries[i];
+    const [source, destination] = queries[i];
 
-    if (!graph[vertex] || !graph[neighbor]) continue;
+    //* There cannot possibly be a path from a to b
+    if (!graph[source] || !graph[destination]) continue;
 
-    if (vertex === neighbor) {
-      results[i] = 1;
+    if (source === destination) {
+      results[i] = 1; //* n / n = 1
     } else {
-      results[i] = bfs(vertex, neighbor);
+      results[i] = bfs(source, destination); //* Either -1 or the result
     }
   }
 
@@ -137,3 +150,10 @@ console.log(
     ]
   )
 );
+
+//* Time: O(n * V+E) - It takes O(V+E) time to build the graph
+//* We have to perform a BFS for each query
+//* In the worst case, every query results in an exploration of every vertex/edge
+
+//* Space: O(V+E) - It takes O(V+E) to store every vertex and edge
+//* The queue itself can store up to V elements at once
