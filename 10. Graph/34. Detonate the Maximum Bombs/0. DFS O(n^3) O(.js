@@ -12,7 +12,7 @@
 function maximumDetonation(bombs) {
   function dfs(vertex, visited) {
     //* Already visited, can't detonate more bombs here
-    if (visited.has(vertex)) return 0;
+    if (visited.has(vertex)) return;
 
     //* Mark as visited
     visited.add(vertex);
@@ -23,14 +23,11 @@ function maximumDetonation(bombs) {
         dfs(neighbor, visited);
       }
     }
-
-    //* Visited.size === Number of bombs that can be detonated
-    //* Otherwise we can just use a separate variable
-    return visited.size;
   }
 
   //* DIRECTED edges; stores which bombs can detonate other bombs
   const graph = {};
+
   let maxBombs = 0;
 
   //* In a brute force manner, determine which bombs can others in their radius
@@ -41,7 +38,9 @@ function maximumDetonation(bombs) {
       const [x2, y2, r2] = bombs[j];
 
       //* Ensure we have a list to store edges
-      if (!graph[i]) graph[i] = [];
+      if (!graph[i]) {
+        graph[i] = [];
+      }
 
       if (!graph[j]) {
         graph[j] = [];
@@ -65,7 +64,9 @@ function maximumDetonation(bombs) {
   //* Try starting the explosion from EVERY bomb, we don't know which is best
   //* Visited set tracks the number of detonated bombs that stemmed from "i"
   for (let i = 0; i < bombs.length; i++) {
-    maxBombs = Math.max(maxBombs, dfs(i, new Set()));
+    const visited = new Set();
+    dfs(i, visited);
+    maxBombs = Math.max(maxBombs, visited.size);
   }
 
   return maxBombs;
