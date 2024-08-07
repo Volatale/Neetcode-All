@@ -77,9 +77,18 @@ class PriorityQueue {
     }
   }
 }
+
+//* Apply Dijkstra's Algorithm
+//* But instead of a Min Heap, use a Max heap
+//* We want to Greedily choose the largest probabilty edges
+//* So instead of relaxing edges to decrease the cost
+//* Increase the cost instead
+//* The probability of reaching the starting vertex is 1 (100%)
+//* Multiply the probability by the weight of each edge
+//*     - This is how we can relax edges in a "positive" manner
 function maxProbability(n, edges, succProb, start, end) {
   const graph = new Array(n).fill(0).map(() => new Array());
-  const dist = new Array(n).fill(Infinity);
+  const dist = new Array(n).fill(0);
 
   //* [node, probability]: Compare based on the WEIGHT in DESCENDING order
   //* Probability of reaching starting node is 1 (100%)
@@ -144,3 +153,10 @@ console.log(
     2
   )
 ); //* 0.30000
+
+//* Time: O(E log V) - Dijkstra's Algorithm runs in O(E log V) time
+//* There are "E" edges and it takes O(log n) to enqueue and dequeue
+
+//* Space: O(V+E) - It takes O(V+E) to store every vertex and its edges
+//* The PQ can potentially store every edge at once
+//* The Dist array uses O(V) space
