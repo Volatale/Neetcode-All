@@ -1,4 +1,4 @@
-class PriorityQueue {
+class MyPriorityQueue {
   constructor(values = [], func = (a, b) => a - b) {
     this.heap = values;
     this.func = func;
@@ -86,14 +86,15 @@ class PriorityQueue {
 //* The probability of reaching the starting vertex is 1 (100%)
 //* Multiply the probability by the weight of each edge
 //*     - This is how we can relax edges in a "positive" manner
-function maxProbability(n, edges, succProb, start, end) {
+function maxProbability(n, edges, succProb, start_node, end_node) {
   const graph = new Array(n).fill(0).map(() => new Array());
-  const dist = new Array(n).fill(0);
+  const prob = new Array(n).fill(0); //* Tracks the max probability of reaching each node
+  const visited = new Array(n).fill(false);
 
   //* [node, probability]: Compare based on the WEIGHT in DESCENDING order
   //* Probability of reaching starting node is 1 (100%)
-  const PQ = new PriorityQueue([[start, 1]], (a, b) => b[1] - a[1]);
-  dist[start] = 1;
+  const PQ = new MyPriorityQueue([[start_node, 1]], (a, b) => b[1] - a[1]);
+  prob[start_node] = 1;
 
   //* Build the undirected graph
   for (let i = 0; i < edges.length; i++) {
@@ -107,22 +108,28 @@ function maxProbability(n, edges, succProb, start, end) {
   while (!PQ.isEmpty()) {
     const [vertex, probability] = PQ.dequeue();
 
-    //* Found a path to the end
-    if (vertex === end) return probability;
+    if (visited[vertex]) continue;
+
+    visited[vertex] = true;
+
+    //* Found a path to the end_node
+    if (vertex === end_node) return probability;
 
     //* Explore neighbors
     for (let [neighbor, weight] of graph[vertex]) {
-      const newProbability = probability * weight;
+      if (!visited[neighbor]) {
+        const newProbability = probability * weight;
 
-      //* Try to relax the edge
-      if (newProbability > dist[neighbor]) {
-        dist[neighbor] = newProbability;
-        PQ.enqueue([neighbor, dist[neighbor]]);
+        //* Try to relax the edge
+        if (newProbability > prob[neighbor]) {
+          prob[neighbor] = newProbability;
+          PQ.enqueue([neighbor, prob[neighbor]]);
+        }
       }
     }
   }
 
-  //* Found no path from start to end
+  //* Found no path from start_node to end_node
   return 0;
 }
 
@@ -153,6 +160,8 @@ console.log(
     2
   )
 ); //* 0.30000
+
+console.log(maxProbability(3, [[0, 1]], [0, 5], 0, 2)); //* 0
 
 //* Time: O(E log V) - Dijkstra's Algorithm runs in O(E log V) time
 //* There are "E" edges and it takes O(log n) to enqueue and dequeue
