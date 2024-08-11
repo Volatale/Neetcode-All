@@ -1,3 +1,11 @@
+//* Use Bellman-Ford's Algorithm
+//* BF after "k" relaxation steps
+//*     - Gives us the shortest path from src to every node within "k" moves
+//*     - We are told we can only have "k" stops
+//*         - But these are intermiediate stops
+//!         - In other words, there can only be "k" nodes BETWEEN src and dst
+//!         - So technically we can move k + 1 times
+//*     - We don't NEED to relax n - 1 times
 function findCheapestPrice(n, flights, src, dst, k) {
   let minCost = new Array(n).fill(Infinity);
   minCost[src] = 0;
@@ -8,6 +16,7 @@ function findCheapestPrice(n, flights, src, dst, k) {
 
     //* Relax edges
     for (const [vertex, neighbor, price] of flights) {
+      //* Haven't reached this vertex yet
       if (minCost[vertex] === Infinity) continue;
 
       //* Relax edge if possible
