@@ -104,7 +104,7 @@ console.log(
     0,
     5
   )
-); //* Should return 8, but gets into an infinite loop
+); //* 8
 
 //* Time: O(fmax * (V+E)) - It takes O(V+E) to find an augmenting path in the worst case
 //* Ford-Fulkerson can find at most fmax augmenting paths where "f" is the maximum flow in the network
