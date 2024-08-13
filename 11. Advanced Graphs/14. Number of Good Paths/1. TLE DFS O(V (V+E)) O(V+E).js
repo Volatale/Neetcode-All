@@ -1,39 +1,39 @@
+//! Gives TLE!
 //* Start a DFS from every node
 //*     - This lets us use each value as a starting point
 //*     - Then we can find good paths that are within the current range
 function numberOfGoodPaths(vals, edges) {
-  function dfs(vertex, startVal, path, visited) {
-    if (visited.has(vertex)) return;
-
+  function dfs(vertex, parent, startVal, path) {
     //* Add vertex to path
     path.push(vertex);
-    visited.add(vertex);
+
+    //* Invalid Path
+    if (vals[vertex] > startVal) {
+      path.pop();
+      return;
+    }
 
     //* Completed a path
-    if (startVal[vertex] === startVal) {
+    if (vals[vertex] === startVal) {
       const forwardPath = path.join("-");
       const reversePath = path.slice().reverse().join("-");
 
-      //* Can't count this path as we have already explored it
-      if (exploredPaths.has(forwardPath) || exploredPaths.has(reversePath)) {
-        path.pop();
-        visited.delete(vertex);
-        return;
+      //* Only count paths we have not already used
+      if (!exploredPaths.has(forwardPath) && !exploredPaths.has(reversePath)) {
+        goodPaths++;
+        exploredPaths.add(forwardPath);
+        exploredPaths.add(reversePath);
       }
-
-      goodPaths++;
-      exploredPaths.add(forwardPath);
-      exploredPaths.add(reversePath);
     }
 
     //* Explore neighbors
     for (const neighbor of graph[vertex]) {
-      dfs(neighbor, startVal, path, visited);
+      if (neighbor === parent) continue;
+      dfs(neighbor, vertex, startVal, path);
     }
 
     //* Backtrack
     path.pop();
-    visited.delete(vertex);
   }
 
   const graph = new Array(vals.length).fill(0).map(() => new Array());
@@ -49,13 +49,17 @@ function numberOfGoodPaths(vals, edges) {
 
   //* Try using every vertex as the start val
   for (let i = 0; i < vals.length; i++) {
-    const path = [];
-    const visited = new Set();
-    dfs(i, vals[i], path, visited);
+    dfs(i, -1, vals[i], []);
   }
 
   return goodPaths;
 }
+
+//* Time: O(V*(V+E)) - We perform a DFS starting from every vertex
+//* Each DFS takes O(V+E) time in the worst case
+
+//* Space: O(V+E) - We use O(V+E) memory to store the graph
+//* The path array and visited set can potentially use O(V) space
 
 console.log(
   numberOfGoodPaths(
@@ -67,7 +71,38 @@ console.log(
       [2, 4],
     ]
   )
-);
+); //* 6
+
+console.log(
+  numberOfGoodPaths(
+    [1, 1, 2, 2, 3],
+    [
+      [0, 1],
+      [1, 2],
+      [2, 3],
+      [2, 4],
+    ]
+  )
+); //* 7
+
+console.log(numberOfGoodPaths([1], [])); //* 1
+
+console.log(
+  numberOfGoodPaths(
+    [2, 5, 5, 1, 5, 2, 3, 5, 1, 5],
+    [
+      [0, 1],
+      [2, 1],
+      [3, 2],
+      [3, 4],
+      [3, 5],
+      [5, 6],
+      [1, 7],
+      [8, 4],
+      [9, 7],
+    ]
+  )
+); //* 20
 
 //* Time: O(V*(V+E)) - We perform a DFS starting from every vertex
 //* Each DFS takes O(V+E) time in the worst case
