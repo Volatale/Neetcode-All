@@ -14,6 +14,7 @@ function houseRobber(nums) {
   if (nums.length === 1) return nums[0];
   if (nums.length === 2) return Math.max(nums[0], nums[1]);
 
+  //* dp[i] = Total Max profit possible at this house
   const n = nums.length;
   const dp = new Array(n).fill(0);
 

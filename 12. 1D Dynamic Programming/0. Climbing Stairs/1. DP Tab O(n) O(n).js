@@ -3,6 +3,7 @@
 function climbStairs(n) {
   if (n <= 2) return n;
 
+  //* dp[i] = No. of Distinct Ways to reach i-th step using 1 or 2 steps
   const dp = new Array(n + 1).fill(0);
 
   //* Seed Values: There is 1 way to reach stair "n" from both 0 and 1

@@ -6,6 +6,7 @@
 //! Recurrence Relation: f(n) = min(f(n-1), f(n-2)) + cost[n]
 //* Apply Bottom-Up DP (Tabulation)
 function minCostClimbingStairs(cost) {
+  //* d[i] = Min Cost to get to the i-th step
   const dp = new Array(cost.length + 1).fill(0);
   const n = cost.length;
 
