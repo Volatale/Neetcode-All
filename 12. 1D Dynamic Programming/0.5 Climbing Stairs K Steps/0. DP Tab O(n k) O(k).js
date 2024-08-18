@@ -10,24 +10,23 @@
 //* Use Tabulation to remove the need for recursion
 function climbingStairsKSteps(n, k) {
   //* dp[i] = No. of Distinct Ways to reach ith step
-  const dp = new Array(k + 1).fill(0);
+  const dp = new Array(k).fill(0);
 
   //* Seed Values: These are our base cases
   //* There is only 1 distinct way to reach step 0 and step 1
   dp[0] = 1;
-  dp[1] = 1;
 
   //* i represents ith step, j represents j-th previous step
-  for (let i = 2; i <= n; i++) {
-    for (let j = 1; j <= k; j++) {
+  for (let i = 1; i <= n; i++) {
+    for (let j = 1; j < k; j++) {
       //* Ensure we stay within bounds
       if (i - j >= 0) {
-        dp[i] += dp[i - j];
+        dp[i % k] += dp[(i - j) % k];
       }
     }
   }
 
-  return dp[n];
+  return dp[n % k];
 }
 
 console.log(climbingStairsKSteps(2, 2)); //* 2
