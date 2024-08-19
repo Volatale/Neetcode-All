@@ -15,7 +15,7 @@ function longestPalindrome(s) {
   //* Expand from every index to get every possible palindrome
   for (let i = 0; i < s.length - 1; i++) {
     const odd = expandFromCenter(s, i, i); //* Odd length palindrome
-    const even = expandFromCenter(s, i, i + 1); //* Even length palind
+    const even = expandFromCenter(s, i, i + 1); //* Even length palindrome
 
     if (odd.length > longest.length) {
       longest = odd;
