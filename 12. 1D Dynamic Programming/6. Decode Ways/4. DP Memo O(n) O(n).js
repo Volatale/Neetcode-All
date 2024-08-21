@@ -1,6 +1,6 @@
 //* Symbols can only have 1 or 2 digits
 //* So there are (at most) two calls at each step
-//* Use memoizatin to avoid redundant work
+//* Use Memoization to avoid redundant work
 
 //! Recurrence Relation: F(n) = F(n + 1) + F(n + 2)
 //* F(n) = No. of Ways to decode string starting from index "n" to the end of the string
@@ -8,22 +8,31 @@
 //! We have leading zeroes, so we should start from the LEFT and go RIGHT
 //* There is no way to guarantee the correct result of we go right (n) to left (0)
 function numDecodings(s) {
-  function decode(i, memo) {
-    if (i === s.length) return 1; //* Completed decoding
-    if (s[i] === "0") return 0; //* Can't have leading zeroes
+  function decode(index, memo) {
+    if (index === s.length) return 1; //* Completed decoding
+    if (s[index] === "0") return 0; //* Can't have leading zeroes
 
     //* Utilize memoized value
-    if (memo.hasOwnProperty(i)) return memo[i];
+    if (memo.hasOwnProperty(index)) return memo[index];
 
-    //* Handle "single" character case
-    let ways = decode(i + 1, memo);
+    let ways = 0;
 
-    //* Handle "double" character case
-    if (i + 1 < s.length && s[i] <= "2" && s[i + 1] <= "6") {
-      ways += decode(i + 2, memo);
+    //* Take substrings starting from "index" to i + 2
+    for (let i = index; i < Math.min(i + 2, s.length); i++) {
+      const substring = s.substring(index, i + 1);
+      const num = parseInt(substring);
+
+      //* Ignore leading zeroes
+      if (substring.length > 1 && substring[0] === "0") continue;
+      if (substring.length > 2) break; //* Symbols can only be 1 or 2 digits
+
+      //* Ensure the number is within bounds
+      if (num <= 26) {
+        ways += decode(i + 1, memo);
+      }
     }
 
-    memo[i] = ways;
+    memo[index] = ways;
     return ways;
   }
 
