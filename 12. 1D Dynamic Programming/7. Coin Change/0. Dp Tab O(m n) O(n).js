@@ -18,7 +18,7 @@ function coinChange(coins, amount) {
 
   for (let i = 1; i <= amount; i++) {
     for (let coin of coins) {
-      if (i - coin >= 0 && dp[i - coin] !== Infinity) {
+      if (i >= coin && dp[i - coin] !== Infinity) {
         dp[i] = Math.min(dp[i], dp[i - coin] + 1);
       }
     }

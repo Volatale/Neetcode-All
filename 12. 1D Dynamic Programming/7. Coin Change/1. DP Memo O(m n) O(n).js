@@ -28,8 +28,8 @@ function coinChange(coins, amount) {
     return fewestCoins;
   }
 
-  const fewestCoins = change(amount, {});
-  return fewestCoins < Infinity ? fewestCoins : -1;
+  const memo = {};
+  return change(amount, memo) < Infinity ? memo[amount] : -1;
 }
 
 console.log(coinChange([1, 2, 5], 11)); //* 3
