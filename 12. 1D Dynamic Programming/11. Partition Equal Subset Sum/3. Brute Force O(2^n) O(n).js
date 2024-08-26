@@ -32,7 +32,6 @@ function canPartition(nums) {
   return partition(0, target);
 }
 
-debugger;
 console.log(canPartition([1, 5, 11, 5])); //* True
 console.log(canPartition([1, 2, 3, 5])); //* False
 console.log(canPartition([4, 3])); //* False
