@@ -1,0 +1,65 @@
+//* We can't choose the same color twice in a row
+//*     - So track the PREVIOUS choice that was made
+//* Ultimately, we want to try every possible combination
+//* Take the minimum out of all three paths
+
+//* i = index, c = color
+/**
+ *! Recurrence Relation: F(i, c) =
+ *!      min(
+ *!           F(i + 1, 0) + houses[i][0]
+ *!           F(i + 1, 1) + houses[i][1]
+ *!           F(i + 1, 2) + houses[i][2]
+ *!         )
+ */
+//* Apply tabulation to avoid recursion overhead
+//* We only need the previous row and the current row
+//*     - Use bitwise alternation to swap between rows
+function paintHouse(house) {
+  const n = house.length;
+
+  //* dp[c] = Min cost to paint house "i" with color "c"
+  let dp = [0, 0, 0];
+
+  //* i = House. We don't need to track the color
+  for (let i = 0; i < n; i++) {
+    let first = house[i][0] + Math.min(dp[1], dp[2]);
+    let second = house[i][1] + Math.min(dp[0], dp[2]);
+    let third = house[i][2] + Math.min(dp[0], dp[1]);
+
+    dp = [first, second, third];
+  }
+
+  //* Return the minimum cost among all paths
+  return Math.min(dp[0], dp[1], dp[2]);
+}
+
+console.log(paintHouse([[10, 4, 2]])); //* 2
+
+console.log(
+  paintHouse([
+    [20, 30, 40],
+    [40, 30, 40],
+    [20, 30, 40],
+  ])
+); //* 70
+
+console.log(
+  paintHouse([
+    [17, 2, 17],
+    [16, 16, 5],
+    [14, 3, 19],
+  ])
+); //* 10
+
+console.log(
+  paintHouse([
+    [17, 2, 17],
+    [16, 16, 5],
+  ])
+); //* 7
+
+//* Time: O(n) - There are "n" houses to iterate over
+//* And there are 3 colors possible colors, so n * 3 unique subproblems
+
+//* Space: O(1) - The space usage is always the same regardless of the number of houses
