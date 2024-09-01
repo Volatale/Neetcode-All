@@ -43,5 +43,4 @@ console.log(integerBreak(10)); //* 36
 //* There are n^2 unique subproblems in the worst case
 //* The branching factor is "n-1", so "n", and the height of the recursion tree is also n
 
-//* Space: O(n^2) - The depth of the recursion tree scales with "n"
-//* There are n^2 unique subproblems to cache, thus n^2 possible keys/values
+//* Space: O(n) - There are "n" unique states, thus "n" unique

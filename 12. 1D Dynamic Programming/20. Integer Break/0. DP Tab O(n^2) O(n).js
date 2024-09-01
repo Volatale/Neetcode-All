@@ -17,9 +17,11 @@ function integerBreak(n) {
   //* 1 itself cannot be broken further
   dp[1] = 1;
 
-  for (let i = 2; i <= n; i++) {
-    for (let j = 1; j < i; j++) {
-      dp[i] = Math.max(dp[i], j * (i - j), j * dp[i - j]);
+  //* "num" is the number we are trying to break (each "n")
+  //* "i" represents the amount we are subtracting FROM n to "break" the number
+  for (let num = 2; num <= n; num++) {
+    for (let i = 1; i < num; i++) {
+      dp[num] = Math.max(dp[num], i * (num - i), i * dp[num - i]);
     }
   }
 
