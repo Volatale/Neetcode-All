@@ -5,34 +5,33 @@
 //* Take the maximum of all of these cases
 
 //! Recurrence Relation: F(i, j) = max(F(i + 1, j + 1), F(i + 1, j), F(i, j + 1))
-//* Apply memoization to avoid redundant work
+//* This problem is basically Longest Common Subsequence
+
+//* Apply tabulation to avoid recursion overhead
+//* We only need the previous and current rows
+//*     - Use bitwise alternation instead of using "n" rows
 function maxUncrossedLines(nums1, nums2) {
-  function crossLines(i, j, memo) {
-    //* Base Case: No more elements to connect
-    if (i === nums1.length || j === nums2.length) return 0;
+  //* There cannot be any lines drawn
+  if (nums1.length === 0 || nums2.length === 0) return 0;
 
-    //* Utilize memoized value
-    const key = `${i}-${j}`;
-    if (memo.hasOwnProperty(key)) return memo[key];
+  const n = nums1.length;
+  const m = nums2.length;
 
-    let lines = 0;
+  //* dp[i][j] = Maximum lines we can get ending at i in nums1 and j in nums[2]
+  //* Bitwise Alternation allows us to only need 2 rows
+  const dp = new Array(2).fill(0).map(() => new Array(m + 1).fill(0));
 
-    //* Case 1: Connect the elements
-    if (nums1[i] === nums2[j]) {
-      lines = crossLines(i + 1, j + 1, memo) + 1;
+  for (let i = 1; i <= n; i++) {
+    for (let j = 1; j <= m; j++) {
+      if (nums1[i - 1] === nums2[j - 1]) {
+        dp[i & 1][j] = dp[(i - 1) & 1][j - 1] + 1;
+      } else {
+        dp[i & 1][j] = Math.max(dp[(i - 1) & 1][j], dp[i & 1][j - 1]);
+      }
     }
-
-    //* Case 2: Try progressing "i"
-    lines = Math.max(lines, crossLines(i + 1, j, memo));
-
-    //* Case 3: Try progressing "j"
-    lines = Math.max(lines, crossLines(i, j + 1, memo));
-
-    memo[key] = lines;
-    return lines;
   }
 
-  return crossLines(0, 0, {});
+  return dp[n & 1][m];
 }
 
 console.log(maxUncrossedLines([1, 4, 2], [1, 2, 4])); //* 2
@@ -46,6 +45,4 @@ console.log(maxUncrossedLines([5], [4, 5, 6, 7, 8])); //* 1
 //* n = nums1 length and m = nums2 length
 //* (n + 1) * (m + 1) = nm + 2 = O(n * m)
 
-//* Space: O(n * m) - There are n * m + 2 unique subproblems to store
-//* So the memo object scales with the size of both inputs
-//* The depth of the recursion tree scales with n + m in the worst case
+//* Space: O(m) - We are only keeping two rows in memory simultaneously
