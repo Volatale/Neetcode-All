@@ -47,7 +47,6 @@ function new21Game(n, k, maxPts) {
   return result;
 }
 
-debugger;
 console.log(new21Game(10, 1, 10)); //* 1.00000
 console.log(new21Game(3, 2, 3)); //* 0.888888
 console.log(new21Game(6, 1, 10)); //* 0.600000
