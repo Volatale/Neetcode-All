@@ -15,12 +15,13 @@
 //*     - But then we need to consider every OTHER subarray range [0, k]
 //*         - There is bound to be a lot of repeated work, hence the DP approach
 
-//* Apply memoization to avoid redundant work
-//*     - The only non-constant parameter we have is "i"
+//* "i" = start of subarray
+//* "j" = end of subarray
+//! Recurrence Relation: F(i) = sum(F(j + 1) + (max * windowSize) for all subarrays [1:k]))
 function maxSumAfterPartitioning(arr, k) {
-  function partition(i, memo) {
-    //* Utilize memoized value
-    if (memo.hasOwnProperty(i)) return memo[i];
+  function partition(i) {
+    //* No more elements to consider
+    if (i === arr.length) return 0;
 
     let currMax = 0;
     let sum = 0;
@@ -32,14 +33,13 @@ function maxSumAfterPartitioning(arr, k) {
       const windowSize = j - i + 1;
 
       //* Multiply the maximum value in window by the window size
-      sum = Math.max(sum, partition(j + 1, memo) + currMax * windowSize);
+      sum = Math.max(sum, partition(j + 1) + currMax * windowSize);
     }
 
-    memo[i] = sum;
     return sum;
   }
 
-  return partition(0, {});
+  return partition(0);
 }
 
 console.log(maxSumAfterPartitioning([7, 15, 8], 2)); //* 38
@@ -48,11 +48,10 @@ console.log(maxSumAfterPartitioning([1, 15, 7, 9, 2, 5, 10], 3)); //* 84
 console.log(maxSumAfterPartitioning([1, 4, 1, 5, 7, 3, 6, 1, 9, 9, 3], 4)); //* 83
 console.log(maxSumAfterPartitioning([1], 1)); //* 1
 
-//* Time: O(n * k) - There are "n" possible indices
-//* And each call can generate "k" more calls in the worst case
-//* But we are memoizing the results of subproblems
-//* (k + 1) * (n + 1) = kn + 2
+//* Time: O(k^n) - There are "n" possible indices in the input
+//* There are also "k" branches per call in the worst case
+//* And the depth of the recursion tree scales with "n"
+//* Within each call, we do an O(k) loop
 
 //* Space: O(n) - The depth of the recursion tree scales with "n"
 //* In the worst case, we transition the state by 1 each call (taking only single length subarrays)
-//* We are only caching the potential indices, and there are "n" of them
