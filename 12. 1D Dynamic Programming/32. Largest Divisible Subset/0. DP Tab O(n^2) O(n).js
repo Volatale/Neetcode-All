@@ -24,8 +24,6 @@ function largestDivisibleSubset(nums) {
   const dp = nums.map((_, i) => [nums[i]]);
 
   for (let i = 0; i < n; i++) {
-    //* Include each element in its own subset
-
     //* Check all previous elements
     for (let j = 0; j < i; j++) {
       //* Element must be divisible by every other element in the subset
