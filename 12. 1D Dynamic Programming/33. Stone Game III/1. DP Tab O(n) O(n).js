@@ -44,6 +44,7 @@ function stoneGameIII(stoneValue) {
     }
 
     dp[i] = maxScore;
+    return maxScore;
   }
 
   //* dp[0] gives us Alice's score; if this is > 0, Alice won
