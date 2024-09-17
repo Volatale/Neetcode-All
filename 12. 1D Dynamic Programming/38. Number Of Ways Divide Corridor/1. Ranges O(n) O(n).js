@@ -34,6 +34,7 @@ console.log(numberOfWays("P")); //* 0
 console.log(numberOfWays("SSPPSPS")); //* 3
 console.log(numberOfWays("PPSPSP")); //* 1
 console.log(numberOfWays("SSSSS")); //* 0
+console.log(numberOfWays("SSPPSSPSPSSS")); //* 6
 
 //* Time: O(n) - We have to iterate through the entire array twice in the worst case
 //* Once to get the seat indices and the second to calculate how many dividers to place within each range

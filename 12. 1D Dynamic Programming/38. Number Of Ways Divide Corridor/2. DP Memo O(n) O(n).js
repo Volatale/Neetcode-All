@@ -54,6 +54,7 @@ console.log(numberOfWays("P")); //* 0
 console.log(numberOfWays("SSPPSPS")); //* 3
 console.log(numberOfWays("PPSPSP")); //* 1
 console.log(numberOfWays("SSSSS")); //* 0
+console.log(numberOfWays("SSPPSSPSPSSS")); //* 6
 
 //* Time: O(n) - In the worst case, there 2 possible branches from a single call
 //* The depth of the recursion tree scales with s.length (n)

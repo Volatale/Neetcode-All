@@ -5,6 +5,15 @@
 //* Start from seat 1 (because we then we KNOW we start from the second)
 //*     - Seat[i+1] - seats[i] will tell us the number of dividers we can put within that range
 //* Since this is combinatorial in nature, we multiply the number of ways as we go
+
+//* Why does combinatorics work here?
+//*     - We have several independent choices/events
+//*         - Each section is formed by finding 2 seats and finding a third
+//*         - Then, we can take the difference between the indices of seat 3 and seat 2 (1-indexed)
+//*         - Each choice has 0 impact on the future choices, hence they are independent
+//*     - The rule of product applies here
+//*         - We want to take ALL of the possible ways
+//*         - This is not a mutual exclusion scenario (take this OR that), which would mean applying the Rule of Sums)
 function numberOfWays(corridor) {
   let seats = 0;
   let lastSeatIndex = -1;
@@ -34,6 +43,7 @@ console.log(numberOfWays("P")); //* 0
 console.log(numberOfWays("SSPPSPS")); //* 3
 console.log(numberOfWays("PPSPSP")); //* 1
 console.log(numberOfWays("SSSSS")); //* 0
+console.log(numberOfWays("SSPPSSPSPSSS")); //* 6
 
 //* Time: O(n) - We have to iterate through the entire array, which takes O(n)
 

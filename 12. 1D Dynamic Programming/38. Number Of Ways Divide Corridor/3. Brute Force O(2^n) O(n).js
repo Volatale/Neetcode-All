@@ -27,11 +27,8 @@ function numberOfWays(corridor) {
         dividers = (countDividers(i + 1, 0) + countDividers(i + 1, 2)) % MOD;
       }
     } else {
-      if (corridor[i] === "S") {
-        dividers = countDividers(i + 1, seats + 1);
-      } else {
-        dividers = countDividers(i + 1, seats);
-      }
+      dividers =
+        countDividers(i + 1, seats + (corridor[i] === "S" ? 1 : 0)) % MOD;
     }
 
     return dividers;
@@ -48,6 +45,7 @@ console.log(numberOfWays("P")); //* 0
 console.log(numberOfWays("SSPPSPS")); //* 3
 console.log(numberOfWays("PPSPSP")); //* 1
 console.log(numberOfWays("SSSSS")); //* 0
+console.log(numberOfWays("SSPPSSPSPSSS")); //* 6
 
 //* Time: O(2^n) - In the worst case, there 2 possible branches from a single call
 //* The depth of the recursion tree scales with s.length (n)
