@@ -1,40 +1,49 @@
-//* We are given the size of the grid, but not the grid itself
-//* Since we are doing top-down DP
-//*     - Start at the bottom-right cell
-//*     - End at top-left
+//* Counting the number of ways to do something is combinatorics
+//*     - Combinatorics = Math, Brute Force, Dynamic Programming etc
+//* Rule of Sum applies
+//*     - We can EITHER move down OR right (mutual exclusion)
+//* (m - 1, n - 1) makes it easier to conceptualize the grid
+//*     - Indexing into index "n" or "m" makes no sense as that would be out of bounds
+//* This is top down, so technically we are going UP and LEFT
+//*     - So we travel to the TOP-LEFT instead of BOTTOM-RIGHT
+//* Sum the total number of ways from BOTH paths
 
-//! Recurrence Relation: F(i,j) = F(i-1,j) + F(i,j-1)
-//* Apply tabulation (using push DP)
+//! Recurrence Relation: F(m, n) = F(m - 1, n) + F(m, n - 1)
+//* Apply Tabulation to avoid recursion overhead
+//*     - We have two parameters, hence 2D State
 function uniquePaths(m, n) {
-  //* dp[i][j] = Number of Unique Ways to get to cell (i, j)
-  const dp = new Array(m + 1).fill(0).map(() => new Array(n + 1).fill(0));
+  if (m === 0 && n === 0) return 1;
 
-  //* There is only 1 distinct way to get to top-left; do nothing
+  //* dp[i][j] = Number of unique ways we can reach bottom right from [row][col]
+  const dp = new Array(m).fill(0).map(() => new Array(n).fill(0));
+
+  //* Seed Value: 1 Way to reach [m-1][n-1] (if we start there)
   dp[0][0] = 1;
 
-  for (let i = 0; i <= m; i++) {
-    for (let j = 0; j <= n; j++) {
-      //* Like in the recursive version, only count paths in bounds
-      if (i + 1 <= m) {
+  //* i represents rows, j represents columns
+  for (let i = 0; i < m; i++) {
+    for (let j = 0; j < n; j++) {
+      //* Ensure we stay within the bounds
+      if (i + 1 < m) {
         dp[i + 1][j] += dp[i][j];
       }
 
-      if (j + 1 <= n) {
+      if (j + 1 < n) {
         dp[i][j + 1] += dp[i][j];
       }
     }
   }
 
-  //* Return final subproblem
   return dp[m - 1][n - 1];
 }
 
-console.log(uniquePaths(3, 7)); //* 28
+console.log(uniquePaths(1, 1)); //* 1
 console.log(uniquePaths(3, 2)); //* 3
-console.log(uniquePaths(2, 2)); //* 2
+console.log(uniquePaths(3, 7)); //* 28
 console.log(uniquePaths(4, 4)); //* 20
-console.log(uniquePaths(3, 3)); //* 6
 
-//* Time: O(m * n) - We memoize computations, so there are only n * m distinct subproblems
+//* Time: O(n * m) - We are caching the results of each subproblem
+//* There are "m" possible values for rows, and "n" possible values for columns
+//* m * n = O(m * n)
 
-//* Space: O(n * m) - We cache each of the n * m subproblems, so there are n * m unique keys
+//* Space: O(n * m) - There are m * n unique subproblems, so the array's size is m x n
