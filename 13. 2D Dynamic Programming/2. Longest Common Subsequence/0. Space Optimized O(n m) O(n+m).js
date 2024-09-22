@@ -1,34 +1,38 @@
-//* When we apply tabulation, we only need the previous set of results
-//* The DP array represents the PREVIOUS set of results
-//* The newDP array represents the CURRENT set of results
-//*     - We essentially have two rows, previous and current
-//! We can still get the DIAGONAL (up-left) result, just in a different manner
-//*     - "dp" represents the PREVIOUS row
-//*     - So when we do newDP[j] = dp[j - 1] + 1
-//*         - "j" is the current position
-//*         - dp[j - 1] gives us the DIAGONAL result
-//*             - So it is basically the same as progressing both i and j simultaneously
+//* A subsequence is just an ordered subset
+//*     - For a subset, we have a CHOICE whether or not to include the current element
+//*     - Given this logic, we just keep track of two positions (one for each input)
+//* There are 2 cases to handle:
+//*     - If both characters match, just progress both indices at once
+//*     - Otherwise, take progress them both individually, and take the MAXIMUM of both paths
+
+//* Apply tabulation to avoid recursion overhead
+//*     - dp[i][j] = Longest Common Substring ending at index i (text1) and index j (text2)
+
+//* We can optimize the space usage of the algorithm
+//*     - dp[i][j] = max(dp[i-1][j-1], dp[i-1][j], dp[i][j-1]): now remove the i state
+//!         - dp[][j] = max(dp[][j-1], dp[][j])
+//!         - dp[j] = max(dp[j-1], dp[j])
 function longestCommonSubsequence(text1, text2) {
+  if (text1.length === 0 || text2.length === 0) return 0;
+
   const n = text1.length;
   const m = text2.length;
 
-  //* Stores LCS for the PREVIOUS row
+  //* Stores LCS for the PREVIOUS row (i)
   let dp = new Array(n + 1).fill(0);
 
   for (let i = 0; i <= n; i++) {
-    //* Stores LCS for the CURRENT row (i)
+    //* Stores LCS for CURRENT row
+    //* We have two different parameters, so this needs to be its own array
     const newDP = new Array(m + 1).fill(0);
 
     for (let j = 0; j <= m; j++) {
       if (i === 0 || j === 0) {
-        //* Base Case
-        newDP[j] = 0;
+        newDP[j] = 0; //* Indexing would lead us out of bounds
       } else if (text1[i - 1] === text2[j - 1]) {
-        //* Characters match, take the previous result
-        newDP[j] = dp[j - 1] + 1;
+        newDP[j] = dp[j - 1] + 1; //* Take whatever we had + 1
       } else {
-        //* Characters don't match, take the maximum
-        newDP[j] = Math.max(newDP[j - 1], dp[j]);
+        newDP[j] = Math.max(newDP[j - 1], dp[j]); //* Take the maximum of both paths
       }
     }
 
@@ -39,19 +43,20 @@ function longestCommonSubsequence(text1, text2) {
 }
 
 console.log(longestCommonSubsequence("abcde", "ace")); //* 3
+console.log(longestCommonSubsequence("aaaaa", "a")); //* 1
 console.log(longestCommonSubsequence("abc", "abc")); //* 3
-console.log(longestCommonSubsequence("abc", "def")); //* 0
+console.log(longestCommonSubsequence("xyz", "huj")); //* 0
 console.log(
   longestCommonSubsequence(
     "abcdefghijklmnopqrstuvwxyz",
     "zyxwutsrqrqponmlkjihfedcba"
   )
 ); //* 2
+console.log(longestCommonSubsequence("dokaldklmxzwok", "odkalkskfnkdans")); //* 6
 
-//* Time: O(n * m) - Our DP has two dimensions (text1 length and text2 length)
-//* So we have two non-constant variables to deal with
-//* We perform a nested for loop that scales with n and m respectively
+//* Time: O(n * m) - We are caching the results of each subproblem
+//* There are n possible indices for text1 and m possible indices for text2
+//* Since we have two non-constant parameters, we get n * m possible unique states
 
-//* Space: O(n + m) - The "dp" array has "n" length
-//* Within each outer loop, we create an array of "m" length
-//* "n" and "m" do not necessarily have the same size
+//* Space: O(n + m) - We removed the multiplicative factor on the space complexity
+//* So now the space complexity is additive (n + m) instead of (n * m)

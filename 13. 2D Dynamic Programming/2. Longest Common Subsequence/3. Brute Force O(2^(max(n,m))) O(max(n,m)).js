@@ -1,46 +1,43 @@
-//* Start from the entire string
-//* At each step, remove 1 character from consideration
-//* If either word has no characters left (would be going out of bounds)
-//*     - Return 0, the LCS of an empty string is 0
-//* If the characters in both words match at the current indices
-//*     - Progress BOTH indices (states) at once and add 1
-//*     - We add 1 because we found a successful match
-//* Otherwise, no characters match
-//*     - Ignore the current character in text1, and then do the same for text2
-
-//* Recurrence Relation: if i || j === 0, return 0
-//* If text1[i-1] === text2[j-1] return LCS + 1, progress both states at once
-//* Else return Math.max(LCS(i-1, j), LCS(i, j-1))
+//* A subsequence is just an ordered subset
+//*     - For a subset, we have a CHOICE whether or not to include the current element
+//*     - Given this logic, we just keep track of two positions (one for each input)
+//* There are 2 cases to handle:
+//*     - If both characters match, just progress both indices at once
+//*     - Otherwise, take progress them both individually, and take the MAXIMUM of both paths
 function longestCommonSubsequence(text1, text2) {
-  function LCS(i, j) {
-    if (i === 0 || j === 0) return 0; //* About to go out of bounds
+  function findLCS(i, j) {
+    //* Base Case: Hit last character
+    if (i === text1.length || j === text2.length) {
+      return 0;
+    }
 
-    if (text1[i - 1] === text2[j - 1]) {
-      //* The characters match, so progress both at once
-      return LCS(i - 1, j - 1) + 1;
+    if (text1[i] === text2[j]) {
+      //* Found match at this level, progress both states
+      return findLCS(i + 1, j + 1) + 1;
     } else {
-      //* The characters didn't match here, so try both paths
-      return Math.max(LCS(i - 1, j), LCS(i, j - 1));
+      //* Try both paths, but don't add one, we didn't find a match at this level
+      return Math.max(findLCS(i + 1, j), findLCS(i, j + 1));
     }
   }
 
-  return LCS(text1.length, text2.length);
+  return findLCS(0, 0);
 }
 
 console.log(longestCommonSubsequence("abcde", "ace")); //* 3
+console.log(longestCommonSubsequence("aaaaa", "a")); //* 1
 console.log(longestCommonSubsequence("abc", "abc")); //* 3
-console.log(longestCommonSubsequence("abc", "def")); //* 0
+console.log(longestCommonSubsequence("xyz", "huj")); //* 0
 console.log(
   longestCommonSubsequence(
     "abcdefghijklmnopqrstuvwxyz",
-    "zyxwutssrqrqponmlkjihfedcba"
+    "zyxwutsrqrqponmlkjihfedcba"
   )
 ); //* 2
 
-//* Time: O(2^(max(n,m))) - Where "n" is text1 length and "m" is text2 length
-//* In the worst case, none of the characters match and both are equal length
-//* Each call would generate two extra calls since none match
+//* Time: O(2^max(n,m)) - Where "n" is text1.length and "m" is text2.length
+//* In the worst case, none of the characters ever match
+//* So we have extra calls for each individual call
+//* The depth of the recursion tree scales with the maximum of n and m
 
-//* Space: O(max(n, m)) - We reduce i or j by 1 each call (or both)
-//* So in the worst case, the depth of the recursion tree is O(max(n, m))
-//* Where "n" is the length of text1 and "m" is the length of text2
+//* Space: O(max(n,m)) - In the worst case, we are only progressing one index
+//* So the other one lags behind
