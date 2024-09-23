@@ -9,9 +9,7 @@
 //*     - dp[i][j] = Longest Common Substring ending at index i (text1) and index j (text2)
 
 //* We can optimize the space usage of the algorithm
-//*     - dp[i][j] = max(dp[i-1][j-1], dp[i-1][j], dp[i][j-1]): now remove the i state
-//!         - dp[][j] = max(dp[][j-1], dp[][j])
-//!         - dp[j] = max(dp[j-1], dp[j])
+//*     - Why keep every row in memory if we only need the the previous and current
 function longestCommonSubsequence(text1, text2) {
   if (text1.length === 0 || text2.length === 0) return 0;
 
