@@ -43,9 +43,9 @@ function bestTimeToBuyAndSellStockWithCooldown(prices) {
   return buySell(0, -1, {});
 }
 
+console.log(bestTimeToBuyAndSellStockWithCooldown([1, 4, 3])); //* 3
 console.log(bestTimeToBuyAndSellStockWithCooldown([1, 2, 3, 0, 2])); //* 3
 console.log(bestTimeToBuyAndSellStockWithCooldown([1])); //* 0
-console.log(bestTimeToBuyAndSellStockWithCooldown([1, 4, 3])); //* 3
 console.log(bestTimeToBuyAndSellStockWithCooldown([5, 6, 7, 8, 9, 10])); //* 5
 console.log(bestTimeToBuyAndSellStockWithCooldown([20, 11, 4])); //* 0 (don't buy any)
 

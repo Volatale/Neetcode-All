@@ -5,36 +5,34 @@
 //!         - We are not allowed to engage in multiple transactions, so buying another is impossible
 //*         - We can choose to sell, or not sell (and wait for a more optimal day)
 //* If we choose to sell, we need to skip the next day (so pass i + 2 instead of i + 1)
-//* Buying:
-//*     - We bought, so "buying" is false
-//*     - Subtract from the profit, the current stock price
-//!         - We aren't keeping track of what we bought, so we have to do it inline here
-//* Selling:
-//*     - We are selling, so we no longer hold a stock; buying is true
-//*     - Add to the profit, the price of this stock (because)
-//*     - Skip the next day since we are on cooldown
 function bestTimeToBuyAndSellStockWithCooldown(prices) {
-  function buySell(i, buying) {
-    //* Base Case: No more days to consider
+  function buySell(i, stockIndex) {
+    //* Base Case: No more stocks to consider
     if (i >= prices.length) return 0;
 
     let maxProfit = 0;
 
-    //* Case 1: We don't have a stock, so buy the current
-    if (buying) {
-      maxProfit = Math.max(maxProfit, buySell(i + 1, false) - prices[i]);
+    //* Case 1: We don't have a stock, so buy or don't buy
+    if (stockIndex === -1) {
+      maxProfit = Math.max(
+        buySell(i + 1, i), //* Buy
+        buySell(i + 1, stockIndex) //* Don't buy
+      );
     } else {
-      //* Case 2: We have a stock to sell, so we sell it, but we skip the next day
-      maxProfit = Math.max(maxProfit, buySell(i + 2, true) + prices[i]);
-    }
+      //* Case 2: We have a stock to sell, so sell or don't sell
+      const profit = prices[i] - prices[stockIndex];
 
-    //* Case 3: Don't do anything, wait for a more optimal day
-    maxProfit = Math.max(maxProfit, buySell(i + 1, buying));
+      maxProfit = Math.max(
+        buySell(i + 2, -1) + profit, //* Sell
+        buySell(i + 1, stockIndex) //* Don't sell
+      );
+    }
 
     return maxProfit;
   }
 
-  return buySell(0, true);
+  //* Start at day 0, with no stock
+  return buySell(0, -1);
 }
 
 console.log(bestTimeToBuyAndSellStockWithCooldown([1, 4, 3])); //* 3
