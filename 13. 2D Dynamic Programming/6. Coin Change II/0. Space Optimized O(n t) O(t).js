@@ -23,7 +23,7 @@ function coinChangeII(amount, coins) {
   dp[0] = 1;
 
   for (const coin of coins) {
-    for (let t = 0; t <= amount; t++) {
+    for (let t = coin; t <= amount; t++) {
       //* Ensure we stay within the array bounds
       if (t >= coin) {
         dp[t] += dp[t - coin];

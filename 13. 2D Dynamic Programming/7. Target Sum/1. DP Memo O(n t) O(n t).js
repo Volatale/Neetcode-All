@@ -1,0 +1,47 @@
+//* We need to either append a "+" or a "-" before each element in nums
+//*     - In other words, we have TWO choices at each step
+//* There is no way to tell what the optimal choices is
+//*     - A locally optimal choice may not lead us to the correct (global) result
+//* We don't have to actually track strings or concatenate anything
+//*     - Just try ADDING and SUBTRACTING each number at every level of recursion
+//* This is a essentially a 0/1 knapsack
+//*     - We can't reuse the same element again (so we pass i + 1)
+//*     - The "max weight" in our case is target
+//*         - If sum < target or sum > target, we did NOT find a valid way
+//*         - Only count paths where SUM is EXACTLY equal to target
+//! "How many ways can we reach target by subtracting nums[i] or adding nums[i] at each step?"
+
+//* Apply memoization to avoid redundant work
+//*     - We have 2D state (i, sum)
+function findTargetSumWays(nums, target) {
+  function countWays(i, sum, memo) {
+    if (i === nums.length) {
+      //* If the sum is equal to target, we found a valid way
+      return sum === target ? 1 : 0;
+    }
+
+    //* Utilize memoized value
+    const key = `${i}-${sum}`;
+    if (memo.hasOwnProperty(key)) return memo[key];
+
+    //* Sum the ways from ADDING and SUBTRACTING nums[i]
+    return (memo[key] =
+      countWays(i + 1, sum + nums[i], memo) +
+      countWays(i + 1, sum - nums[i], memo));
+  }
+
+  return countWays(0, 0, {});
+}
+
+console.log(findTargetSumWays([1, 1, 1, 1, 1], 3)); //* 5
+console.log(findTargetSumWays([1, 1, 1], 3)); //* 1
+console.log(findTargetSumWays([5], 10)); //* 0
+console.log(findTargetSumWays([1, 1, 1, 2], 5)); //* 1
+console.log(findTargetSumWays([1], 1)); //* 1
+
+//* Time: O(n * t) - We are memoizing the results of each subproblem
+//* There are "n" different possibilities for "i"
+//* And there are "t * 2" different values for target -target to target
+
+//* Space: O(n * t) - Since there are n * t unique subproblems, there are also n * t keys/values in the worst case
+//* The height of the recursion tree scales with the number of elements (n)
