@@ -52,6 +52,7 @@ function isInterleave(s1, s2, s3) {
   return findInterleaving(0, 0, {});
 }
 
+console.log(isInterleave("aa", "bc", "abac")); //* True
 console.log(isInterleave("aaaaa", "", "aaaaa")); //* True
 console.log(isInterleave("aabcc", "dbbca", "aadbbcbcac")); //* True
 console.log(isInterleave("aabcc", "dbbca", "aadbbbaccc")); //* False

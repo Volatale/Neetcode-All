@@ -26,38 +26,29 @@ function isInterleave(s1, s2, s3) {
     .fill(false)
     .map(() => new Array(m + 1).fill(false));
 
-  //* Base Case: It is always possible to make an s3 of length 0
+  //* Always possible to make a string of length 0
   dp[0][0] = true;
 
-  //* Handle case of building string entirely with s1
-  for (let i = 1; i <= n; i++) {
-    dp[i][0] = dp[i - 1][0] && s1[i - 1] === s3[i - 1];
-  }
-
-  //* Handle case of building string entirely with s2
-  for (let j = 1; j <= m; j++) {
-    dp[0][j] = dp[0][j - 1] && s2[j - 1] === s3[j - 1];
-  }
-
-  //* Build string with both s1 and s2
-  for (let i = 1; i <= n; i++) {
-    for (let j = 1; j <= m; j++) {
-      //* Case 1: Match current character of s1 to s3
-      if (s1[i - 1] === s3[i + j - 1]) {
-        dp[i][j] = dp[i][j] || dp[i - 1][j];
-      }
-
-      //* Case 2: Match current character of s2 to s3
-      if (s2[j - 1] === s3[i + j - 1]) {
-        dp[i][j] = dp[i][j] || dp[i][j - 1];
+  for (let i = 0; i <= n; i++) {
+    for (let j = 0; j <= m; j++) {
+      if (j === 0 && i > 0) {
+        //* Character in s1 matches character in s3
+        dp[i][j] = dp[i - 1][j] && s1[i - 1] === s3[i + j - 1];
+      } else if (i === 0 && j > 0) {
+        //* Character in s2 matches character in s3
+        dp[i][j] = dp[i][j - 1] && s2[j - 1] === s3[i + j - 1];
+      } else if (i > 0 && j > 0) {
+        dp[i][j] =
+          (dp[i - 1][j] && s1[i - 1] === s3[i + j - 1]) || //* s1 matches
+          (dp[i][j - 1] && s2[j - 1] === s3[i + j - 1]); //* s2 matches
       }
     }
   }
 
-  //* Whether or not we can build the entire string of s3
   return dp[n][m];
 }
 
+console.log(isInterleave("aa", "bc", "abac")); //* True
 console.log(isInterleave("aaaaa", "", "aaaaa")); //* True
 console.log(isInterleave("aabcc", "dbbca", "aadbbcbcac")); //* True
 console.log(isInterleave("aabcc", "dbbca", "aadbbbaccc")); //* False

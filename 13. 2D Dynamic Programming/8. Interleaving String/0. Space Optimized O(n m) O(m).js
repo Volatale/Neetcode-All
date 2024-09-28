@@ -14,6 +14,15 @@
 //* Apply tabulation to avoid recursion overhead
 //*     - We have 2D state (i, j) to track each string's progress
 //*     - Remove the "i" state entirely and use a 1D array
+//*         - If the above/left values are false, they would also be false in the 2D array
+//*         - So why not just use a 1D array and remove the "i" state entirely
+//* Remove the state of dp[i] entirely, we only rely on the previous row (i - 1) and current row (j - 1)
+//*     - dp[i][j] = dp[i][j] || dp[i-1][j]
+//*         - dp[][j] = dp[][j] || dp[][j]
+//*         - dp[j] = dp[j] || dp[j]
+//*     - dp[i][j] = dp[i][j] || dp[i][j-1]
+//*         - dp[][j] = dp[][j] || dp[][j-1]
+//*         - dp[j] = dp[j] || dp[j-1]
 function isInterleave(s1, s2, s3) {
   //* String lengths don't match up
   if (s1.length + s2.length !== s3.length) return false;
@@ -21,34 +30,33 @@ function isInterleave(s1, s2, s3) {
   const n = s1.length;
   const m = s2.length;
 
-  //* dp[n][m] = Whether or not we can contribute to s3 using first "i" chars of s1
-  //* and first "j" chars of s2
-  let dp = new Array(m + 1).fill(false);
+  //* dp[n][m] = Whether we can contribute to s3 at each index
+  //* We have eliminated the need for the 2D state (remove every "i" from the state)
+  const dp = new Array(m + 1).fill(false);
 
-  //* Base Case: It is always possible to make an s3 of length 0
+  //* Always possible to make a string of length 0
   dp[0] = true;
 
-  //* Handle case of building string entirely with s2
-  for (let j = 1; j <= m; j++) {
-    dp[j] = dp[j - 1] && s2[j - 1] === s3[j - 1];
-  }
-
-  //* Build string with both s1 and s2
-  for (let i = 1; i <= n; i++) {
-    //* First element of the row (using s1 up to i and no s2)
-    dp[0] = dp[0] && s1[i - 1] === s3[i - 1];
-
-    for (let j = 1; j <= m; j++) {
-      dp[j] =
-        (dp[j] && s1[i - 1] === s3[i + j - 1]) || //* s1 matches s3 (dp[j] === dp[i-1][j])
-        (dp[j - 1] && s2[j - 1] === s3[i + j - 1]); //* s2 matches s3 (d[j - 1] === dp[i][j-1])
+  for (let i = 0; i <= n; i++) {
+    for (let j = 0; j <= m; j++) {
+      if (j === 0 && i > 0) {
+        //* Character in s1 matches character in s3
+        dp[j] = dp[j] && s1[i - 1] === s3[i + j - 1];
+      } else if (i === 0 && j > 0) {
+        //* Character in s2 matches character in s3
+        dp[j] = dp[j - 1] && s2[j - 1] === s3[i + j - 1];
+      } else if (i > 0 && j > 0) {
+        dp[j] =
+          (dp[j] && s1[i - 1] === s3[i + j - 1]) || //* s1 matches (dp[j] === dp[i-1][j])
+          (dp[j - 1] && s2[j - 1] === s3[i + j - 1]); //* s2 matches (dp[j-1] === dp[i][j-1])
+      }
     }
   }
 
-  //* Whether or not we can build the entire string of s3
   return dp[m];
 }
 
+console.log(isInterleave("aa", "bc", "abac")); //* True
 console.log(isInterleave("aaaaa", "", "aaaaa")); //* True
 console.log(isInterleave("aabcc", "dbbca", "aadbbcbcac")); //* True
 console.log(isInterleave("aabcc", "dbbca", "aadbbbaccc")); //* False
