@@ -13,28 +13,34 @@
 //*     - We are selling, so we no longer hold a stock; buying is true
 //*     - Add to the profit, the price of this stock (because)
 //*     - Skip the next day since we are on cooldown
+
+//* Apply tabulation to avoid redundant work
+//* We can optimize to O(1) space by avoiding DP arrays
+//*     - We only rely on the previous "buy" state
+//*     - And we rely on the previous 2 "sell" states
+//*         - So just use three variables to hold their states
+//* prevBuy represents buy[i-1]
+//* prevSell represents sell[i-1]
+//* prevPrevSell represents sell[i-2]
 function bestTimeToBuyAndSellStockWithCooldown(prices) {
-  function buySell(i, buying) {
-    //* Base Case: No more days to consider
-    if (i >= prices.length) return 0;
+  //* We need two days minimum to sell a single stock
+  if (prices.length <= 1) return 0;
 
-    let maxProfit = 0;
+  let prevBuy = -prices[0]; //* buy[i - 1]
+  let prevSell = 0; //* sell[i - 1] (we can't sell since we own no stock)
+  let prevPrevSell = 0; //* sell[i - 2] (there is no sell before day 0)
 
-    //* Case 1: We don't have a stock, so buy the current
-    if (buying) {
-      maxProfit = Math.max(maxProfit, buySell(i + 1, false) - prices[i]);
-    } else {
-      //* Case 2: We have a stock to sell, so we sell it, but we skip the next day
-      maxProfit = Math.max(maxProfit, buySell(i + 2, true) + prices[i]);
-    }
+  for (let i = 1; i < prices.length; i++) {
+    const newBuy = Math.max(prevBuy, prevPrevSell - prices[i]);
+    const newSell = Math.max(prevSell, prevBuy + prices[i]);
 
-    //* Case 3: Don't do anything, wait for a more optimal day
-    maxProfit = Math.max(maxProfit, buySell(i + 1, buying));
-
-    return maxProfit;
+    //* Update variables for next day
+    prevPrevSell = prevSell; //* sell[i-2] becomes sell[i-1]
+    prevSell = newSell; //* sell[i-1] becomes sell[i]
+    prevBuy = newBuy; //* buy[i-1] becomes buy[i]
   }
 
-  return buySell(0, true);
+  return prevSell;
 }
 
 console.log(bestTimeToBuyAndSellStockWithCooldown([1, 4, 3])); //* 3
@@ -43,8 +49,6 @@ console.log(bestTimeToBuyAndSellStockWithCooldown([1])); //* 0
 console.log(bestTimeToBuyAndSellStockWithCooldown([5, 6, 7, 8, 9, 10])); //* 5
 console.log(bestTimeToBuyAndSellStockWithCooldown([20, 11, 4])); //* 0 (don't buy any)
 
-//* Time: O(2^n) - At each step, we have a few cases to consider
-//* Regardless of what we are allowed to do, there are 2 calls made per recursive call
-//* The depth of the recursion tree scales with the number of days (prices.length)
+//* Time: O(n) - We iterate through the array once in total
 
-//* Space: O(n) - The space usage scales with the recursion depth
+//* Space: O(1) - We are using three constant space variables

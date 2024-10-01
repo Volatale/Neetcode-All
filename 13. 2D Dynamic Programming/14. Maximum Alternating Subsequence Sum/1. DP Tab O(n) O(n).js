@@ -21,22 +21,22 @@ function maxAlternatingSum(nums) {
   subtract[0] = -nums[0];
 
   for (let i = 1; i <= n; i++) {
-    //* Retain the previous max or add the current element
+    //* Keep the current subsequence or add the current element
     plus[i] = Math.max(plus[i - 1], nums[i - 1] + subtract[i - 1]);
 
-    //* Retain the previous max or subtract the current element
+    //* Keep the current subsequence or subtract the current element
     subtract[i] = Math.max(subtract[i - 1], -nums[i - 1] + plus[i - 1]);
   }
 
   return plus[n];
 }
 
+console.log(maxAlternatingSum([10, 5, 4])); //* 10
 console.log(maxAlternatingSum([4, 2, 5, 3])); //* 7
 console.log(maxAlternatingSum([5, 6, 7, 8])); //* 8
 console.log(maxAlternatingSum([6, 2, 1, 2, 4, 5])); //* 10
 console.log(maxAlternatingSum([5])); //* 5
 console.log(maxAlternatingSum([5, 10])); //* 10
-console.log(maxAlternatingSum([10, 5, 4])); //* 10
 
 //* Time: O(n) - We are caching the result of each subproblem
 //* We iterate through the entire array, which takes O(n)
