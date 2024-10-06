@@ -6,6 +6,9 @@
 //*     - Because we want the OPTIMAL (maximum) amount of coins considering ALL possible moves
 //*     - There is no heuristic we can apply to know which balloon is best for each decision
 //*         - Thus, we need to try ALL possible moves and take the maximum from each
+//* Since we pop the ith balloon LAST
+//*     - That means we can't eliminate "i" from the range
+//*     - Because we still need the ith balloon for FUTURE calls
 
 //* Apply memoization to avoid redundant work
 //*     - We have 2D state (left, right)

@@ -1,5 +1,12 @@
-//* Explore all subarrays of all sizes (starting at size 2)
-//* Look at the left and right values from (relative to i itself)
+//* Explore all ranges/subarrays of all sizes, starting at size 3
+//*     - Subarray sizes are generally given by: right - left + 1
+//*         - The + 1 INCLUDES the element at the right pointer
+//*     - The left and right pointers are essentially our bounds
+//* We can't actually remove elements from the array
+//*     - The amount of coins we get is relative to the ADJACENT balloons
+//* Instead, we just ensure we don't consider each element (relative to itself) twice
+//*     - In other words, we eliminate the current element from the range
+//*     - Hence why we do: dp[left][i] and dp[i][right]
 
 //* Apply tabulation to avoid redundant work
 //*     - We have 2D state (left, right)
