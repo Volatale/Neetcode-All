@@ -1,7 +1,7 @@
 //* "n" = Number of sticks left
 //* "k" = Number of visible sticks we STILL need
-//* Instead of trying each permutation in a brute force manner
-//* Apply reverse thinking
+//! Apply reverse thinking
+//*     - Instead of trying each permutation in a brute force manner
 //*     - Try placing the current stick LAST
 //!     - Placing the LARGEST stick LAST guarantees that "k" will decrement
 //*     - Regardless of what we choose, n will ALWAYS be decremented by 1
@@ -14,13 +14,21 @@
 //*     - We DO, however, know that we have one less stick to consider (so n - 1 still happens)
 //*     - (n-1) * dp[n-1][k]
 //*         - We multiply by (n - 1) because there are (n-1) branches where the stick is NOT placed at the end
+//* Base Case is n === k
+//*     - If n === k, there is only ONE valid permutation
+//*     - n = 3, k = 3
+//*         - [1, 2, 3] is the only valid permutation
+//*         - The same holds true for EVERY n === k
+//* If n > 0 && k === 0, it is impossible for us to have 0 visible sticks
+//*     - We HAVE to place sticks, there is no situation where we can avoid placing sticks
+//*     - Regardless of the permutation, there will always be at least 1 stick visible (sorted in descending order)
 function rearrangeSticks(n, k) {
   function sticks(n, k) {
     //* Base Case: Found "k" valid sticks
     if (n === k) return 1;
 
     //* Base Case: There are no more sticks to consider (or not enough)
-    if (n === 0 || k === 0) return 0;
+    if (k === 0 || k > n) return 0;
 
     let ways = 0;
 
