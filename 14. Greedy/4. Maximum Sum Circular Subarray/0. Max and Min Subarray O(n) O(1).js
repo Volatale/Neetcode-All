@@ -49,15 +49,19 @@ function maxSubarraySumCircular(nums) {
     total += num;
   }
 
-  //* Edge Case: All elements are negative; return largest element
-  if (total < 0) return globalMax;
+  //* Edge Case: All elements are negative; return largest element (globalMax)
+  if (globalMin === total) {
+    return globalMax;
+  }
 
+  //* Maximum sum subarray vs (entire array - minimum sum subarray)
   return Math.max(globalMax, total - globalMin);
 }
 
 console.log(maxSubarraySumCircular([1, -2, 3, -2])); //* 3
 console.log(maxSubarraySumCircular([5, -3, 5])); //* 10
 console.log(maxSubarraySumCircular([-3, -2, -3])); //* -2 (all elements are negative, return largest)
+console.log(maxSubarraySumCircular([1, -6, -7, 4])); //* 5
 
 //* Time: O(n) - We iterate through the entire array once
 //* So the time taken scales with the number of elements
