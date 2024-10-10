@@ -19,7 +19,6 @@ function jump(nums) {
   let minJumps = 0;
   let bestJump = 0; //* Index of furthest jump we can make considering elements in range [0, i]
 
-  debugger;
   //* We are guaranteed to find a way to n - 1
   while (bestJump < n - 1) {
     //* There may be a new maximum index from this position
