@@ -7,6 +7,7 @@
 //*     - It is LEAVING the window, thus we add it to the currSum
 //* The element at cardpoints[end] is being REMOVED from our sum
 //*     - It is ENTERING the window, thus we subtract it from currSum
+//! currSum tracks the value of everything outside of the window
 function maxScore(cardPoints, k) {
   if (cardPoints.length === 0 || k === 0) return 0;
 
