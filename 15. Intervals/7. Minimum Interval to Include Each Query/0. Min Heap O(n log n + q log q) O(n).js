@@ -126,7 +126,7 @@ function minInterval(intervals, queries) {
     while (index < intervals.length && intervals[index][0] <= query) {
       const [start, end] = intervals[index];
 
-      if (end >= query) {
+      if (start <= query) {
         PQ.enqueue([start, end, end - start + 1]);
       }
 
