@@ -1,12 +1,27 @@
-//* In a brute force manner, we can go through the entire simulation
-//* There are a total of "n" days to deposit on
-//*     - Each iteration, we increment the day
-//*     - If day is a multiple of 7, we need to subtract 6 from deposit
-//*         - For example, if day is 7, deposit will be 8
-//*         - We need to get back to 2 for the next week (starting at monday)
-//*             - So we 8 - 6 = 2, which is exactly what the next monday's deposit will be
+//* Instead of using a brute force approach, we can apply a mathematical approach
+//* The sum of an entire week (at base rate) is:
+//*     - 1 + 2 + 3 + 4 + 5 + 6 + 7 -> Week 1
+//*     - 2 + 3 + 4 + 5 + 6 + 7 + 7 -> Week 2
+//*     - 3 + 4 + 5 + 6 + 7 + 8 + 9 -> Week 3
+//*     - 4 + 5 + 6 + 7 + 8 + 9 + 10 -> Week 4
+//! We can apply the arithmetic series formula to caclulate the amount we need to deposit per week
+//* Get the total number of COMPLETE weeks we can do (Math.floor(n / 7))
+//* Then, get the amount we can get deposit in ONE week (at the base rate)
+//*     - Low = 28
+//* Get the amount we get from the other weeks
+//*     - High = 28 + 7 * (weeks - 1)
+//*         - 1 entire week is 28, and there are 7 days in a week
+//*         - Then, weeks - 1 is used because we already calculated for the FIRST week
+//* Now, we have the low and high boundaries for the arithmetic series formula
+//*     - Math.flor((weeks * (low + high)) / 2)
+//*     - This gives us the total amount we can get from the complete weeks
+//* Finally, we have a remaining number of days (n % 7)
+//*     - Perform a loop and add the remaining deposits
+//*     - weeks + 1 is used because these deposits take place within the NEXT week
 function totalMoney(n) {
   const weeks = Math.floor(n / 7); //* Number of FULL completed weeks
+  const daysLeft = n % 7; //* Number of remaining days
+
   const low = 28; //* 1 Week Sum
   const high = 28 + 7 * (weeks - 1); //* Week "n" sum (subtract 1 because that has been counted)
 
@@ -14,7 +29,7 @@ function totalMoney(n) {
   let result = Math.floor((weeks * (low + high)) / 2);
 
   //* Deposit the money for the remaining days
-  for (let i = 0; i < n % 7; i++) {
+  for (let i = 0; i < daysLeft; i++) {
     result += i + (weeks + 1); //* Weeks + 1 because this is the NEXT week after
   }
 
