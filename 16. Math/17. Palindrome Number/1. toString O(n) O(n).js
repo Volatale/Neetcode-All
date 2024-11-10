@@ -1,6 +1,9 @@
 //* Simply convert the number into a string
 //* Then compare each opposite index at the same time
 function isPalindrome(x) {
+  //* Negative numbers are not palindromes
+  if (x < 0) return false;
+
   const string = x.toString();
 
   //* Check if the string is a palindrome
