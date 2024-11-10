@@ -10,19 +10,14 @@ function countPrimes(n) {
   prime[1] = false;
 
   //* Try every number (starting at 2 (0 and 1 are not prime))
-  for (let p = 2; p * p <= n; p++) {
+  for (let p = 2; p < n; p++) {
     if (prime[p]) {
+      primes++;
+
       //* Mark all later multiplies of "p" as not prime
       for (let i = p * p; i <= n; i += p) {
         prime[i] = false;
       }
-    }
-  }
-
-  //* Any index that is still true is a prime
-  for (let p = 2; p <= n; p++) {
-    if (prime[p] && p < n) {
-      primes++;
     }
   }
 
