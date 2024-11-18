@@ -8,7 +8,12 @@
 //!         - Bit position (0-indexed) 1 and 2 do not match
 //!         - If they DID match on every position, they'd be the same number
 //* Using that logic, we can split the numbers up into TWO groups
-//* Find the FIRST set bit in the XOR result
+//* Both duplicates of each number must exist in the same XOR group
+//* On top of that, each singular number should only appear in one group
+//* Take this example: [1, 2, 1, 2, 3, 5]
+//*     - A = 1 ^ 1 ^ 3 = 3
+//*     - B = 2 ^ 2 ^ 5 = 5
+//* How? Find the FIRST set bit in the XOR result
 //* Then, if nums[i] & firstSetBit = 1
 //*     - XOR this number into group A
 //* Otherwise, XOR it into group B
@@ -27,9 +32,8 @@ function singleNumber(nums) {
   let firstSetBit = xor & -xor;
 
   //* XOR into different groups (numbers)
-  //* Each duplicate group
-  let a = 0;
-  let b = 0;
+  let a = 0; //* XOR numbers that have a set bit in the firstSetBit position
+  let b = 0; //* XOR numbers that DON'T have a set bit in the firstSetBit position
 
   for (let i = 0; i < nums.length; i++) {
     if (firstSetBit & nums[i]) {
@@ -47,7 +51,7 @@ console.log(singleNumber([-1, 0])); //* [-1, 0]
 console.log(singleNumber([4, 1, 2, 3, 4, 2, 1, 7])); //* [3, 7]
 
 //* Time: O(n) - We need to iterate through the input and get the XOR result of every element
-//* We can find the first set bit in O(1) time (instead of left shifting, which would take O(log n))
+//* We can find the first set bit in O(1) time (ins ead of left shifting, which would take O(log n))
 //* Finally, it takes O(n) to iterate over the array again and form our XOR groups
 
 //* Space: O(1) - We always use the samen amount of space regardless of the input size
