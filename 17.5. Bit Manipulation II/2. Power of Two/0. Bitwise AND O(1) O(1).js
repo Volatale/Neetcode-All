@@ -1,5 +1,5 @@
 //* Powers of 2 in binary have exactly 1 set bit
-//* Numbers that preceed powers of two have exactly "k" set bits
+//* Numbers that precede powers of two have exactly "k" set bits
 //*     - Where "k" is the kth power of two
 //* For example
 //*     - 8 in binary is 1000 (1 set bit)
