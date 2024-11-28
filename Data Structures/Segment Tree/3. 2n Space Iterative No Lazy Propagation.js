@@ -14,7 +14,7 @@ class SegmentTree {
       this.ST[i + this.n] = nums[i];
     }
 
-    //* The interal nodes are stored in the prior half (work backwrds from n - 1 to index 0)
+    //* The interal nodes are stored in the prior half (work backwards from n - 1 to index 0)
     //* i << 1 === 2 * i
     //* (i << 1) | 1 === 2 * i + 1
     for (let i = this.n - 1; i > 0; i--) {
@@ -24,8 +24,8 @@ class SegmentTree {
 
   rangeQuery(left, right) {
     //* Clamp the query range to valid bounds
-    left = Math.max(left, 0); //* If left < 0, left = 0
-    right = Math.min(right, this.n - 1); //* If right > n - 1, right = n - 1
+    left = Math.max(left, 0) + this.n; //* If left < 0, left = 0
+    right = Math.min(right, this.n - 1) + this.n; //* If right > n - 1, right = n - 1
 
     let sum = 0;
 
@@ -99,5 +99,5 @@ console.log("--- Edge Cases ---");
 console.log(ST.rangeQuery(0, 0)); //* 2
 console.log(ST.rangeQuery(ST.n - 1, ST.n - 1)); //* 3
 console.log(ST.rangeQuery(0, ST.n - 1)); //* 38
-console.log(ST.rangeQuery(-1, 2)); //* 25
+console.log(ST.rangeQuery(-1, 2)); //* 11
 console.log(ST.rangeQuery(7, 10)); //* 0
