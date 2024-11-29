@@ -27,16 +27,21 @@ class SegmentTree {
     left = Math.max(left, 0) + this.n; //* If left < 0, left = 0
     right = Math.min(right, this.n - 1) + this.n; //* If right > n - 1, right = n - 1
 
+    //* The range is still invalid even after clamping
+    if (left > right) return 0;
+
     let sum = 0;
 
     while (left <= right) {
-      //* If the index is ODD, it is the right child
+      //* If the index is ODD, it is the right child, and the parent doesn't include this node
+      //* It is our last chance to process this node. Otherwise, we might aswell just wait and process the parent
       if (left & 1) {
         sum += this.ST[left];
-        left++; //* Make left even
+        left++; //* Make left even (13 >> 1 = 6, but we need it to be 7. 14 >> 1 = 7)
       }
 
-      //* If the index is EVEN, it is the left child
+      //* If the index is EVEN, it is the left child, and the parent doesn't include this node
+      //* It is our last chance to process this node
       if ((right & 1) === 0) {
         sum += this.ST[right];
         right--; //* Make right odd
@@ -68,6 +73,30 @@ class SegmentTree {
       //* Update value for the parent node
       this.ST[i] = this.ST[i << 1] + this.ST[(i << 1) | 1];
     }
+  }
+
+  //* Does NOT use Lazy Propagation
+  rangeUpdate(left, right, val) {
+    left = Math.max(left, 0) + this.n;
+    right = Math.min(right, this.n - 1);
+
+    if (left > right) return;
+
+    while (left <= right) {
+      if (left & 1) {
+        this.ST[left] += val;
+        left++;
+      }
+
+      if ((right & 1) === 0) {
+        this.ST[right] += val;
+        right--;
+      }
+    }
+
+    //* Move to parent nodes
+    left >>= 1;
+    right >>= 1;
   }
 }
 
