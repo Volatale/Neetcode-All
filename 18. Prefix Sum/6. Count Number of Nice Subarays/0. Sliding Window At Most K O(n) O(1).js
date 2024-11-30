@@ -18,6 +18,9 @@
 //* atMost(k - 1) includes all subarrays with up to "k-1" odds
 //* Subtracting the latter removes all subarrays with FEWER than "k" odds
 //*     - Thus, we are left with ONLY those with EXACTLY "k" odds
+//* The intuition works similarly to how 5! / 4! would work
+//*     - Since 4, 3, 2, 1 factorial all exist on the numerator AND the denominator
+//*     - We can "cancel" them out, which leaves us with JUST the 5 on its own
 function numberOfSubarrays(nums, k) {
   //* Exactly(k) = atMost(k) - atMost(k - 1)
   return atMost(nums, k) - atMost(nums, k - 1);
@@ -54,7 +57,8 @@ function atMost(nums, k) {
 console.log(numberOfSubarrays([1, 1, 2, 1, 1], 3)); //* 2
 console.log(numberOfSubarrays([2, 4, 6], 1)); //* 0
 console.log(numberOfSubarrays([2, 2, 2, 1, 2, 2, 1, 2, 2, 2], 2)); //* 16
+console.log(numberOfSubarrays([1, 2, 1, 2], 1)); //* 6
 
-//* Time: O(n^2) - We need to perform a nested for loop to check every possible subarray
+//* Time: O(n) - We iterate through the entire input twice at most, so the time taken is linear
 
 //* Space: O(1) - No additional space that will scale with the input size is used
