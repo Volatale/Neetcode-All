@@ -16,6 +16,13 @@
 //!     - The problem is reducible to a classic two-sum problem
 //*     - For each index i and element nums[i], determine what i - nums[i] equals
 //*         - If we have seen this difference before, we can make GOOD pairs pair with all of the occurrences
+//* So what is the intuition behind this?
+//*     - For a (good) pair, we need two different indices
+//*     - We have the equation j - nums[j] = i - nums[i]
+//!         - Find some index "j" and record the difference of j - nums[j] and record it in the map
+//*     - Any index AFTER that has the potential to form a good pair
+//*         - As long as the differences end up being the same
+//*     - IF that IS the case, we can make good pairs using nums[i] and EVERY occurrence of diff encountered prior
 function countBadPairs(nums) {
   //* We need two or more elements to make a pair
   if (nums.length <= 1) return 0;
