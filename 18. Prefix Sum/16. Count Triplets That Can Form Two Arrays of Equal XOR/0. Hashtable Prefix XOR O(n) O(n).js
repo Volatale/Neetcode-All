@@ -19,6 +19,7 @@
 //* If "k" = 2 and "i" = 0
 //*     - Then we get (2 - 0) = 2
 //!     - Thus does NOT include the element at index i (which is correct)
+//* In other words, we can form a valid triplet with all of the elements inbetween i and j
 
 //* Count all triplets such that:
 //*     - XOR(i -> j - 1) = XOR(j -> k)
