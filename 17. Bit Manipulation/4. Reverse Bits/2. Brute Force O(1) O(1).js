@@ -18,16 +18,15 @@
 //*     - Thus, if result < 0, just return the negated form of it
 //*     - This ensures the result will always be positive
 function reverseBits(n) {
-  let result = 0;
+  const result = new Array(32).fill(0);
 
   for (let i = 0; i < 32; i++) {
-    const bit = n & 1; //* Get the LSB
-    n >>= 1; //* Drop the LSB
-    result |= bit << (31 - i); //* Set the 31 - ith bit (start from right, - i gives us the offset)
+    const bit = (n >> i) & 1; //* Get the ith bit (starting from the right, going left)
+    result[i] = bit;
   }
 
   //* The result should be an UNSIGNED integer; Unsigned Right Shift makes the sign bit a 0 (positive)
-  return result >>> 0;
+  return parseInt(result.join(""), 2) >>> 0;
 }
 
 console.log(reverseBits(0b00000010100101000001111010011100));
@@ -36,3 +35,4 @@ console.log(reverseBits(0b11111111111111111111111111111101));
 //* Time: O(1) - We always do 32 iterations regardless of the input
 
 //* Space: O(1) - The space usage remains constant since the output always has 32 bits
+//* We (always) create an array of 32 length, and then a string of 32 length

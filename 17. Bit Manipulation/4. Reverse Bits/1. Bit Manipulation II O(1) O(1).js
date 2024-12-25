@@ -20,10 +20,10 @@
 function reverseBits(n) {
   let result = 0;
 
+  //* Extract the bit at the ith position and set it in the reversed position
   for (let i = 0; i < 32; i++) {
-    const bit = n & 1; //* Get the LSB
-    n >>= 1; //* Drop the LSB
-    result |= bit << (31 - i); //* Set the 31 - ith bit (start from right, - i gives us the offset)
+    const bit = (n >> i) & 1; //* Get the ith bit (offset from the right)
+    result |= bit << (31 - i); //* Set the bit (offset from the left)
   }
 
   //* The result should be an UNSIGNED integer; Unsigned Right Shift makes the sign bit a 0 (positive)
