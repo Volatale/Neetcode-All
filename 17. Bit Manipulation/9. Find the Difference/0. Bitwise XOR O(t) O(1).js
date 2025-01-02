@@ -7,9 +7,9 @@
 //* Bitwise XOR means the following statements hold true:
 //!     - (a ^ b ^ a) = b
 //*         - This therefore leaves the EXTRA charactewr
-//*     - The XOR operation is DISTRIBUTIVE
+//*     - The XOR operation is ASSOCIATIVE
 //*         - We are told that "t" is randomly shuffled
-//*             - XOR allows us to avoid that entirely (because XOR is distributive)
+//*             - XOR allows us to avoid that entirely (because XOR is ASSOCIATIVE)
 //*         - (a ^ b ^ a) = (b ^ a ^ a) (which equals b)
 //* The only characters we have to deal with are lowercase English characters (ASCII)
 //* All we have to do is take the XOR of every character in both strings
