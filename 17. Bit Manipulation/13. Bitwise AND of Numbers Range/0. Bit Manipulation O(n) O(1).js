@@ -42,6 +42,7 @@ console.log(rangeBitwiseAnd(1, 2147483647)); //* 0
 console.log(rangeBitwiseAnd(0, 10)); //* 0
 console.log(rangeBitwiseAnd(5, 50)); //* 0
 
-//* Time: O(n) - We AND left with every possible number in the range [left + 1, right]
+//* Time: O(log n) - Left and Right are both divided by 2 each iteration
+//* Thus, we can assume there will be 32 divisions at most
 
 //* Space: O(1) - The space used does not scale with the input(s)
