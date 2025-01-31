@@ -2,8 +2,6 @@
 //* If the frequency is 0, this is the missing number
 //* Whereas if the frequency is 2, we found number with a duplicate
 function findErrorNums(nums) {
-  const results = [];
-
   let duplicate = -1;
   let missing = -1;
 
