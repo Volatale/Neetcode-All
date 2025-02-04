@@ -1,7 +1,7 @@
 //* Get the frequencies of every EVEN element in nums (skip the odd elements)
 //* While doing so, keep track of whatever the maximum frequency element was
 //* Then, iterate through the keys in the object
-//*     - If the frequency of an element matches the maxEvenFreq, this is a potential "smallest frequent even"
+//* If the frequency of an element matches the maxEvenFreq, this is a potential "smallest frequent even"
 function mostFrequentEven(nums) {
   const freq = {};
   let maxEvenFreq = -1;
