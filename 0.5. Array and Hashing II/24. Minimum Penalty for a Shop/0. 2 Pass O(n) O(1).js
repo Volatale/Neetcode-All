@@ -19,14 +19,14 @@ function bestClosingTime(customers) {
 
   let minPenalty = penalty;
 
-  //* Then, open the shop for days [0, n) and update the penalty (i = day)
+  //* Then, open the shop for days [0, n) and update the penalty (i = last hour shop is open)
   for (let i = 0; i < customers.length; i++) {
-    //* If there are customers visiting there is no penalty for this day
+    //* Shop is OPEN, so if customers visit, we get no penalty; if NO customers visit, we get a penalty
     penalty += customers[i] === "Y" ? -1 : 1;
 
     if (penalty < minPenalty) {
       minPenalty = penalty;
-      earliestDay = i + 1;
+      earliestDay = i + 1; //* The shop is closed AFTER this hour
     }
   }
 
