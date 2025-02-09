@@ -25,4 +25,4 @@ console.log(getSumAbsoluteDifferences([1, 4, 6, 8, 10])); //* [24, 15, 13, 15, 2
 
 //* Time: O(n^2) - The number of iterations we do scales with n * (n + 1) / 2
 
-//* Space: O(1) - The memory usage remains constant regardless of input size
+//* Space: O(n) - The result array scales proportionally in size with the input size
