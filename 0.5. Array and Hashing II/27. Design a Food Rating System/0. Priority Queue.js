@@ -88,7 +88,7 @@ class MyPriorityQueue {
 class FoodRatings {
   constructor(foods, cuisines, ratings) {
     this.cuisineMap = {}; //* Cuisine -> PQ of [food, rating]
-    this.foodMap = {}; //* Food -> [name, rating] (for direct access)
+    this.foodMap = {}; //* Food -> [food, rating] pair (for direct access)
     this.cuisines = {}; //* Food -> Cuisine
 
     for (let i = 0; i < foods.length; i++) {
