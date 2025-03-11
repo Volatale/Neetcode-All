@@ -1,44 +1,43 @@
-//* We have "n" coins
-//* So 1 would be the minimum coins we can have on 1 row
-//* Use Gauss' formula to find whether or not there are too many coins for this row
-//* For example, fitting to complete 4 rows, you need 10 coins
-//* 1 + 2 + 3 + 4 = 10, so we can use the gauss formula
-//* "mid" represents the number of rows we can try
-//* If mid > count, you don't have enough coins to fit that many rows
-//* So reduce the search space on the right
-//* Else, you see if you found a new "best"
-//* Then try a larger number of rows (increase mid)
-function arrangingCoins(n) {
-  //* We know there is 1 coin minimum, and "n" is the amount we start with
+//* Arithmetic Series
+//! Total coins needed follows this pattern
+//*     - 1 + 2 + 3 + 4 + ... + n
+//* So we can technically binary search to optimize the choices
+//* [0...n]
+//* "mid" represents the number of rows we are trying to build
+//* If we don't have enough coins to complete the row
+//*     - Then try building LESS rows
+//* If we DO have enough coins, we have a potential best
+//*     - Then try building MORE rows
+function arrangeCoins(n) {
+  //* The min and max no of rows we can try building
   let left = 1;
   let right = n;
 
   while (left < right) {
-    //* Represents the number of rows we want to fit the coins into
-    let mid = left + ((right - left + 1) >> 1);
+    //* Mid represents the No. of Rows we are trying to build
+    const mid = left + ((right - left + 1) >> 1);
 
-    //* How many coins it would take to create "mid" complete rows
-    let coins = (mid * (mid + 1)) / 2;
+    //* Coins needed to build "mid" rows
+    const coinsNeeded = (mid * (mid + 1)) / 2;
 
-    //* You can't have more coins than "n"
-    if (coins > n) {
-      right = mid - 1; //* Try a smaller number of rows
+    if (coinsNeeded <= n) {
+      //* We have enough to build "mid" rows, so try more (greedily)
+      left = mid;
     } else {
-      left = mid; //* Try a larger number of rows (see if you can beat rows)
+      //* We don't have enough coins; try building LESS rows
+      right = mid - 1;
     }
   }
 
+  //* No. of Rows that can be built completely using "n" coins
   return left;
 }
 
-console.log(arrangingCoins(1)); //* 1
-console.log(arrangingCoins(2)); //* 1
-console.log(arrangingCoins(3)); //* 2
-console.log(arrangingCoins(5)); //* 2
-console.log(arrangingCoins(8)); //* 3
-console.log(arrangingCoins(10)); //* 4
+console.log(arrangeCoins(5)); //* 2
+console.log(arrangeCoins(1)); //* 1
+console.log(arrangeCoins(10)); //* 4
+console.log(arrangeCoins(8)); //* 3
 
-//* Time: O(log n) - Each iteration, we halve the total search space
-//* This allows us to avoid doing an O(n) loop through the whole search space
+//* Time: O(log n) - Each iteration, we eliminate half of the search space
 
-//* Space: O(1) - We don't use any space that scales with input size
+//* Space: O(1) - The memory usage remains constant regardless of the input size
