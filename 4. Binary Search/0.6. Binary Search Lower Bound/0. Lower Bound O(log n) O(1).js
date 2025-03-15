@@ -1,29 +1,32 @@
-function lowerBound(nums, target) {
-  //* Search space is the nums array itself
+function leftBisect(nums, target) {
+  //* The search space is the array itself
   let left = 0;
   let right = nums.length - 1;
 
-  //* Left and Right congregate toward a single value
-  while (left < right) {
-    let mid = left + ((right - left) >> 1);
+  while (left <= right) {
+    const mid = left + ((right - left) >> 1);
 
-    //* We are looking for the FIRST value >= target
+    //* Move to the LEFTMOST target, or where target "would" be
     if (nums[mid] >= target) {
-      right = mid; //* Don't eliminate "mid", it could be the correct value
+      right = mid - 1; //* The value is either too large, or we need the FIRST occurrence
     } else {
-      left = mid + 1;
+      left = mid + 1; //* We need a LARGER value
     }
   }
 
-  //* Index of the first element >= target
+  //* Index of the first occurrence of target, or where it "would" be
   return left;
 }
 
-console.log(lowerBound([0, 5, 9, 13, 17, 19, 20, 22], 15)); //* 4
-console.log(lowerBound([0, 2, 4, 7, 8], 1)); //* 1
-console.log(lowerBound([5], 5)); //* 0
-console.log(lowerBound([0, 5, 13, 19, 22, 41, 55, 68, 72, 81, 98], 69)); //* 8
+console.log(leftBisect([1, 1, 1, 1, 1], 1)); //* 0
+console.log(leftBisect([1, 2, 3], 4)); //* 3
+console.log(leftBisect([1, 2, 3], 2)); //* 1
+console.log(leftBisect([5, 5, 6, 7], 4)); //* 0
+console.log(leftBisect([5, 5, 6, 7], 5)); //* 0
+console.log(leftBisect([1], 0)); //* 0
+console.log(leftBisect([1], 1)); //* 0
+console.log(leftBisect([1], 2)); //* 1
 
-//* Time: O(log n) - The search space halves each iteration of the loop
+//* Time: O(log n) - We are eliminating half of the search space each iteration
 
-//* Space: O(1) - The space complexity remains constant regardless of input size
+//* Space: O(1) - The memory usage remains constant regardless of input size
