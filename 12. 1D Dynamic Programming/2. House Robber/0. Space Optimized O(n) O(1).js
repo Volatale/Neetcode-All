@@ -1,11 +1,12 @@
-//* At each level of recursion, we have two choices
-//*     Either rob the current house or don't
-//* If you DO rob the house
-//*     - Get the profit from the current house (nums[n])
-//*     - Decrement "n" by 2 since we can't rob an adjacent house
-//* If we DON'T rob the house
-//*     - We don't get the profit from the house
-//*      - But we ARE allowed to rob an adjacent house
+//! We cannot rob ADJACENT houses
+//* If you DON'T rob house 0, then move to house 0 + 1 (i + 1)
+//* If you DO rob house 0, then skip ahead to 0 + 2 (i + 2)
+//* At each step, either rob or don't rob
+//*     - Don't rob: (0 + f(n + 1))
+//*     - Rob: (nums[i] + f(n + 2))
+//! Base Cases:
+//*     - n === 1 (return nums[0]) because there is only 1 house
+//*     - n === 2 (return max(nums[0], nums[1])); there are two houses
 
 //! Recurrence Relation: F(n) = Math.max(F(n-2) + cost[n], F(n-1))
 //* F(n) = Maximum profit possible to get at this house
