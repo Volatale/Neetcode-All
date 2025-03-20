@@ -5,11 +5,16 @@
 //*     - nums[i] ^= 1
 //*     - nums[i + 1] ^= 1
 //*     - nums[i + 2] ^= 1
+//! Why does the greedy approach work?
+//* If we have an array like: [0, 0, 0, 1]
+//*     - Then the ONLY way to get index 0 to be 1 is to FLIP index 0
+//*     - We CAN flip index 1, but that still doesn't handle the index 0 case
+//* So naturally, it is evident that once we process an INDEX
+//*     - We never flip from that that index again
 //! The array consists of all 1s if:
 //*     - nums[n-1] and nums[n-2] are both 1
 //* Why? Any valid solution leaves the last two elements as 1
-//*     - If they are NOT both 1, then non solution exists
-
+//*         - If they are NOT both 1, then non solution exists
 function minOperations(nums) {
   const n = nums.length;
   let flips = 0;

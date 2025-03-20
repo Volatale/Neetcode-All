@@ -7,9 +7,7 @@
 //*     - nums[i + 2] ^= 1
 //! The array consists of all 1s if:
 //*     - nums[n-1] and nums[n-2] are both 1
-//* Why? Any valid solution leaves the last two elements as 1
-//*     - If they are NOT both 1, then non solution exists
-
+//* Once we have flipped everything, validate that every element === 1
 function minOperations(nums) {
   const n = nums.length;
   let flips = 0;
