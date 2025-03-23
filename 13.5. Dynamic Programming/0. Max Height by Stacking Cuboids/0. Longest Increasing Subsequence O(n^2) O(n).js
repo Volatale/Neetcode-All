@@ -34,6 +34,11 @@
 //*     - This ensures the cuboids are sorted in a monotonically non-decreasing order
 //* Now, the problem has been reduced to a regular Longest Increasing Subsequence
 //*     - Which means a Dynamic Programming approach is possible
+//! Additional reasoning:
+//*     - We always use the largest value as the height for each cuboid
+//*     - And since we are sorting the cuboids, the AREA of each cuboid also increases monotonically
+//*         - area[i] <= area[j] (w_i * l_i) <= (w_j * l_j)
+//*     - We have already checked small[i] <= small[j] && mid[i] <= mid[j]
 function maxHeight(cuboids) {
   //* Sort the dimensions of each cuboid internally in ascending order (removes necessity to rotate)
   cuboids = cuboids.map((cuboid) => cuboid.sort((a, b) => a - b));
