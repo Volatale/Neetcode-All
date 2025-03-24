@@ -1,17 +1,24 @@
-//* Use Two Pointers
-//* Anything on the left side of "left" is guaranteed to not be a 0
-//* Right moves forward, ahead of left to search for NON-zero elements
-//* If we find one, we swap it with nums[left], then increment left
+//* Use two pointers (left and right)
+//* Our goal is to move all of the 0s to the RIGHT
+//* Or, alternatively, we can move all the NON-ZEROES to the left
+//* So effectively, if we think in REVERSE, we can do the above
+//* Right moves toward the end of the array each iteration (right++)
+//*     - "right" is used to find elements that DO NOT equal 0
+//* Left indicates the position of the next element NOT equal to 0
+//! If nums[right] !== 0, swap the element with nums[left]
+//*     - Then increment left (this lets us retain the relative ordering of nums)
+//* Putting the elements that are NOT 0 on the left implicitly puts elements that ARE 0 on the right
 function moveZeroes(nums) {
-  let left = 0; //* There are no 0s to the left of "left"
-  let right = 0;
+  //* There are either zero or one elements, so just return the array
+  if (nums.length <= 1) return nums;
 
-  for (let i = 0; i < nums.length; i++) {
+  let left = 0; //* Position of next NON-ZERO element
+  let right = 0; //* Searches for NON-ZERO elements
+
+  //* Search for elements that are NOT 0 and put them on the left
+  while (right < nums.length) {
     if (nums[right] !== 0) {
-      //* Swapping values
-      const temp = nums[right];
-      nums[right] = nums[left];
-      nums[left] = temp;
+      [nums[left], nums[right]] = [nums[right], nums[left]];
       left++;
     }
 
@@ -21,10 +28,13 @@ function moveZeroes(nums) {
   return nums;
 }
 
-console.log(moveZeroes([0, 1, 0, 3, 12])); //* [1, 3, 12, 0, 0]
-console.log(moveZeroes([0])); //* [0]
+console.log(moveZeroes([0, 0, 1, 2, 0, 3])); //* [1, 2, 3, 0, 0, 0]
+console.log(moveZeroes([0, 5, 1, 2])); //* [5, 1, 2, 0]
+console.log(moveZeroes([0, 1])); //* [1, 0]
+console.log(moveZeroes([1, 0])); //* [1, 0]
+console.log(moveZeroes([1])); //* [1]
 console.log(moveZeroes([0])); //* [0]
 
-//* Time: O(n) - The time taken to iterate over the array scales with the size of the input
+//* Time: O(n) - We iterate through the entire array once
 
-//* Space: O(1) - The space usage remains constant - we only use two variables
+//* Space: O(1) - The memory usage remains constant regardless of input size
