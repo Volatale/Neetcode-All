@@ -1,53 +1,57 @@
 class SegmentTree {
-  //* Iterative 2n Segment Trees don't need padding
+  //* Iterative Segment trees don't need padding
   constructor(nums) {
     this.n = nums.length;
     this.ST = new Array(2 * this.n).fill(0);
-    this.lazy = new Array(2 * this.n).fill(0);
     this.#build(nums);
   }
 
-  //* Root is at index 1, Left child = 2 * i, Right child =  2 * i + 1
+  //* Root is at index 1, left child = 2 * i, right child = 2 * i + 1
   #build(nums) {
-    //* The leaf nodes are stored in the latter half
+    //* The leaf nodes are stored in the range [n, 2n - 1] (0-indexed)
     for (let i = 0; i < this.n; i++) {
       this.ST[i + this.n] = nums[i];
     }
 
-    //* The interal nodes are stored in the prior half (work backwards from n - 1 to index 0)
-    //* i << 1 === 2 * i
-    //* (i << 1) | 1 === 2 * i + 1
+    //* The internal nodes are stored in nodes [1, n - 1] (0-indexed)
     for (let i = this.n - 1; i > 0; i--) {
       this.ST[i] = this.ST[i << 1] + this.ST[(i << 1) | 1];
     }
   }
 
   rangeQuery(left, right) {
-    //* Clamp the query range to valid bounds
-    left = Math.max(left, 0) + this.n; //* If left < 0, left = 0
-    right = Math.min(right, this.n - 1) + this.n; //* If right > n - 1, right = n - 1
+    //* Convert to segment tree leaf indices
+    left += this.n;
+    right += this.n;
 
-    //* The range is still invalid even after clamping
+    //* Clamp within valid bounds
+    left = Math.max(left, this.n);
+    right = Math.min(right, 2 * this.n - 1);
+
+    //* Invalid query bounds, so throw an error
     if (left > right) return 0;
 
     let sum = 0;
 
+    //* If there were only a single element in nums, left and right would be equal
     while (left <= right) {
-      //* If the index is ODD, it is the right child, and the parent doesn't include this node
-      //* It is our last chance to process this node. Otherwise, we might aswell just wait and process the parent
+      //* "Left" points to a RIGHT child
+      //* Parent of ST[left] includes nodes BEFORE our query range, which we can't have
+      //* In other words, the parent node does not FULLY cover our needed range, process "left" separately
       if (left & 1) {
         sum += this.ST[left];
-        left++; //* Make left even (13 >> 1 = 6, but we need it to be 7. 14 >> 1 = 7)
+        left++; //* We can't include the parent node, so move up the tree
       }
 
-      //* If the index is EVEN, it is the left child, and the parent doesn't include this node
-      //* It is our last chance to process this node
+      //* "Right" points to a LEFT child
+      //* Parent of ST[right] includes nodes AFTER our query range, which we can't have
+      //* Parent node does not FULLY cover our needed range, process "right" immediately
       if ((right & 1) === 0) {
         sum += this.ST[right];
-        right--; //* Make right odd
+        right--; //* Can't include parent node, move up tree
       }
 
-      //* Move to parents of nodes
+      //* Travel to the parents of each node
       left >>= 1;
       right >>= 1;
     }
@@ -56,47 +60,53 @@ class SegmentTree {
   }
 
   pointUpdate(i, val) {
-    //* Base Case: Out of Bounds index
-    if (i < 0 || i >= this.n) return;
+    if (i < 0 || i >= this.n) throw new RangeError("Out of bounds index.");
 
-    //* Move to the leaf node side of the array
+    //* Move to the leaf nodes
     i += this.n;
 
-    //* Update the value at this index
+    //* Update the value at index "i"
     this.ST[i] += val;
 
-    //* Index 1 is the root, so keep traveling up the tree until index 1
+    //* Update all of the (parent) nodes along the path till index 1 (our root)
     while (i > 1) {
-      //* Move to the parent node -> Math.floor((i - 1) / 2)
+      //* Move to the parent node
       i >>= 1;
 
-      //* Update value for the parent node
+      //* Update the value for the parent node
       this.ST[i] = this.ST[i << 1] + this.ST[(i << 1) | 1];
     }
   }
 
-  //* Does NOT use Lazy Propagation
   rangeUpdate(left, right, val) {
-    left = Math.max(left, 0) + this.n;
-    right = Math.min(right, this.n - 1);
+    //* Convert to segment tree leaf indices
+    left += this.n;
+    right += this.n;
 
-    if (left > right) return;
+    //* Clamp within valid bounds
+    left = Math.max(left, this.n);
+    right = Math.min(right, 2 * this.n - 1);
+
+    //* Invalid query bounds, so throw an error
+    if (left > right) return 0;
 
     while (left <= right) {
+      //* Left points to a right child, parent does not fully cover query range
       if (left & 1) {
         this.ST[left] += val;
-        left++;
+        left++; //* Parent
       }
 
+      //* Right points to a left child, parent does not fully cover query range
       if ((right & 1) === 0) {
         this.ST[right] += val;
         right--;
       }
-    }
 
-    //* Move to parent nodes
-    left >>= 1;
-    right >>= 1;
+      //* Travel to the parents of each node
+      left >>= 1;
+      right >>= 1;
+    }
   }
 }
 
