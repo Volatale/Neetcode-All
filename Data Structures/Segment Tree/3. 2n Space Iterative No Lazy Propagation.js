@@ -79,7 +79,7 @@ class SegmentTree {
   }
 
   rangeUpdate(left, right, val) {
-    //* Convert to segment tree leaf indices
+    //* Move to the leaf nodes
     left += this.n;
     right += this.n;
 
@@ -87,56 +87,37 @@ class SegmentTree {
     left = Math.max(left, this.n);
     right = Math.min(right, 2 * this.n - 1);
 
-    //* Invalid query bounds, so throw an error
-    if (left > right) return 0;
+    //* Invalid query bounds
+    if (left > right) return;
 
-    while (left <= right) {
-      //* Left points to a right child, parent does not fully cover query range
-      if (left & 1) {
-        this.ST[left] += val;
-        left++; //* Parent
-      }
+    //* Apply the updates to all of the elements in the range
+    for (let i = left; i <= right; i++) {
+      this.ST[i] += val;
+    }
 
-      //* Right points to a left child, parent does not fully cover query range
-      if ((right & 1) === 0) {
-        this.ST[right] += val;
-        right--;
-      }
+    //* Rwecalculate the parent values
+    while (left > 0) {
+      left >>= 1; //* Move to the parent of left
+      this.ST[left] = this.ST[left << 1] + this.ST[(left << 1) | 1];
+    }
 
-      //* Travel to the parents of each node
-      left >>= 1;
+    while (right > 0) {
       right >>= 1;
+      this.ST[right] = this.ST[right << 1] + this.ST[(right << 1) | 1];
     }
   }
 }
 
-const ST = new SegmentTree([2, 3, 1, 7, 9, 11, 3]);
+const ST = new SegmentTree([1, 2, 3, 4]);
 
-//* Range Queries
-console.log("--- Range Queries ---");
-console.log(ST.rangeQuery(0, 3)); //* 13
-console.log(ST.rangeQuery(4, 6)); //* 23
-console.log(ST.rangeQuery(1, 5)); //* 31
-console.log(ST.rangeQuery(0, 6)); //* 36
-console.log(ST.rangeQuery(2, 2)); //* 1
+console.log(ST.rangeQuery(0, 3)); //* 10
+console.log(ST.rangeQuery(0, 0)); //* 1
+console.log(ST.rangeQuery(1, 1)); //* 2
+console.log(ST.rangeQuery(2, 2)); //* 3
+console.log(ST.rangeQuery(3, 3)); //* 4
 
-//* Point Updates
-console.log("--- Point Update ---");
-ST.pointUpdate(2, 5);
-console.log("--- Range Queries ---");
-console.log(ST.rangeQuery(0, 3)); //* 18
-console.log(ST.rangeQuery(2, 2)); //* 6
-
-console.log("--- Point Update ---");
-ST.pointUpdate(4, -3); //* Subtract 3 from index 4 (nums[4] becomes 6)
-console.log("--- Range Queries ---");
-console.log(ST.rangeQuery(4, 6)); //* 20
-console.log(ST.rangeQuery(3, 5)); //*  24
-
-//! Edge Cases
-console.log("--- Edge Cases ---");
-console.log(ST.rangeQuery(0, 0)); //* 2
-console.log(ST.rangeQuery(ST.n - 1, ST.n - 1)); //* 3
-console.log(ST.rangeQuery(0, ST.n - 1)); //* 38
-console.log(ST.rangeQuery(-1, 2)); //* 11
-console.log(ST.rangeQuery(7, 10)); //* 0
+ST.rangeUpdate(0, 3, 2);
+console.log(ST.rangeQuery(0, 0)); //* 3
+console.log(ST.rangeQuery(1, 1)); //* 4
+console.log(ST.rangeQuery(2, 2)); //* 5
+console.log(ST.rangeQuery(3, 3)); //* 6
