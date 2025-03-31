@@ -48,7 +48,22 @@ class SegmentTree {
 //*     - In other words, the difference between pref[j] and pref[i] is within the valid range
 //* Rearranging this gives us:
 //*     - prefix[j] - upper <= prefix[i] <= prefix[j] - lower
-//! For each prefix[j], count all prefix[i] values that fall in this range
+//! How does the above rearranging work?
+//*     - Start with the following: lower <= pref[j] - pref[i] <= upper
+//*         - We want to ISOLATE pref[i], so subtract pref[j] from all sides of the inequality
+//*     - lower - pref[j] <= pref[j] - pref[i] - pref[j] <= upper - pref[j]
+//*         - This simplifies to: lower - pref[j] <= -pref[i] <= upper - pref[j]
+//*     - Now, we have -pref[i], but we want this to be positive
+//*         - Multiply all the sides of the inequality by -1 to reverse the directionality
+//*     - This gives us: -(lower - pref[j]) >= pref[i] >= -(upper - pref[j])
+//*         - But now we need to get rid of the negatives
+//*     - Distribute the negative sign (apply negatives inside the parentheses)
+//*         - pref[j] - lower >= pref[i] >= pref[j] - upper
+//!     - Flip the order for standard form (inequalities read more naturally when written increasing order)
+//*         - pref[j] - upper <= pref[i] <= pref[j] - lower
+//! For each prefix[j] (value in the prefix array)
+//*     - Count all prefix[i] values that fall into the range
+//*     - [prefix[j] - upper, prefix[j] - lower]
 //* Prefix sums can be large and sparse, so we should COMPRESS them into a smaller range
 //*     - pref[j]
 //*     - pref[j] - lower
@@ -82,13 +97,14 @@ function countRangeSum(nums, lower, upper) {
   //* We need to perform coordinate compression
   const sortedNums = new Set();
 
+  //* The queries are in the range [prefix[j] - upper, prefix[j] - lower]
   for (let sum of prefix) {
     sortedNums.add(sum);
     sortedNums.add(sum - lower);
     sortedNums.add(sum - upper);
   }
 
-  const sortedArray = Array.from(sortedNums).sort((a, b) => a - b);
+  const sortedArray = [...sortedNums].sort((a, b) => a - b);
 
   //* Maps the original values to their compressed indices
   const compressed = {};
