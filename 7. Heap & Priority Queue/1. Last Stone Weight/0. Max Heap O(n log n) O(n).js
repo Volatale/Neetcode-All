@@ -1,16 +1,20 @@
 class MyPriorityQueue {
-  constructor(values = [], func = (a, b) => b - a) {
-    this.heap = values;
+  constructor(nums = [], func = (a, b) => a - b) {
+    this.heap = nums;
     this.func = func;
-    this.heapify();
+    this.#heapify();
+  }
+
+  size() {
+    return this.heap.length;
   }
 
   isEmpty() {
     return this.heap.length === 0;
   }
 
-  size() {
-    return this.heap.length;
+  swap(x, y) {
+    [this.heap[x], this.heap[y]] = [this.heap[y], this.heap[x]];
   }
 
   peek() {
@@ -18,22 +22,18 @@ class MyPriorityQueue {
     return this.heap[0];
   }
 
-  heapify() {
+  #heapify() {
     for (let i = Math.floor((this.heap.length - 2) / 2); i >= 0; i--) {
-      this.sinkDown(i);
+      this.#sinkDown(i);
     }
-  }
-
-  swap(x, y) {
-    [this.heap[x], this.heap[y]] = [this.heap[y], this.heap[x]];
   }
 
   enqueue(val) {
     this.heap.push(val);
-    this.bubbleUp(this.heap.length - 1);
+    this.#bubbleUp(this.heap.length - 1);
   }
 
-  bubbleUp(i) {
+  #bubbleUp(i) {
     let parent = Math.floor((i - 1) / 2);
 
     while (i !== 0 && this.func(this.heap[i], this.heap[parent]) < 0) {
@@ -48,12 +48,12 @@ class MyPriorityQueue {
 
     this.swap(0, this.heap.length - 1);
     const popped = this.heap.pop();
-    this.sinkDown(0);
+    this.#sinkDown(0);
 
     return popped;
   }
 
-  sinkDown(i) {
+  #sinkDown(i) {
     let length = this.heap.length;
 
     while (true) {
@@ -83,39 +83,44 @@ class MyPriorityQueue {
   }
 }
 
-//* Add the entire array to a priority queue
-//* After completion, we have O(1) access to the top element
-//* While there are 2 elements or more in the priority queue
-//* We still have stones we can smash
-//* Pop the top two and save them to variables
-//* If x -  y > 0, it means the left stone still exists
-//* Enqueue a new element of (x - y)
-//* If that condition is NOT true, there aren't enough stones to smash
+//* Since we always want to smash the two heaviest stones, we can use a Max Heap
+//* Using the Max Heap, whenever we dequeue (pop), we know that we'll have the HEAVIEST stone
+//* The game continues until there are <= 1 stones left
+//*     - Thus, keep looping while the size of the max heap is > 1
+//*     - This ensures that we always have TWO or more stones to smash if we ever need to
+//* Get the two heaviest stones via a dequeue
+//* Then, if (x - y > 0), push a new "stone" with the DIFFERENCE
+//*     - We effectively assume neither stone will remain in the heap
+//*     - And if the heaviest stone still exists (albiet in a smaller form), we push the difference
+//* This works because we know for sure that only two cases exist:#
+//*     - Either x === y, which means a new stone is not added to the heap
+//*     - Or, x !== y, which means a new stone that has the weight of the difference will be added
+//*         - So we can get away with dequeueing both and not enqueuing both afterwards; one stone is guaranteed to be destroyed
+//*         - In other words, if we start with 2 stones, we'll either end up with 0 or 1; the number of stones never stays the same
 function lastStoneWeight(stones) {
-  //* Gives us O(1) access to the top two stones
-  const pq = new MyPriorityQueue(stones);
+  //* There is only one stone, so just return that
+  if (stones.length === 1) return stones[0];
 
-  //* While you have stones to smash (handles 0 or 1 left)
-  while (pq.size() > 1) {
-    //* Dequeue the two heaviest stones
-    const x = pq.dequeue();
-    const y = pq.dequeue();
+  //* Use a Max Heap so we can always access the heaviest stones
+  const PQ = new MyPriorityQueue(stones, (a, b) => b - a);
 
-    //* The left stone still exists; push the result
+  //* Keep smashing stones while there are two stones
+  while (PQ.size() > 1) {
+    //* Dequeue the two heaviest stoens
+    const x = PQ.dequeue();
+    const y = PQ.dequeue();
+
+    //* If the result is > 0, simply enqueue whatever is left
     if (x - y > 0) {
-      pq.enqueue(x - y);
+      PQ.enqueue(x - y);
     }
   }
 
-  return pq.isEmpty() ? 0 : pq.peek();
+  //* Return the final stone if it exists, else just return 0
+  return !PQ.isEmpty() ? PQ.peek() : 0;
 }
 
 console.log(lastStoneWeight([2, 7, 4, 1, 8, 1])); //* 1
-console.log(lastStoneWeight([1, 1])); //* 0
-console.log(lastStoneWeight([5])); //* 5
-console.log(lastStoneWeight([100, 100, 100])); //* 100
-
-//* Time: O(n log n) - It takes O(log n) to insert an element into the priority queue
-//* We do this "n" times, so O(n log n)
-
-//* Space: O(n) - The priority queue is initialized with "n" elements
+console.log(lastStoneWeight([1])); //* 1
+console.log(lastStoneWeight([4, 4, 4, 4])); //* 0
+console.log(lastStoneWeight([4, 4, 4, 4, 5])); //* 3
