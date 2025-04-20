@@ -6,60 +6,61 @@ class TreeNode {
   }
 }
 
-//* We need to process nodes in a postorder manner
-//* Use a map to track both number of nodes on a subtree AND the sum of those nodes
-//*     - Whenever we travel down the tree, store an array/tuple of the above data
-//* Once all the children of a node have been processed
-//*     - Get the number of nodes on each side of the subtree, plus their sum from the map
-//*     - Use these values to check whether the current node meets the criteria
-//*     - Create/update the key for the current node using the total number of nodes and the sum
-function countNodesEqualToAverageOfSubstrees(root) {
+//* Return the number of nodes where the average is equal to the average of its subtree
+//* So for each node, we need to know how many nodes are in its left and right subtrees
+//* And we also need to know what the SUMS of those subtrees are.
+//* To calculate the average of a node's subtrees, we first need to ensure the children are processed
+//* Thus, we need to do a Postorder traversal (DFS) of the tree (left, right, node)
+//! This is the iterative version, so we need to use a data structure to track the relevant data
+//*     - We can just use a map where the keys are the nodes themselves, and the value is a nodes' data [nodeCount, sumOfSubtree]
+//* Once the left and right children have been processed, we can calculate the average of the current node
+//* Note that the average of a node's subtree actually also includes the node itself
+function averageOfSubtree(root) {
+  //* A null node has a node count of 0, and a sum of 0
   if (root === null) return 0;
 
   const stack = [];
   let curr = root;
   let prev = null;
-
   let count = 0;
 
-  //* Node: [nodesInSubtree, sumOfNodes]
-  //* Null is used because a node may not have children (base case)
+  //* "Node" has [nodesInSubtree, sumOfSubtree]. null has [0, 0]
   const nodeMap = new Map([[null, [0, 0]]]);
 
   while (stack.length > 0 || curr !== null) {
-    //* Travel as far left as possible
     while (curr !== null) {
-      //* Add children to the map so we have a reference later
+      //* Add the children to the map so we can get the averages later
       if (curr.left) nodeMap.set(curr.left, [1, curr.left.val]);
       if (curr.right) nodeMap.set(curr.right, [1, curr.right.val]);
 
       stack.push(curr);
-      curr = curr.left; //* Go left
+      curr = curr.left;
     }
 
     curr = stack[stack.length - 1];
 
-    //* Process this node
-    if (curr.right === null || prev === curr.right) {
-      const [leftNodes, leftSum] = nodeMap.get(curr.right);
-      const [rightNodes, rightSum] = nodeMap.get(curr.left);
+    if (curr.right === null || curr.right === prev) {
+      const [leftNodes, leftSum] = nodeMap.get(curr.left);
+      const [rightNodes, rightSum] = nodeMap.get(curr.right);
 
-      const totalNodes = 1 + leftNodes + rightNodes;
-      const sum = curr.val + leftSum + rightSum;
+      const nodeCount = leftNodes + rightNodes + 1;
+      const sum = leftSum + rightSum + curr.val;
+      const average = Math.floor(sum / nodeCount);
 
-      //* Calculate the average of nodes on left and right subtree (including this node)
-      if (Math.floor(sum / totalNodes) === curr.val) {
+      //* Found a node whose value equals the average of its subtrees
+      if (curr.val === average) {
         count++;
       }
 
-      //* Create/Update the totalNodes and sum for THIS node
-      nodeMap.set(curr, [totalNodes, sum]);
+      //* Update the nodeCount and sum for the current node
+      nodeMap.set(curr, [nodeCount, sum]);
 
+      //* Finish processing the node
       stack.pop();
       prev = curr;
       curr = null;
     } else {
-      curr = curr.right; //* Go right
+      curr = curr.right;
     }
   }
 

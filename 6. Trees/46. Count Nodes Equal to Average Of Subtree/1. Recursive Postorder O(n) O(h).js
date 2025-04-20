@@ -6,34 +6,36 @@ class TreeNode {
   }
 }
 
-//* In a postorder manner, get the number of nodes on each subtree and the sum for each node
-//*     - We need to process both children BEFORE processing the current node
-//*     - Hence we need to use postorder traversal
-//* A null node has no sum, nor any children
-//*     - So in this case, just return an array of [0, 0]/
-//*     - This indicates this subtree had 0 nodes and a sum of 0
-function countNodesEqualToAverageOfSubstrees(root) {
-  function postOrder(curr) {
-    //* Base Case: [Nodes in subtree, sum of nodes]
-    if (curr === null) return [0, 0];
+//* Return the number of nodes where the average is equal to the average of its subtree
+//* So for each node, we need to know how many nodes are in its left and right subtrees
+//* And we also need to know what the SUMS of those subtrees are.
+//* To calculate the average of a node's subtrees, we first need to ensure the children are processed
+//* Thus, we need to do a Postorder traversal (DFS) of the tree (left, right, node)
+//* Once the left and right children have been processed, we can calculate the average of the current node
+//* Note that the average of a node's subtree actually also includes the node itself
+function averageOfSubtree(root) {
+  function postorder(node) {
+    //* Base Case: A null node has a node count of 0, and a sum of 0
+    if (node === null) return [0, 0];
 
-    const [leftNodes, leftSum] = postOrder(curr.left);
-    const [rightNodes, rightSum] = postOrder(curr.right);
+    const [leftCount, leftSum] = postorder(node.left);
+    const [rightCount, rightSum] = postorder(node.right);
 
-    const totalNodes = 1 + leftNodes + rightNodes;
-    const sum = curr.val + leftSum + rightSum;
+    //* These values include the current node
+    const nodeCount = leftCount + rightCount + 1;
+    const nodeSum = leftSum + rightSum + node.val;
+    const average = Math.floor(nodeSum / nodeCount);
 
-    //* Calculate the average of nodes on left and right subtree (including this node)
-    if (Math.floor(sum / totalNodes) === curr.val) {
-      count++;
-    }
+    //* Found a node whose value equals the average of its subtrees
+    if (average === node.val) count++;
 
-    return [totalNodes, sum];
+    return [nodeCount, nodeSum];
   }
 
-  let count = 0;
+  if (root === null) return 0;
 
-  postOrder(root);
+  let count = 0;
+  postorder(root);
   return count;
 }
 
@@ -50,8 +52,10 @@ root2.left.right = new TreeNode(1);
 root2.right = new TreeNode(5);
 root2.right.right = new TreeNode(6);
 
-console.log(countNodesEqualToAverageOfSubstrees(root1)); //* 4
-console.log(countNodesEqualToAverageOfSubstrees(root2)); //* 5
+console.log(averageOfSubtree(root1)); //* 4
+console.log(averageOfSubtree(root2)); //* 5
+console.log(averageOfSubtree(null)); //* 0
+console.log(averageOfSubtree(new TreeNode(1))); //* 1
 
 //* Time: O(n) - We have to process every node once - there are "n" nodes in total
 
