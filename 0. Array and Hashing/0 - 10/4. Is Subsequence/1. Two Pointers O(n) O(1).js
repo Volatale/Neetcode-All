@@ -16,23 +16,23 @@
 //*     - Therefore we know that "s" does not exist as a subsequence within "t"
 //*     - Return false
 function isSubsequence(s, t) {
-  //* A subsequence is not possible
+  //* There is no way "s" is a subsequence of "t" if s.length > t.length
   if (s.length > t.length) return false;
 
-  //* s[left] tells us what character we need to find next in "t"
+  //* Used to track progress through "s"
   let left = 0;
 
-  //* Iterate over every character in "t" and try to find all characters in "s"
+  //* Iterate through "t" and increment "left" when we find matching characters
   for (let i = 0; i < t.length; i++) {
-    if (t[i] === s[left]) {
+    if (s[left] === t[i]) {
       left++;
     }
 
-    //* Early return; no point checking the rest of the characters
+    //* Early return (no point checking the rest of the characters)
     if (left === s.length) return true;
   }
 
-  //* If left === s.length, then "s" is a subsequence of "t"
+  //* If this is true, then "s" is a subsequence of "t"
   return left === s.length;
 }
 
