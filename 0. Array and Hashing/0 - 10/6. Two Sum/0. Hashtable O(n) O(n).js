@@ -1,22 +1,25 @@
-//* Use an object/map to store the indices of each number in arr
-//* Key = arr[i], value = i (the current index)
-//* Get the complement of the target vs the current element (arr[i])
-//* If complement exists (as a key) in the obj
-//* Then we have found our pair: get the position from the obj by accessing the cache, then also insert the current index
-function twoSum(arr, target) {
-  const obj = {};
+function twoSum(nums, target) {
+  //* We found value at index "i" (val : i)
+  const seen = {};
 
-  for (let i = 0; i < arr.length; i++) {
-    const need = target - arr[i];
+  for (let i = 0; i < nums.length; i++) {
+    //* Since we have nums[i], we want to find its complement
+    const complement = target - nums[i];
 
-    if (need in obj) return [obj[need], i];
+    //* Check if we already found the complement at an earlier index
+    if (seen.hasOwnProperty(complement)) {
+      return [seen[complement], i];
+    }
 
-    obj[arr[i]] = i; //* "arr[i] is stored at current index"
+    //* We have found "value" at index "i"
+    seen[nums[i]] = i;
   }
 }
 
-console.log(twoSum([2, 7, 11, 15], 9));
-console.log(twoSum([0, 5, 7, 15], 7));
+console.log(twoSum([2, 7, 11, 15], 9)); //* [0, 1]
+console.log(twoSum([1, 5, 1], 2)); //* [0, 2]
+console.log(twoSum([3, 2, 4], 6)); //* [1, 2]
+console.log(twoSum([3, 3], 6)); //* [0, 1]
 
 //* Time: O(n) - The time taken in the worst case scales with the size of the input
 //* The indices we need could be at the very end of the array, which means we have to iterate through the whole array

@@ -1,21 +1,20 @@
-//* Use an object/map to store the indices of each number in arr
-//* Key = arr[i], value = i (the current index)
-//* Get the complement of the target vs the current element (arr[i])
-//* If complement exists (as a key) in the obj
-//* Then we have found our pair: get the position from the obj by accessing the cache, then also insert the current index
-function twoSum(arr, target) {
-  for (let i = 0; i < arr.length - 1; i++) {
-    const complement = arr[i];
-
-    for (let j = i + 1; j < arr.length; j++) {
-      if (complement + arr[j] === target) return [i, j];
+//* In the most brute force manner, simply use two nested for loops
+//* There are two indices (i, j), whose values store two numbers that sum to target
+function twoSum(nums, target) {
+  for (let i = 0; i < nums.length - 1; i++) {
+    for (let j = i + 1; j < nums.length; j++) {
+      if (nums[i] + nums[j] === target) {
+        return [i, j];
+      }
     }
   }
 }
 
-console.log(twoSum([2, 7, 11, 15], 9));
-console.log(twoSum([0, 5, 7, 15], 7));
+console.log(twoSum([2, 7, 11, 15], 9)); //* [0, 1]
+console.log(twoSum([1, 5, 1], 2)); //* [0, 2]
+console.log(twoSum([3, 2, 4], 6)); //* [1, 2]
+console.log(twoSum([3, 3], 6)); //* [0, 1]
 
-//* Time: O(n^2) - We have two nested for loops that both depend on the size of the input
+//* Time: O(n^2) - We have two nested for loops, so the time taken scales with the input size squared
 
-//* Space: O(1) - We don't use any extra auxilary space
+//* Space: O(1) - The memory usage remains constant regardless of the input size
