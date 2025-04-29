@@ -1,33 +1,42 @@
-//* Create two maps, these strings need to be bidirectionally isomorphic
-//* Iterate over each string (they both have the same length)
-//* Check if map[s[i]] returns the same value as mapII[t[i]]
-//*     - If they don't, you know the strings are NOT isomorphic
-//*     - In the case where "o" returned 2, and then "r" (which doesn't exist in map 2) returned undefined
-//*     - You know that we are missing a character somewhere
-//* In each iteration, set the the key to be s[i] or t[i] and then the value to i + 1
+//* Two strings are "isomorphic" if the characters in "s" can be replaced to get "t"
+//* All of the occurrences of a character must be replaced with another character
+//*     - We also need to maintain the relative ordering of characters
+//* For example, with "egg" and "add":
+//*     - All of the "e" become "a"
+//*     - All of the "g" become "d"
+//! There is no need to actually (literally) modify any characters
+//* We can simply map each (current) character in s and t to a number (simultaneously)
+//* If the current characters do not map to the same number, the strings cannot be isomorphic
+//* In "bar" and "taa"
+//*     - b : 1, t : 1
+//*     - a : 2, a : 2
+//*     - r doesn't exist (undefined), but "a" : 2
+//*         - So the strings are non-isomorphic
 function isIsomorphic(s, t) {
-  const map = {};
-  const mapII = {};
+  const charMap = {}; //* Tracks char mappings in "s"
+  const charMapII = {}; //* Tracks char mappings in "t"
 
+  //* Each char maps to i + 1: if they don't match, s[i] and t[i] are not isomorphic
   for (let i = 0; i < s.length; i++) {
-    if (map[s[i]] !== mapII[t[i]]) return false; //! If the values are different, the strings are NOT isomorphic
+    if (charMap[s[i]] !== charMapII[t[i]]) return false;
 
-    map[s[i]] = i + 1;
-    mapII[t[i]] = i + 1;
+    charMap[s[i]] = i + 1;
+    charMapII[t[i]] = i + 1;
   }
 
+  //* "s" and "t" are isomorphic
   return true;
 }
 
-console.log(isIsomorphic("egg", "add")); // true
-console.log(isIsomorphic("foo", "bar")); // false (t doesn't exist, therefore returns undefined)
-console.log(isIsomorphic("sonic", "mario")); // true
-console.log(isIsomorphic("", "")); // true
-console.log(isIsomorphic("_", "w")); // true
-console.log(isIsomorphic("bar", "taa")); // false
-console.log(isIsomorphic("bbbaaaba", "aaabbbba")); // false
+console.log(isIsomorphic("egg", "add")); //* True
+console.log(isIsomorphic("foo", "bar")); //* False
+console.log(isIsomorphic("sonic", "mario")); //* True
+console.log(isIsomorphic("_", "w")); //* True
+console.log(isIsomorphic("bar", "taa")); //* False
+console.log(isIsomorphic("bbbaaaba", "aaabbbba")); //* False
 
-//* Time: O(n) - The time taken scales with the length of the input string(s)
-//* Both strings have an equal length, so "n" represents the length of either
+//* Time: O(n) - The time taken scales with the length of "s" (since s.length === t.length)
 
-//* Space: O(k) - K represents the number of UNIQUE characters in "s" and "t"
+//* Space: O(1) - The character range is any valid ASCII character; there are 256 in total
+//* So the "true" memory usage scales with the number of unique characters in both s and t
+//* But the maximum is bounded by 256
