@@ -1,51 +1,45 @@
-//* If "n" === 0, return true. We can ALWAYS plant 0 trees regardless of board state
-//* If the length of flowerbed is 1, return true if [0] === 0 (which means we can plant), and false otherwise
-//* Iterate through the whole flowerbed
-//* If the current index === 0
-//*     - If i - 1 or i + 1 would result in out of bounds, assume 1
-//*     - If the above doesn't apply, if flowerbed[i-1] or flowerbed[i+1] === 0
-//*         - Then those sides are "free", and we can plant in this position
-//* Set flowerbed[i] = i, and decrement n
-//* If n <= 0, that means we were successfully able to plant "n" plants without breaking the adjacency rule
-
+//* Array contains 0 or 1, with 0 indicating empty and 1 indicating not empty
+//* We need to check if we can plant "n" flowers without breaking the following rule:
+//*     - Flowers cannot be planted in ADJACENT plots
+//* Being able to successfully plant depends on the neighbours
+//* If either the previous spot (i - 1) , or the next spot (i + 1) are occupied, we cannot plant
+//! Out of bounds does NOT prevent us from being able to plant
+//*     - i.e., we can plant in a situation like: [0]
 function canPlaceFlowers(flowerbed, n) {
-  if (n === 0) return true; //* Always possible
+  //* There is nothing to plant
+  if (n === 0) return true;
 
-  if (flowerbed.length === 1) {
-    return flowerbed[0] === 0 ? true : false; //* You can't plant if its already a 1
-  }
-
-  //* Assume that out of bounds means a 1
   for (let i = 0; i < flowerbed.length; i++) {
-    if (flowerbed[i] === 0) {
-      const leftFree = i - 1 < 0 || flowerbed[i - 1] !== 1 ? 1 : 0;
-      const rightFree =
-        i + 1 >= flowerbed.length || flowerbed[i + 1] !== 1 ? 1 : 0;
+    //* We can't plant here
+    if (flowerbed[i] === 1) continue;
 
-      if (leftFree === 1 && rightFree === 1) {
-        flowerbed[i] = 1;
-        n--;
-      }
+    //* Check if both sides are either empty, or are out of bounds
+    const leftEmpty = i - 1 < 0 || flowerbed[i - 1] === 0;
+    const rightEmpty = i + 1 >= flowerbed.length || flowerbed[i + 1] === 0;
+
+    //* We can successfully plant here
+    if (leftEmpty && rightEmpty) {
+      flowerbed[i] = 1;
+      n--;
     }
   }
 
+  //* If n === 0, we planted "n" flowers. If n < 0, we planted more than necessary
   return n <= 0;
 }
 
-console.log(canPlaceFlowers([1], 1)); // False (it is already occupied)
-console.log(canPlaceFlowers([0], 1)); // True (x)
-console.log(canPlaceFlowers([0, 0], 1)); // True (x -) or (- x)
-console.log(canPlaceFlowers([0, 1], 1)); // False (already occupied)
-console.log(canPlaceFlowers([0, 0, 0], 2)); // True (x - x)
-console.log(canPlaceFlowers([1, 0, 0, 0, 1], 1)); // True (x - x - x)
-console.log(canPlaceFlowers([1, 0, 0, 0, 1], 2)); // False (x - x - x) is only 1 plant
-console.log(canPlaceFlowers([1, 0, 1, 0, 1], 1)); // False
-console.log(canPlaceFlowers([1, 0, 0, 1], 1)); // False
-console.log(canPlaceFlowers([1, 0, 0, 1], 1)); // False
-console.log(canPlaceFlowers([0, 0, 0, 0], 0)); // False
-console.log(canPlaceFlowers([0, 0, 1, 0, 0], 1)); // False
+console.log(canPlaceFlowers([1], 1)); //* False
+console.log(canPlaceFlowers([0], 1)); //* True
+console.log(canPlaceFlowers([0, 0], 1)); //* True
+console.log(canPlaceFlowers([0, 1], 1)); //* False
+console.log(canPlaceFlowers([0, 0, 0], 2)); //* True
+console.log(canPlaceFlowers([1, 0, 0, 0, 1], 1)); //* True
+console.log(canPlaceFlowers([1, 0, 0, 0, 1], 2)); //* False
+console.log(canPlaceFlowers([1, 0, 1, 0, 1], 1)); //* False
+console.log(canPlaceFlowers([1, 0, 0, 1], 1)); //* False
+console.log(canPlaceFlowers([0, 0, 0, 0], 0)); //* True
+console.log(canPlaceFlowers([0, 0, 1, 0, 0], 1)); //* True
 
-//* Time: O(n) - We have to iterate through the whole input once
-//* So the time taken scales with the size of flowerbed
+//* Time: O(n) - We have to iterate through the entire array, so the time taken scales with the input size
 
-//* Space: O(1) - We don't use any extra auxilary data structures at all, so the space remains constant
+//* Space: O(1) - The memory usage remains constant regardless of input size
