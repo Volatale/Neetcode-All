@@ -1,10 +1,13 @@
-//* Start at left
-//* Iterate up to right and sum the values
+//* The goal is to handle multiple range queries
+//* Range Sum: Calculate the sum of elements of nums between indices (i, j) inclusive
+//*     - sum(i, j) = nums[i] + nums[i + 1] + ... + nums[j]
+//* In a brute force manner, we can iterate through the array starting at "i" and ending at "j" (inclusive)
 class NumArray {
   constructor(nums) {
     this.nums = nums;
   }
 
+  //* Sum the elements between indices "left" and "right" inclusive
   sumRange(left, right) {
     let sum = 0;
 
@@ -18,13 +21,12 @@ class NumArray {
 
 const arr = new NumArray([-2, 0, 3, -5, 2, -1]);
 
-console.log(arr.sumRange(0, 2)); // 1
-console.log(arr.sumRange(2, 5)); // -1
-console.log(arr.sumRange(0, 5)); // -3
+console.log(arr.sumRange(0, 2)); //* 1
+console.log(arr.sumRange(2, 5)); //* -1
+console.log(arr.sumRange(0, 5)); //* -3
 
-//* Time: O(n) - It takes O(n) in the worst case to use sumRange
-//* If left is 0, and right is nums.length - 1, then we iterate over the entire array
+//* Time: O(n) - It takes O(1) to construct an instance of NumArray
+//* However, each query takes O(n) time to compute
 
-//* Space: O(1) - The array has been passed to the constructor (so it was pre-constructed)
-//* The class merely holds a reference to the array (pass by reference)
-//* Therefore the space usage remains constant regardless of input size
+//* Space: O(1) - The memory usage remains constant regardless of input size
+//* The instance receives a reference to a (pre-constructed) array
