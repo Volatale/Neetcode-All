@@ -1,29 +1,32 @@
-//* Get the frequency of characters in "balloon", and the input
-//* Start result at the highest value possible
-//* Iterate through characters in "balloon"
-//* Take the minimum of the ratio:
-//* Even if you have 4 "a" in the freqCount, if the other characters don't have enough
-//* For multiple instances of "balloon", these extra characters are useless
-//* So we take the minimum (we have to check for the minimum amount each time)]
-//* Essentially, assume that we don't have enough on each iteration
+//* We need to use the characters in the string "text" to make the word "balloon"
+//* However, we can only use each character in "text" once
+//* Ultimately, we need to find the MAXIMUM number of instances of "balloon" we can make
+//* Observations:
+//*     - The (unique) characters that exist in balloon are: "b", "a", "l", "o", "n"
+//*     - The number of times we can use each character is limited by its frequency in "word"
+//* Mathematically, we can divide the frequency of each character to find the number of times we can use the character
+//* If we have 4 "a" in the freqCount, if the other characters don't have enough
+//* Then we can ONLY use "a" 4 times (to create a complete word)
+//* For multiple instances of "balloon", the extra occurrences are useless
 function maxNumberOfBalloons(text) {
-  const balloon = getFreq("balloon");
+  //* Get the frequency of chars we need
+  const balloon = { b: 1, a: 1, l: 2, o: 2, n: 1 };
   const freqCount = getFreq(text);
 
-  //* Set this to a value you know we can't reach
-  let result = Infinity;
+  //* The maximum number of "balloon" we can make
+  let occurrences = Infinity;
 
+  //* Iterate through the characters in "balloon"
   for (let char of "balloon") {
-    result = Math.min(
-      result,
-      Math.floor((freqCount[char] || 0) / balloon[char]) // || 0 in cases where key doesn't exist (avoids NaN)
+    occurrences = Math.min(
+      occurrences,
+      Math.floor((freqCount[char] || 0) / balloon[char])
     );
   }
 
-  return result;
+  return occurrences;
 }
 
-//* O(26) -> O(1)
 function getFreq(text) {
   const freqMap = {};
 
@@ -34,16 +37,12 @@ function getFreq(text) {
   return freqMap;
 }
 
-console.log(maxNumberOfBalloons("nlaebolko")); // 1
-console.log(maxNumberOfBalloons("loonbalxballpoon")); // 2
-console.log(maxNumberOfBalloons("leetcode")); // 0
-console.log(maxNumberOfBalloons("balon"));
+console.log(maxNumberOfBalloons("nlaebolko")); //* 1
+console.log(maxNumberOfBalloons("loonbalxballpoon")); //* 2
+console.log(maxNumberOfBalloons("leetcode")); //* 0
+console.log(maxNumberOfBalloons("balon")); //* 0
 
-//* Time: O(n) - The time taken by the function scales with the time it takes to get the frequency of the input
-//* The length of the string is "n", so the time taken to get hte frqeuency of text is O(n)
-//* "balloon" will always take O(7) -> O(1) to compute because it is always going to be the same string
-//* The for loop within the original function will also always take O(7) -> O(1) for this very reason
+//* Time: O(n) - It takes O(n) to get the frequency of the input
+//* And then we iterate through each character in "balloon" (O(7) -> O(1))
 
-//* Space: O(26) -> O(1) - Since we are restricted to lowercase alphabetical characters
-//* That only leaves 26 options at most. So in the worst case, there are 26 keys in "freqCount"
-//* Therefore, freqCount is bounded by 26 (which is a constant, and therefore simplifies down to O(1))
+//* Space: O(26) -> O(1) - The frequency map is bounded by 26 (no. of lowercase characters)
