@@ -1,45 +1,44 @@
-//* Use a Regular Expression to check for alphanumeric characters
-//* Use two pointers to track the left and right character
-//* If we find a non-alphanumeric on either side, skip it
-//* Once you have an alphanumeric character on both sides, convert that character to lowercase
-//* Then check if they are the same; if not, return false
-function validPalindrome(s) {
-  const isAlphaNumeric = (char) => /[a-zA-Z0-9]/gi.test(char);
+//* We need to check if the input string is a palindrome
+//* But that means we need to handle all of the non-alphanumeric characters
+//*     - " " characters should be skipped
+//*     - Uppercase characters should be converted to lowercase characters
+//* A regular expression can handle that task for us
+//* Then, we simply use the two pointer technique and check character equality from both ends simultaneously
+//* If s[left] === s[right], then increment both and move to the next character
+//* Otherwise, return false, because we know they are not equal
+//! By using a Regex, we avoid modifying the input
+function isPalindrome(s) {
+  const isAlphanumeric = (char) => /[a-zA-Z0-9]/gi.test(char);
 
-  //* Two Pointers
+  //* The two pointers are initialized to opposite ends of the input
   let left = 0;
   let right = s.length - 1;
 
   while (left < right) {
-    //* Skip non-alphanumeric characters
-    while (left < right && !isAlphaNumeric(s[left])) {
-      left++;
-    }
+    //* Skip all of the non-alphanumeric characters
+    while (left < right && !isAlphanumeric(s[left])) left++;
+    while (left < right && !isAlphanumeric(s[right])) right--;
 
-    //* We check for right < left because the above may
-    while (left < right && !isAlphaNumeric(s[right])) {
-      right--;
-    }
-
-    //* O(1) time since we only check ONE character per call
+    //* The input is not palindromic
     if (s[left].toLowerCase() !== s[right].toLowerCase()) return false;
 
     left++;
     right--;
   }
 
+  //* The input is a palindrome
   return true;
 }
 
-console.log(validPalindrome("race a car")); //* False
-console.log(validPalindrome("race car")); //* True
-console.log(validPalindrome("bob")); //* True
-console.log(validPalindrome("sonoS")); //* True
-console.log(validPalindrome("soneS")); //* False
-console.log(validPalindrome("A man, a plan, a canal: Panama")); //* True
-console.log(validPalindrome(" ")); //* True
+console.log(isPalindrome("race a car")); //* False
+console.log(isPalindrome("race car")); //* True
+console.log(isPalindrome("bob")); //* True
+console.log(isPalindrome("sonoS")); //* True
+console.log(isPalindrome("soneS")); //* False
+console.log(isPalindrome("A man, a plan, a canal: Panama")); //* True
+console.log(isPalindrome(" ")); //* True
 
-//* Time: O(n) - It takes O(n) time to iterate through the whole string
-//* It takes O(1) time to convert 1 char to lowercase, and also O(1) to check for alphanumeric characters
+//* Time: O(n) - It takes O(n) to iterate over every character in the input
+//* Converting a character to lowercase takes O(1) since it is done on a single character each time
 
-//* Space: O(1) - We don't use any extra space other than constant space variables
+//* Space: O(1) - The memory usage remains constant regardless of input size
