@@ -1,14 +1,24 @@
-//* Use Two Pointers
-//* The function applies the same logic as the merge portion of merge sort
-//* We just do it in reverse
-function mergeSortedArray(nums1, m, nums2, n) {
-  let left = m - 1; //* Last index in nums1
-  let right = n - 1; //* Last index in nums2
+//* We need to merge two separate arrays into a single, sorted array
+//*     - Both arrays are sorted in non-decreasing order
+//*     - And the arrays can contain duplicates
+//* Ultimately, since the end result must also be sorted, the order of elements is important
+//* We can use a two pointer approach and process two numbers simultaneously
+//! The key thing to note is that we are merging into nums1
+//*     - nums1.length = n + m
+//*     - nums2.length = n
+//* We cannot iterate left to right because we'd be overwriting values we still depend on
+//* So instead, we should process each element in descending order
+//* In this variation of merge arrays, the only array that "could" have remaining elements is nums2
+//* We cannot merge nums1 into itself, so logically, that means element
+function merge(nums1, m, nums2, n) {
+  //* Each index represents the next number that should be pushed to the result
+  let left = m - 1;
+  let right = n - 1;
 
-  let mergeIndex = m + n - 1; //* The index to place merged elements
+  //* The index where the next element should be placed
+  let mergeIndex = m + n - 1;
 
   while (left >= 0 && right >= 0) {
-    //* We need to move this element to the right
     if (nums1[left] > nums2[right]) {
       nums1[mergeIndex] = nums1[left];
       left--;
@@ -17,23 +27,18 @@ function mergeSortedArray(nums1, m, nums2, n) {
       right--;
     }
 
+    //* This index is now sorted
     mergeIndex--;
   }
 
-  //* To pick up the remaining elements that weren't added
+  //* Handle the remaining elements
   while (right >= 0) {
     nums1[mergeIndex] = nums2[right];
     right--;
     mergeIndex--;
   }
-
-  return nums1;
 }
 
-console.log(mergeSortedArray([1, 2, 3, 0, 0, 0], 3, [2, 5, 6], 3)); //* [1, 2, 2, 3, 5, 6]
-console.log(mergeSortedArray([1], 1, [], 0)); //* [1]
-console.log(mergeSortedArray([0], 0, [1], 1)); //* [1]
+//* Time: O(n + m) - Ultimately, we iterate through (n + m) elements
 
-//* Time: O(n + m) - If nums1 only had elements > elements in nums2,
-
-//* Space: O(1) - We don't use any extra space other than constant space variables
+//* Space: O(1) - The memory usage remains constant regardless of input size
