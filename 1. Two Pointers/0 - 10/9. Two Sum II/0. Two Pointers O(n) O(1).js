@@ -1,34 +1,42 @@
-//* Two Pointers, left and right
-//* We start at both ends of the array
-//* Then in each iteration, we sum the values at the two pointers
-//* If sum > target, then decrement right because we need a SMALLER sum
-//* If sum < target, increment left, because we need a LARGER sum
-//* If sum === target, then return [left + 1, right + 1] since it is 1-indexed
-function twoSumII(arr, target) {
-  //* Two Pointers
+//* We need to find two numbers that sum up to "target"
+//* Specifically, we need to return the indices of both elements +1
+//*     - So if index 0 and 1 are the indices, we return [1, 2]
+//* The array is already sorted in non-decreasing order
+//*     - Thus, we can say the array exhibits monotonicity
+//*     - numbers[i] <= numbers[i + 1] <= ... <= numbers[n - 1]
+//* We can use a two pointer approach, with both pointers initialized to opposite sides
+//* If numbers[left] + numbers[right] > target, right--
+//*     - This will either decrease the sum or leave it the same (in the case of duplicates)
+//* If numbers[left] + numbers[right] < target, left++
+//*     - This will either increase the sum or leave it the same (in the case of duplicates)
+//* If numbers[left] + numbers[right] === target
+//*     - return [left + 1, right + 1]
+function twoSum(numbers, target) {
+  //* Two pointer approach to find the correct indices
   let left = 0;
-  let right = arr.length - 1;
+  let right = numbers.length - 1;
 
   while (left < right) {
-    const sum = arr[left] + arr[right];
+    //* Store the result of the sum so we don't have to recompute it
+    const sum = numbers[left] + numbers[right];
 
     if (sum > target) {
       right--;
     } else if (sum < target) {
       left++;
     } else {
-      return [left + 1, right + 1]; //* It is a 1-indexed array
+      return [left + 1, right + 1];
     }
   }
 
+  //* A solution is guaranteed, so this is not necessary
   return -1;
 }
 
-console.log(twoSumII([2, 7, 11, 15], 9)); //* [1, 2]
-console.log(twoSumII([2, 3, 4], 6)); //* [1, 3]
-console.log(twoSumII([-1, 0], -1)); //* [1, 2]
+console.log(twoSum([2, 7, 11, 15], 9)); //* [1, 2]
+console.log(twoSum([2, 3, 4], 6)); //* [1, 3]
+console.log(twoSum([-1, 0], -1)); //* [1, 2]
 
-//* Time: O(n) - The time taken to iterate through the array scales with the size of the input
-//* In the worst case you process every element in the array
+//* Time: O(n) - In the worst case, there are "n" iterations in total, so the time taken scales with "n"
 
-//* Space: O(1) - We only use constant space; any space used does not scale with the size of the input
+//* Space: O(1) - The memory usage remains constant regardless of input size
