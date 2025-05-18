@@ -19,6 +19,16 @@
 //*     - It can only remain the same (in the case of duplicates), or, increase
 //* We want to "keep" the larger of the two lines at any given point
 //*     - So we only increment the pointer that points to the SMALLER of the lines
+//! Greedy intuition
+//*     - The area is limited by the shorter line (since water would spill over that)
+//*     - Moving the LONGER line inward won't INCREASE the height
+//*         - The smaller of the two still acts as a bottleneck; it doesn't matter how tall the other is
+//*     - Therefore, the ONLY way we can possibly find a better area is by finding a taller shorter line
+//*         - i.e., we increase the minimum
+//*     - This comes at the cost of decreasing the overall width (since the pointers will get closer together)
+//! Essentially, we eliminate pairs that cannot possibly beat the best case so far
+//*     - If (i, j) are the pair that give the highest area, we are guaranteed to compute that pair
+//*     - However, the majority of the "useless" or "worse" pairs will be skipped
 function maxArea(height) {
   let maxWater = 0;
 
@@ -55,7 +65,6 @@ console.log(maxArea([1, 8, 6, 2, 5, 4, 8, 3, 7])); //* 49
 console.log(maxArea([1, 1])); //* 1
 console.log(maxArea([1, 2, 3, 3, 3, 3, 2, 1])); //* 10
 
-//* Time: O(n) - The time taken scales with the length of the input
-//* In the worst case, we process each element at most once
+//* Time: O(n^2) - We have two nested for loops, both of which depend on nums.length
 
 //* Space: O(1) - The memory usage remains constant regardless of input size
