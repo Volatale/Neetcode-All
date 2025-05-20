@@ -1,26 +1,34 @@
-//* Find the starting element for the new array
-//* Iterate through the array and add "i"
-//* Make sure you mod by "n" to ensure we don't go out of bounds
-function rotateArray(nums, k) {
+//* Given an int[] and an integer "k", we need to rotate the array by "k" steps
+//*     - If "k = 3", we move every element over by 3 spaces
+//* Firstly, if we take "n" to be nums.length, then k could be GREATER than "n"
+//*     - So we perform k = k % n to remove all of the redundant rotations
+//* In a brute force manner, we could simply generate a brand new array
+//* The formula (n - k - 1) gives us the new index of the current 0th element
+//* Every other element is placed after this one; use % n to avoid going out of bounds
+//* To get the "new" index of each element, ((n - k) + i + 1)
+function rotate(nums, k) {
   const n = nums.length;
+  const newArray = new Array(n).fill(0);
 
-  const result = [];
+  //* Remove the redundant rotations
+  k = k % n;
 
-  const startIdx = n - k; //* The element index will be the the k-th from the end
+  //* NEW index of the current 0th element (post-rotate)
+  const startIndex = n - k - 1;
 
   for (let i = 0; i < n; i++) {
-    const index = (startIdx + i) % n; //* Ensure we don't go out of bounds
-    result.push(nums[index]);
+    const index = (startIndex + i + 1) % n;
+    newArray[i] = nums[index];
   }
 
-  return result;
+  return newArray;
 }
 
-console.log(rotateArray([1, 2, 3, 4, 5, 6, 7], 3)); //* [5, 6, 7, 1, 2, 3, 4]
-console.log(rotateArray([-1, -100, 3, 99], 2)); //* [3, 99, -1, 100]
-console.log(rotateArray([5], 1)); //* []
-console.log(rotateArray([1, 2], 1)); //* [2, 1]
+console.log(rotate([1, 2, 3, 4, 5, 6, 7], 3)); //* [5, 6, 7, 1, 2, 3, 4]
+console.log(rotate([-1, -100, 3, 99], 2)); //* [3, 99, -1, 100]
+console.log(rotate([5], 1)); //* []
+console.log(rotate([1, 2], 1)); //* [2, 1]
 
-//* Time: O(n) - The time taken scales with the size of the input
+//* Time: O(n) - It takes O(n) to iterate through every element in nums
 
-//* Space: O(n) - We create a new array that scales linearly in size proportional to "n"
+//* Space: O(n) - The memory usage scales with the input size
