@@ -1,45 +1,43 @@
-//* Strings in JavaScript are immutable, so convert the string into an array
-//* Then, we simply need to reverse each word
-//* "i" is used to mark the FIRST index of a word
-//* And "j" is used to mark the LAST index of a word
-//* So we are essentially using a two pointer approach
-//* Reverse all of the characters in the range [i, j]
-//* When we reverse a word, set i = j (we don't want to process them again)
+//* Given an input string, we need to reverse the order of the words
+//* All of the words are separated by spaces
+//* Strings in JavaScript are immutable, so we need to convert the string into an array
+//* We can use the split() function to remove all of the leading/trailing whitespace
+//* Then, we can simply use a two pointer approach to reverse everything in-place
+//* One pointer marks the first index of the word
+//* And the other marks the last index of the word
+//! Multiple whitespace should be reduced to single whitespace
 function reverseWords(s) {
-  //* Split the string so we can reverse it
-  const string = s.split("");
+  let string = [];
 
-  for (let i = 0; i < string.length; i++) {
-    //* Skip empty strings
-    if (string[i] === " ") continue;
+  //* Iterate backwards to avoid reversing
+  let right = s.length - 1;
 
-    //* Tracks the END of the current word
-    let j = i;
+  while (right >= 0) {
+    //* Skip trailing whitespace
+    while (right >= 0 && s[right] === " ") right--;
 
-    //* Move the "j" pointer to the end of the current word (" ")
-    while (j + 1 < string.length && string[j + 1] !== " ") {
-      j++;
-    }
+    //* We are out of bounds, thus there are no more characters
+    if (right < 0) break;
 
-    //* Then reverse the string
-    reverse(string, i, j);
-    i = j;
+    //* Used to find the START of this word
+    let left = right;
+
+    //* Move `left` to the first index of this word
+    while (left >= 0 && s[left] !== " ") left--;
+
+    //* Process the word and add empty space if necessary
+    if (string.length > 0) string.push(" ");
+    string.push(s.slice(left + 1, right + 1));
+
+    //* Move the right pointer
+    right = left;
   }
 
   return string.join("");
 }
 
-function reverse(s, left, right) {
-  while (left < right) {
-    [s[left], s[right]] = [s[right], s[left]];
-    left++, right--;
-  }
-}
-
-console.log(reverseWords("Let's take LeetCode contest"));
-console.log(reverseWords("Hi! My name's Goku and I'm a saiyan, from earth!"));
-console.log(reverseWords("Mr Ding"));
-
-//* Time: O(n) - We process each character twice at most
-
-//* Space: O(n) - The "string" array's size scales with the input size
+console.log(reverseWords("the sky is blue")); //* "blue is sky the"
+console.log(reverseWords("the  sky is  blue")); //* "blue is sky the"
+console.log(reverseWords("  hello world   ")); //* "world hello"
+console.log(reverseWords("a good   example")); //* "example good a"
+console.log(reverseWords("sonic")); //* "sonic"
