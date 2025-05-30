@@ -1,29 +1,30 @@
-//* We need to compare values based on their position
-//* And this needs to be done simultaneously with BOTH strings at once
-//* So a Two Pointer approach will work here
-//* Split the strings via "." to get rid of them, then iterate left to right
-//* Since the split array lengths can differ
-//*     - We only need to keep iterating until we find a differing revision
-//* In the case that one string is longer than the other, we use 0 as a default value
+//* We are given two version strings and we need to compare them
+//* Version strings consist of "revisions" (numbers) that are separated via "."
+//* The value of a revision is its numeric value ignoring any leading zeroes
+//*     - The comparison occurs in left-to-right order
+//! If one of the version strings has fewer revisions, the "missing" values are treated as 0
+//* Since the strings are separated via ".", we can isolate the numerical values using the split() method
+//* However, JavaScript string comparisons are done lexicographically, so this can negatively affect our comparisons
+//* Instead, we can convert each of the revision strings into a number (integer), and then perform the comparison
 function compareVersion(version1, version2) {
-  const v1 = version1.split(".");
-  const v2 = version2.split(".");
+  //* Get each individual revision string in a row (without the ".")
+  const string1 = version1.split(".");
+  const string2 = version2.split(".");
 
-  //* Track the progress through both strings
+  //* Used to track which revision string we are looking at
   let left = 0;
   let right = 0;
 
-  //* Compare every revision as we go
-  while (left < v1.length || right < v2.length) {
-    //* Conver the current value to an int, or, 0 if non-existent
-    const num1 = left < v1.length ? parseInt(v1[left++]) : 0;
-    const num2 = right < v2.length ? parseInt(v2[right++]) : 0;
+  while (left < string1.length || right < string2.length) {
+    //* Convert the revision string to a number
+    const lNumber = left < string1.length ? parseInt(string1[left++]) : 0;
+    const rNumber = right < string2.length ? parseInt(string2[right++]) : 0;
 
-    if (num1 < num2) return -1;
-    if (num1 > num2) return 1;
+    if (lNumber < rNumber) return -1;
+    else if (lNumber > rNumber) return 1;
   }
 
-  //* Both version strings are equal
+  //* Both revision strings are equivalent
   return 0;
 }
 
@@ -34,8 +35,7 @@ console.log(compareVersion("1.2.3.4", "1.2.3.5")); //* -1
 console.log(compareVersion("1.25", "1.2")); //* 1
 console.log(compareVersion("1.0.1", "1.0")); //* 1
 
-//* Time: O(max(n,m)) - In the worst case, one of the two strings is longer
-//* So the time taken scales with the longer of the two inputs
+//* Time: O(max(n,m)) - The input strings are not guaranteed to be of equal length
+//* So the time taken scales with the maximum of the length of both input strings1
 
-//* Space: O(max(n, m)) - The memory usage scales with the length of the longer of the two inputs
-//* If we have something like "1.0.0000", this is the same as "1.0.0"
+//* Space: O(max(n,m)) - Split returns a new array, so the total memory usage scales with the larger of the two inputs
