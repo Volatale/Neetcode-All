@@ -1,60 +1,49 @@
-//* We simply want to find every valid pair (i, j) whose sum < target
-//* If we sort the array into ascending order, we know the array is monotonically non-decreasing
-//! Why can we sort? Because the index constraint is that i < j
-//*     - But nums[i] + nums[j] === nums[j] + nums[i]
-//*     - So the ORDER of the two elements doesn't matter
-//*         - We don't actually care about the pairs themselves
-//*         - The task is simply to COUNT the number of valid pairs
-//! Thus, we can find the maximum subarray such that nums[left] + nums[right] < target
-//* Use a Two Pointer approach where left starts at 0 and right starts at n - 1
-//* If we have a valid subarray where nums[left] + nums[right] < target:
-//*     - We can pair nums[left] with every element in the valid subarray
-//* For example, take the following example:
-//*     - [1, 2, 3, 7], target = 6
-//*         - (1 + 7) = 8, so this is invalid
-//*         - We need a SMALLER sum, so decrement right
-//*     - That gives us [1, 2, 3]
-//*         - (1 + 3) = 4, so we know the two extremes are valid
-//*     - Thus, we can pair 1 (the value) with every other element in this valid subarray
-//*         - (1 + 2) = 3
-//*         - (1 + 3) = 4
-//!             - So far we have TWO valid pairs
-//*     - Then, we increment left (since we already formed every pair using nums[left])
-//*     - That leaves us with [2, 3]
-//*         - (2 + 3) = 5, so we know the two extremes are valid
-//*     - Once again, we can pair nums[left] with every other element in the valid subarray
-//*         - (2 + 3) = 5
-//* So we end up with 3 pairs (2 + 1)
+//* We need to return the number of pairs such that:
+//*     - 0 <= i < j < n
+//*     - nums[i] + nums[j] < target
+//* In other words, the two indices must be different, and the sum of their values must be < target
+//* This is possible using a brute force approach, but we can be more efficient through the use of sorting
+//! Sorting would introduce an element of monotonicity to the array, which makes it easier to find pairs
+//* Ultimately, if we have an array like [1, 2, 3, 4] and nums[1] + nums[2] < target
+//! Then we know that every pair of elements in the range [nums[0], nums[2]] should ALSO form a valid pair
+//* Why? Because the sum of the "extremes" of the subarray are valid, which means any pair to the left will also be valid
+//*     - Any element to the left of the boundary element is <= nums[right], so any pair in the range [nums[left], nums[right]] is also valid
+//* Since we need to determine the boundaries of the subarray, we can use a two pointer approach
+//*     - Anything to the right of `right` will have already been processed (so we don't count any pairs twice)
+//*     - Anything to the left of `left` will also have already been processed for the same reason
+//* We can use the equation (pairs += right - left) to get the total number of pairs given the current boundaries of the subarray
+//*     - Avoid adding 1 to the above result because a pair requires 2 elements
+//*     - In a valid subarray of length 3, there are 3 pairs [0, 1, 2], target = 3: (0 + 2), (0 + 1), (1 + 2)
+//! Essentially, we are finding the maximum subarray such that nums[left] + nums[right] < target
+//*     - Then, we can compute all of the pairs within this range
 function countPairs(nums, target) {
   let pairs = 0;
 
-  //* Sort the elements into ascending order (creates monotonicity)
+  //* Sorting the array introduces monotonicity, which makes it easier to find pairs efficiently
   nums.sort((a, b) => a - b);
 
-  //* The search space is the array itself
+  //* Two pointers used to find the extremes of the array
   let left = 0;
   let right = nums.length - 1;
 
-  //* Find the maximum subarray such that nums[left] + nums[right] < target
   while (left < right) {
-    //* Decrement right until nums[left] + nums[right] < target
+    //* Eliminate all of the invalid pairs
     while (left < right && nums[left] + nums[right] >= target) {
-      right--;
+      right--; //* We need to decrease the sum
     }
 
-    //* Now we know every nums[left] can pair with everything in the range
-    pairs += right - left;
-    left++;
+    pairs += right - left; //* A pair takes 2 elements, and left != right, so don't add one
+    left++; //* We are not allowed to reuse elements, so increment to move onto the next
   }
 
   return pairs;
 }
 
-console.log(countPairs([1, 2, 3, 7], 6)); //* 3
-console.log(countPairs([-1, 1, 2, 3, 1], 2)); //* 3
-console.log(countPairs([-6, 2, 5, -2, -7, -1, 3], -2)); //* 10
+//*   0  1  2  3  4
+//* [-1, 1, 2, 3, 1], target = 2
+//* [-1, 1, 1, 2, 3], target = 2
+//*   L        R
 
-//* Time: O(n log n) - Sorting an array generally takes O(n log n) time complexity
-//* Then, finding the valid pairs takes O(n) in the worst case
-
-//* Space: O(n) - Assuming the sorting algorithm used is merge sort, the memory usage scales with the input size (n)
+//* -1 + 3 = 2. 2 >= target. Invalid
+//* -1 + 2 = 1. 1 < target. valid
+//*     - Since all elements <
