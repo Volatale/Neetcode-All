@@ -1,11 +1,13 @@
-//* Since we need to reverse the string, it makes sense to iterate backwards
-//* We can use two pointers
-//*     - right marks the END of the current word
-//*     - left marks the START of the current word (it usually points to whitespace)
-//* Then, if string.length > 0, we know we need to add a space before appending the current word
-//* After adding the current word using s.slice, we set right = left
+//* Given an input string, we need to reverse the order of the words
+//* All of the words are separated by spaces
+//* Strings in JavaScript are immutable, so we need to convert the string into an array
+//* We can use the split() function to remove all of the leading/trailing whitespace
+//* Then, we can simply use a two pointer approach to reverse everything in-place
+//* One pointer marks the first index of the word
+//* And the other marks the last index of the word
+//! Multiple whitespace should be reduced to single whitespace
 function reverseWords(s) {
-  let string = "";
+  let string = [];
 
   //* Iterate backwards to avoid reversing
   let right = s.length - 1;
@@ -14,23 +16,24 @@ function reverseWords(s) {
     //* Skip trailing whitespace
     while (right >= 0 && s[right] === " ") right--;
 
-    //* We are out of bounds - no more characters
+    //* We are out of bounds, thus there are no more characters
     if (right < 0) break;
 
+    //* Used to find the START of this word
     let left = right;
 
-    //* Find the START of the current word (could be " " or out of bounds)
+    //* Move `left` to the first index of this word
     while (left >= 0 && s[left] !== " ") left--;
 
-    //* Process the word (and add empty space if needed)
-    if (string.length > 0) string += " ";
-    string += s.slice(left + 1, right + 1);
+    //* Process the word and add empty space if necessary
+    if (string.length > 0) string.push(" ");
+    string.push(s.slice(left + 1, right + 1));
 
-    //* Skip to the start of the
+    //* Move the right pointer
     right = left;
   }
 
-  return string;
+  return string.join("");
 }
 
 console.log(reverseWords("the sky is blue")); //* "blue is sky the"
@@ -38,7 +41,3 @@ console.log(reverseWords("the  sky is  blue")); //* "blue is sky the"
 console.log(reverseWords("  hello world   ")); //* "world hello"
 console.log(reverseWords("a good   example")); //* "example good a"
 console.log(reverseWords("sonic")); //* "sonic"
-
-//* Time: O(n) - We iterate through every character, so the time taken scales with s.length
-
-//* Space: O(n) - In the worst case, the resulting string has a length equal to s.length
