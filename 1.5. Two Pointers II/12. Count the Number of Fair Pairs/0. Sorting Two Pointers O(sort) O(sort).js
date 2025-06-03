@@ -1,71 +1,53 @@
-//* Addition is commutative, so both the addends can be swapped
-//* nums[i] + nums[j] === nums[j] + nums[i]
-//*     - The (i < j) condition degrades to just (i !== j)
-//! We can sort the array and then use a Two Pointer approach
-//* Why does this work?
-//*     0  1  2  3  4  5
-//*     [0, 1, 7, 4, 4, 5], lower = 3, upper = 6
-//*         - [0, 3] = 3
-//*         - [0, 4] = 4
-//*         - [0, 5] = 5
-//*         - [1, 3] = 4
-//*         - [1, 4] = 5
-//*         - [1, 5] = 6
-//! There are 6 fair pairs
-//* Now lets try the sorted array version
-//*     0  1  2  3  4  5
-//*     [0, 1, 4, 4, 5, 7], lower = 3, upper = 6
-//*         - [0, 2] = 4
-//*         - [0, 3] = 4
-//*         - [0, 4] = 5
-//*         - [1, 2] = 5
-//*         - [1, 3] = 5
-//*         - [1, 4] = 6
-//! There are STILL 6 fair pairs
-//! Sorting the array does not change the number of fair pairs
-//* It only changes WHAT the pairs are
-//* Since we sorted, the array is now monotonically increasing left to right
-//* So we can use two pointers to narrow down the maximum valid subarray
-//* All of the elements within this subarray when paired together create fair pairs
-//*     - So fairPairs += right - left
-//*     - We don't have to subtract 1 since we already did that when finding the valid range
-//*         - For a valid array of 3 elements, we can create TWO pairs, not three
+//* We are given two integers `lower` and `higher` and an int[]
+//* The goal is to count the total number of pairs such that:
+//*     - 0 <= i < j < n
+//*     - lower <= nums[i] + nums[j] <= upper
+//* Essentially, we cannot reuse the same index in a pair, and the sum of the values must be within the valid range
+//* Instead of checking each pair in a brute force manner, we can use a more efficient approach
+//! Ultimately, we need to find the maximum subarray such that the two boundary elements form a valid "fair" pair
+//* By sorting the array, we can introduce monotonicity, which ensures that nums[i] <= nums[i + 1] <= ... <= nums[n - 1]
+//* If the boundary elements form a valid pair, and the above invariant holds true, then every possible subarray in this range is ALSO valid
+//* Since we always need to know what the boundary element is, we can use a two pointer approach
+//* Sorting the array is valid since addition is commutative (a + b = b + a)
+//*     - We don't necessarily care about the pairs themselves, only that the number of pairs is correct
+//! Use the "Exactly(k)" variation to guarantee the correct result
+//* Simply reducing the sum relative only to the `upper` value alone will not guarantee a correct result
 function countFairPairs(nums, lower, upper) {
-  function countLess(val) {
-    let pairs = 0;
+  function count(val) {
+    let fairPairs = 0;
 
-    //* The search space is the array itself
+    //* Two pointer approach to find the boundary elements
     let left = 0;
     let right = nums.length - 1;
 
-    //* Find the MAXIMUM valid subarray such that nums[left] + nums[right] <= val
     while (left < right) {
-      //* The sum is too large, find a smaller sum
+      //* Sum is too large, need a smaller sum
       while (left < right && nums[left] + nums[right] > val) {
         right--;
       }
 
-      //* All of the elements within (left, right) create fair pairs
-      pairs += right - left;
+      fairPairs += right - left;
       left++;
     }
 
-    return pairs;
+    return fairPairs;
   }
 
-  //* Sort the array so we can use a two pointer approach
+  //* Sorting the array introduces monotonicity, which enables two pointers
   nums.sort((a, b) => a - b);
 
-  //* Pairs that fit ExactlyWithinRange(k) = atMost(k) - atMost(k - 1)
-  //* There are lots of duplicate pairs we count, so eliminate them
-  return countLess(upper) - countLess(lower - 1);
+  //* count(upper) gives all pairs <= upper, count(lower - 1) gives pairs < lower
+  //* Difference gives no. of pairs between lower and upper inclusive
+  return count(upper) - count(lower - 1);
 }
 
+debugger;
+console.log(countFairPairs([1, 1, 1, 1], 2, 2)); //* 6
 console.log(countFairPairs([0, 1, 7, 4, 4, 5], 3, 6)); //* 6
 console.log(countFairPairs([1, 7, 9, 2, 5], 11, 11)); //* 1
 console.log(countFairPairs([1, 2, 3, 4], 0, 10)); //* 6
 
-//* Time: O(sort) - The sorting step probably takes O(n log n) on average (depending on the algorithm used)
-//* The countLess() has a time complexity of O(n), since in the worst case, we iterate over every element in nums
+//* Time: O(sort) - The time taken to sort depends on the internal sorting algorithm used
+//* It takes O(n) to find all of the fair pairs
 
-//* Space: O(sort) - The memory used depends on the sorting algorithm used (merge -> O(n), quick -> O(log n))
+//* Space: O(sort) - The memory usage scales with the sorting algorithm used
