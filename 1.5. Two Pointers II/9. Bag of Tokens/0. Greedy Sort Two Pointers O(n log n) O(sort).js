@@ -1,42 +1,40 @@
-//* The only operation that actually GETS us some score is operation 1
-//* But we can ONLY play tokens face-up if we have enough "power"
-//* Regardless of the token's value, our score only goes up by 1 per face-up play
-//* So logically speaking, to MAXIMIZE our score, we want to MAXIMIZE the amount of tokens played face-up
-//* Since the score only increases by 1 per face-up play (regardless of the token's value)
-//*     - Our goal becomes "play as many tokens face-up as possible"
-//* Prioritizing the lower-valued tokens effectively MINIMIZES the reduction to "power"
-//* We ONLY want to play tokens face-down if we CAN'T play them face-up
-//*     - Why? Because playing tokens face-down REDUCES our score, which we don't really want to do
-//* To ensure we always have the best possible choice for each step, we can employ a Greedy approach
-//*     - Sort the array in ascending order
-//*     - Then use Two Pointers to track what will be played face-up and what gets played face-down
-//* We ALWAYS play elements at tokens[left], since we know these are LOWER valued
-//*     - Which gives us the highest chance to play LATER tokens since the reduction to "power" is MINIMIZED
+//* We start with an intial power and a score of 0, as well as tokens[], where tokens[i] denotes the value of the token
+//* The goal is to MAXIMIZE the total score by playing tokens optimally
+//!     - We can only play tokens that have not already been played
+//* To play a token face-up, our power must be >= tokens[i]
+//*     - In which case we lose tokens[i] power, and gain 1 score
+//* To play a token face-down, our power must be >= 1
+//*     - In which case we gain tokens[i] power, and lose 1 score
+//* In order to play optimally, we need to determine the optimal time to make both of the above choices
+//* Since our tokens will DECREASE upon playing a token face-up, we want to MINIMIZE that cost
+//* And since our tokens will INCREASE upon playing a token face-down, we want to MAXIMIZE that value
+//! If we sort the array, and then use a two pointer approach, we can always make the optimal decision
+//*     - This also allows us to avoid playing the same token twice (since we'll increment/decrement the pointers accordingly)
+//* Otherwise we'd have to try every possible permutation, which would take O(n!)
+//* In order to maximize our score, we greedily choose to play face-up where possible
 function bagOfTokensScore(tokens, power) {
-  //* There are no tokens to play, thus our max score is 0
-  if (tokens.length === 0) return 0;
+  //* Sorting introduces monotonicity, which allows for a two pointer approach
+  tokens.sort((a, b) => a - b);
+
+  //* Left indicates the optimal face-up play, right indicates the optimal face-down play
+  let left = 0;
+  let right = tokens.length - 1;
 
   let score = 0;
   let maxScore = 0;
 
-  //* Sort the tokens in a monotonically non-decreasing order
-  tokens.sort((a, b) => a - b);
-
-  //* Ideally, we play "left" tokens face up and "right" tokens face down
-  let left = 0;
-  let right = tokens.length - 1;
-
   while (left <= right) {
     if (power >= tokens[left]) {
-      //* Play face-up
+      //* Play token face-up
       power -= tokens[left++];
-      maxScore = Math.max(maxScore, ++score);
+      score++;
+      maxScore = Math.max(maxScore, score);
     } else if (score > 0) {
-      //* Play face-down (but only if we have score to spend)
+      //* Play token face-down
       power += tokens[right--];
       score--;
     } else {
-      //* Neither is possible, break the loop
+      //* Unable to make a play
       break;
     }
   }
@@ -50,7 +48,8 @@ console.log(bagOfTokensScore([100, 200, 300, 400], 200)); //* 2
 console.log(bagOfTokensScore([1, 4, 7, 8, 5], 7)); //* 2
 console.log(bagOfTokensScore([0, 0, 0, 0, 0], 0)); //* 5
 
-//* Time: O(n log n) - We have to sort the tokens array, so this takes n log n
-//* Then, we iterate over the entire array in the worst case (all n elements)
+//* Time: O(sort) - Sorting the tokens array takes O(n log n) on average (depends on the algorithm used)
+//* Actually playing the game only takes O(n)
 
-//* Space: O(sort) - The memory usage scales depending on the sorting algorithm used
+//* Space: O(sort) - The memory usage scales with the sorting algorithm used
+//* If that memory is excluded, then the memory usage is constant
