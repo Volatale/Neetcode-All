@@ -1,22 +1,25 @@
-//* Use Two Pointers
-//* Start left at 0, and right at 1 because we can't buy & sell on the same day
-//* We can only make a profit if prices[left] < prices[right]
-//* Buy Low & Sell High
-function bestTimeToBuyAndSellStock(prices) {
+//* We are given an int[] prices, where prices[i] = price of ith stock
+//* The goal is to maximize the profit by choosing a day to buy a stock, and then also sell a stock
+//* Logically speaking, we want to MINIMIZE the cost to buy, and MAXIMIZE the profit from the sale
+//* It is not possible to buy and sell on the same day (so we need two different days)
+//* We should perform a simulation and only take the best possible result
+//* Naturally, since we need two different days, we can use a two pointer approach
+function maxProfit(prices) {
   let maxProfit = 0;
 
-  //* Two Pointers
-  let left = 0; //* Left = Buy day
-  let right = 1; //* Right = Sell Day
+  //* Two pointers to find the optimal days to buy/sell
+  let left = 0;
+  let right = 1;
 
   while (right < prices.length) {
-    //* Buy Low Sell High
+    //* If prices[left] < prices[right], then we at least make "some" profit
     if (prices[left] < prices[right]) {
       maxProfit = Math.max(maxProfit, prices[right] - prices[left]);
     } else {
       left = right;
     }
 
+    //* We can't considerthe same day multiple times
     right++;
   }
 
@@ -29,6 +32,6 @@ console.log(bestTimeToBuyAndSellStock([2, 5])); //* 3
 console.log(bestTimeToBuyAndSellStock([5])); //* 0
 console.log(bestTimeToBuyAndSellStock([9, 2])); //* 0
 
-//* Time: O(n) - It takes O(n) time to process every element in the array
+//* Time: O(n) - It takes O(n) time to process all of the elements in the array
 
-//* Space: O(1) - We use no extra space at all
+//* Space: O(1) - The memory usage remains constant regardless of input size
