@@ -1,35 +1,35 @@
-//* Take subarrays of size "k"
-//* Check the max in those windows
-//* Add each max to the output array
-function slidingWindowMaximum(nums, k) {
+//* We are given an int[], and there is a sliding window of size `k` moving from left to right
+//* Since the window size is `k`, we can only see `k` numbers in the window
+//* "Max sliding window" really means "return an array of the maximum value in each window of size k"
+//* Since we potentially require a range of values, we can't just use a regular sliding window
+//! The same `max` value in a window could potentially be used over a range of indices
+//* So it is not as simple as just tracking the current max
+//* If the current max is leaving the window, then we need to use a previous max, or the current value
+//* Instead of a sliding window, we could simply brute force the answer
+//* Use nested for loops and simply iterate over a window of size "k" from each index
+//* Take the maximum within the window, and that is our maximum value for the current window
+function maxSlidingWindow(nums, k) {
   const result = [];
 
-  //* Iterate over the entire array
   for (let i = 0; i <= nums.length - k; i++) {
-    let maxSum = nums[i];
+    let maxInWindow = nums[i];
 
-    //* Look ahead "k" numbers
+    //* Find the maximum within the current window
     for (let j = i; j < i + k; j++) {
-      maxSum = Math.max(maxSum, nums[j]);
+      maxInWindow = Math.max(maxInWindow, nums[j]);
     }
 
-    result.push(maxSum);
+    result.push(maxInWindow);
   }
 
   return result;
 }
 
-console.log(slidingWindowMaximum([1, 3, -1, -3, 5, 3, 6, 7], 3)); //* [3, 3, 5, 5, 6, 7]
-console.log(slidingWindowMaximum([1, 2, 3], 1)); //* [1, 2, 3]
-console.log(slidingWindowMaximum([1, 3, -1], 3)); //* [3]
+console.log(maxSlidingWindow([1, 3, -1, -3, 5, 3, 6, 7], 3)); //* [3, 3, 5, 5, 6, 7]
+console.log(maxSlidingWindow([1, 2, 3], 1)); //* [1, 2, 3]
+console.log(maxSlidingWindow([1, 3, -1], 3)); //* [3]
 
-//* Time: O(n * k) - For every outer loop, there are "k" inner loops
-//* Push adds an element to the end of the array in O(1) time
+//* Time: O(n * k) - There are "n" elements, and we are doing "k" iterations within each outer loop iteration
 
-//* Space: O(k) - The space usage scales with "k", not "n"
-//* If we have an array like [1, 2, 3, 4, 5], and k = 1
-//* That gives us [1, 2, 3, 4, 5] as the output
-//* If k = 2, then we get [2, 4]
-//* Then if k = 3, then we get [3]
-//* All of these are different output lengths that scale with "k"
-//* Even when "n" stays the same
+//* Space: O(n) - The memory usage scales with the input size
+//* However, if we do not consider the output memory usage to be part of the space complexity, then it is O(1) space

@@ -6,7 +6,7 @@ class ListNode {
   }
 }
 
-class Deque {
+class MyDeque {
   constructor(values = []) {
     this.head = null;
     this.tail = null;
@@ -18,8 +18,9 @@ class Deque {
   }
 
   getValues() {
-    const values = [];
+    if (this.length === 0) return [];
 
+    const values = [];
     let curr = this.head;
 
     while (curr !== null) {
@@ -36,7 +37,7 @@ class Deque {
 
   getHead() {
     if (this.head === null) {
-      throw new Error("Deque is empty");
+      return undefined;
     }
 
     return this.head.val;
@@ -44,7 +45,7 @@ class Deque {
 
   getTail() {
     if (this.tail === null) {
-      throw new Error("Deque is empty");
+      return undefined;
     }
 
     return this.tail.val;
@@ -84,7 +85,7 @@ class Deque {
 
   dequeue() {
     if (this.head === null || this.tail === null) {
-      throw new Error("Deque is empty");
+      return undefined;
     }
 
     const dequeued = this.head;
@@ -102,7 +103,9 @@ class Deque {
   }
 
   pop() {
-    if (this.head === null || this.tail === null) return undefined;
+    if (this.head === null || this.tail === null) {
+      return undefined;
+    }
 
     const popped = this.tail;
 
@@ -119,38 +122,39 @@ class Deque {
   }
 }
 
-//* Use a monotonically decreasing queue
-//* The leftmost element is the LARGEST
-//* The rightmost element is the SMALLEST
-//* While the current element is LARGER than the "top" of the queue (right)
-//* Keep popping elements, this ensures that we remove the minimum elements
-//* If i - k + 1 >= 0, then the window size is "k"
-//* Push the leftmost element to the window
-//* Then, check if the leftmost element is the current element matches the start of the window
-//* Then popleft.
-//* With the while loop, and the last if statement, we ensure that the leftmost is ALWAYS the largest
-function slidingWindowMax(nums, k) {
-  //* Monotonically Decreasing Queue
-  const deque = new Deque();
-
+//* We are given an int[], and there is a sliding window of size `k` moving from left to right
+//* Since the window size is `k`, we can only see `k` numbers in the window
+//* "Max sliding window" really means "return an array of the maximum value in each window of size k"
+//* Since we potentially require a range of values, we can't just use a regular sliding window
+//! The same `max` value in a window could potentially be used over a range of indices
+//* So it is not as simple as just tracking the current max
+//* If the current max is leaving the window, then we need to use a previous max, or the current value
+//* Since we need to retain all possible valid elements, we can use a monotonic queue
+//* The leftmost element will be considered the "maximum" in the window
+//* At the very start of each iteration, we remove all of the elements whose value is < nums[i]
+//*     - Why? Those values are going to be removed earlier, and they are also useless if they are smaller
+//* If the leftmost element is going to be leaving the window (nums[i - k + 1] === head)
+//*     - Then we need to dequeue the leftmost element (deque.dequeue)
+function maxSlidingWindow(nums, k) {
+  //* Monotonically non-increasing deque
+  const deque = new MyDeque();
   const results = [];
 
   for (let i = 0; i < nums.length; i++) {
-    //* Repeatedly elements that are LESS than what we want to add
+    //* Remove all of the elements that are less than nums[i] (we want the maximum)
     while (deque.size() > 0 && nums[i] > deque.getTail()) {
       deque.pop();
     }
 
-    //* Add the current element to the right (tail)
+    //* Add the current element to the right (tail). Can't add to left because it might NOT be larger
     deque.enqueue(nums[i]);
 
-    //* If the window size is "k"
+    //* If the window size is "k", then we can begin processing windows
     if (i - k + 1 >= 0) {
-      //* The leftmost element (head) is the maximum
+      //* The leftmost element is the maximum
       results.push(deque.getHead());
 
-      //* If the head matches the start of the window element
-      //* Dequeue, because it is leaving the window
+      //* If the head matches the start of the window, dequeue (it is leaving the window)
       if (nums[i - k + 1] === deque.getHead()) {
         deque.dequeue();
       }
@@ -160,6 +164,11 @@ function slidingWindowMax(nums, k) {
   return results;
 }
 
-console.log(slidingWindowMax([8, 7, 6, 7], 2)); //* [8, 7, 7]
-console.log(slidingWindowMax([1, 1, 1, 1, 1, 4, 5], 6)); //* [4, 5]
-console.log(slidingWindowMax([1, 3, -1, -3, 5, 3, 6, 7], 3)); //* [3, 3, 5, 5, 6, 7]
+console.log(maxSlidingWindow([1, 3, -1, -3, 5, 3, 6, 7], 3)); //* [3, 3, 5, 5, 6, 7]
+console.log(maxSlidingWindow([1, 2, 3], 1)); //* [1, 2, 3]
+console.log(maxSlidingWindow([1, 3, -1], 3)); //* [3]
+
+//* Time: O(n * k) - There are "n" elements, and we are doing "k" iterations within each outer loop iteration
+
+//* Space: O(n) - The memory usage scales with the input size
+//* However, if we do not consider the output memory usage to be part of the space complexity, then it is O(1) space
