@@ -1,20 +1,26 @@
-//* Grab all of the subarrays of length "k"
-//* If any of them have a value >= valToBeat, then it meets the sum / k >= threshold requiremenet
-function numberOfSubarraysSizeK(nums, k, threshold) {
-  //* Multiplication is faster than division
+//* We are given an int[] and integers `k` and `threshold`
+//* The goal is to count the number of subarrays of size k whose average is >= threshold
+//* To compute the average, we simply sum the elements within each subarray and then divide by the no. of elements
+//* In a brute force manner, we could try every possible subarray
+//* Note that division is the inverse of multiplication, so we can use multiplication instead of division
+//* Valid Average = (sum / k) >= threshold
+//* thresholdTobeat:
+//*     - (sum / k) >= threshold
+//*         - Multiply both sides by `k`
+//*     - sum >= threshold * k
+function numOfSubarrays(arr, k, threshold) {
   const valToBeat = k * threshold;
-
   let subarrays = 0;
 
-  //* Make sure there are at least "k" elements left (including this one)
-  for (let i = 0; i <= nums.length - k; i++) {
+  //* We only want to consider subarrays of at least "k" elements
+  for (let i = 0; i <= arr.length - k; i++) {
     let sum = 0;
 
-    //* Grab the next "k" elements
     for (let j = i; j < i + k; j++) {
-      sum += nums[j];
+      sum += arr[j];
     }
 
+    //* Found a valid subarray
     if (sum >= valToBeat) {
       subarrays++;
     }
@@ -23,11 +29,10 @@ function numberOfSubarraysSizeK(nums, k, threshold) {
   return subarrays;
 }
 
-console.log(numberOfSubarraysSizeK([2, 2, 2, 2, 5, 5, 5, 8], 3, 4)); //* 3
-console.log(numberOfSubarraysSizeK([11, 13, 17, 23, 29, 31, 7, 5, 2, 3], 3, 5)); //* 6
-console.log(numberOfSubarraysSizeK([1, 2, 3, 4, 5], 2, 3)); //* 2
+console.log(numOfSubarrays([2, 2, 2, 2, 5, 5, 5, 8], 3, 4)); //* 3
+console.log(numOfSubarrays([11, 13, 17, 23, 29, 31, 7, 5, 2, 3], 3, 5)); //* 6
+console.log(numOfSubarrays([1, 2, 3, 4, 5], 2, 3)); //* 2
 
-//* Time: O(n * k) - For each outer loop iteration, there are "k" inner loop iterations
-//* Thus we have an O(n * k) time complexity
+//* Time: O(n * k) - For every outer loop iteration (n), there are "k" inner iterations
 
-//* Space: O(1) - We use constant space - no auxillary data structures are used that scale with input size
+//* Space: O(1) - The memory usage remains constant regardless of input size
