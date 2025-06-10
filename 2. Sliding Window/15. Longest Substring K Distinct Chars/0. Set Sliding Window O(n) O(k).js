@@ -1,24 +1,29 @@
-//* Sliding Window so we can track the length of the window
-//* A set can be used to track the distinct characters within the window
-//* This saves us from having to create substrings
-//* Use set.size check the number of distinct characters in the substring
+//* Given a string, find the length of the LONGEST substring that contains AT MOST `k` DISTINCT characters
+//* Since we care about unique characters, and the frequency of these characters, we should use a frequency map
+//*     - A set would help, but wouldn't give us all of the information we need
+//*     - We'd still have no way of knowing when we should delete a character
+//* Since we need a window (substring) of characters, we can use a sliding window approach
+//* The window invariant states that there should be <= k distinct characters within the window
+//* If this invariant is ever broken, we'll shrink the window on the left until it becomes valid
+//* Simply track the length of the longest valid window, and that is our answer
 function longestSubstringKDistinctChars(s, k) {
-  const chars = new Set();
+  const distincts = new Set();
+  let maxLength = 0;
 
-  //* Sliding Window
+  //* Pointers to mark the start/end of the sliding window
   let start = 0;
   let end = 0;
 
-  let maxLength = 0;
-
   while (end < s.length) {
-    chars.add(s[end]);
+    //* Add the character to the window
+    distincts.add(s[end]);
 
-    //* Size represents the number of unique characters in the substring
-    while (chars.size > k) {
-      chars.delete(s[start++]);
+    //* Ensure the window invariant is fulfilled
+    while (distincts.size > k) {
+      distincts.delete(s[start++]);
     }
 
+    //* Record the length of the longest window
     maxLength = Math.max(maxLength, end - start + 1);
     end++;
   }
@@ -27,14 +32,10 @@ function longestSubstringKDistinctChars(s, k) {
 }
 
 console.log(longestSubstringKDistinctChars("eceba", 2)); //* 3
-console.log(longestSubstringKDistinctChars("aaabbba", 2)); //* 7
 console.log(longestSubstringKDistinctChars("aba", 2)); //* 3
 console.log(longestSubstringKDistinctChars("bba", 1)); //* 2
 console.log(longestSubstringKDistinctChars("aqwwer", 4)); //* 5
-console.log(longestSubstringKDistinctChars("a", 0)); //* 0
 
-//* Time: O(n) - It takes O(n) time to iterate through each character in the string
-//* We are using a set, so we have Θ(1) lookup for characters within the substring
+//* Time: O(n) - The time taken scales with the length of the input string
 
-//* O(k) - The set will only contain at most "k" distinct characters
-//* Even if the string is something like "abcdefg", if "k" is 1, then the set only contains 1 element at most
+//* Space: O(k) - The set's size never grows beyond "k + 1", so the space complexity scales with k

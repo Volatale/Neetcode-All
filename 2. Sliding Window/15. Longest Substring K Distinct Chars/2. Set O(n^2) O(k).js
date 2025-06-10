@@ -1,11 +1,16 @@
-//* Use a set to track the characters within the substring
-//* This saves us from having to create substrings - we can also clear in O(1) time
-//* Use set.size as a way to track how many distinct characters we have in the substring
+//* Given a string, find the length of the LONGEST substring that contains AT MOST `k` DISTINCT characters
+//* Since we care about unique characters, and the frequency of these characters, we should use a frequency map
+//*     - A set would help, but wouldn't give us all of the information we need
+//*     - We'd still have no way of knowing when we should delete a character
+//* However, if we use a brute force approach, we CAN in fact, use a set instead of a frequency map
+//* Simply try every possible substring (all 2^n of them) and reset the set for each
+//* Why does this work? Because we care about the LENGTH of the valid substring(s), not the substring itself
+//*     - So we can completely discard any information about the string (i.e. the characters in the substring themselves)
 function longestSubstringKDistinctChars(s, k) {
   const distincts = new Set();
   let maxLength = 0;
 
-  //* Creating a new set each iteration is a higher overhead
+  //* Try every substring. Clearing the set is faster than allocating memory for a new object (set)
   for (let i = 0; i < s.length; i++) {
     distincts.clear();
     let length = 0;
@@ -18,7 +23,7 @@ function longestSubstringKDistinctChars(s, k) {
         distincts.add(s[j]);
         length++;
       } else {
-        break;
+        break; //* We cannot add a third character to the "substring"
       }
     }
 
@@ -33,8 +38,6 @@ console.log(longestSubstringKDistinctChars("aba", 2)); //* 3
 console.log(longestSubstringKDistinctChars("bba", 1)); //* 2
 console.log(longestSubstringKDistinctChars("aqwwer", 4)); //* 5
 
-//* Time: O(n^2) - We have a nested for loop, both of which scale with the input size
-//* In the absolute worst case, the entire string is the same char and k = 1 etc
+//* Time: O(n^2) - In the worst case, there are (n * (n + 1)) / 2 iterations
 
-//* O(k) - The set will only contain at most "k" distinct characters
-//* Even if the string is something like "abcdefg", if "k" is 1, then the set only contains 1 element
+//* Space: O(k) - The size of the set scales with `k` itself
