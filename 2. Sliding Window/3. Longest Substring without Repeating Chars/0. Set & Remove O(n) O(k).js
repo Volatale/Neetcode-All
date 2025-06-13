@@ -1,35 +1,41 @@
-//* Use a set for Θ(1) lookup
-//* The set also represents our window of elements
-//* If we find a character that already exists within the window
-//* Then we need to remove the duplicates from the set
-//* But the order we remove elements in needs to be relative to the input order
-//* So we delete(nums[left++])
-//* That is what the second pointer is for
-function longestSubstringWithoutRepeatingChars(s) {
-  let start = 0; //* Represents the left anchor
-  let end = 0;
-  let maxLength = 0;
+//* We need to find the length of the longest substring that does not contain DUPLICATE characters
+//* The frequency of duplicate characters will always greater than 1
+//* So all we really have to do is track the frequency of all of the characters in the current substring
+//* Instead of using nested for loops, we simply need to recognise that we are tracking a RANGE of characters
+//* We can use a sliding window approach here since the invariant holds true
+//* There should not be any duplicate characters within the window
+//* In the event that this invariant is NOT true, shrink the window on the left till it is a valid window
+function lengthOfLongestSubstring(s) {
+  if (s.length === 0) return 0;
 
-  const set = new Set(); //* Contains the elements in the window
+  //* Tracks chars in the current window
+  const chars = new Set();
+
+  //* Pointers for the sliding window
+  let start = 0;
+  let end = 0;
+  let longest = 0;
 
   while (end < s.length) {
-    //* Remove all elements going left -> right until duplicate is non-existant
-    while (set.has(s[end])) {
-      set.delete(s[start++]);
+    //* Remove all of the duplicate characters from the window
+    while (chars.has(s[end])) {
+      chars.delete(s[start++]);
     }
 
-    set.add(s[end++]);
-    maxLength = Math.max(maxLength, end - start);
+    //* Add the character to the window (we know its not a duplicate now)
+    chars.add(s[end++]);
+    longest = Math.max(longest, end - start);
   }
 
-  return maxLength;
+  return longest;
 }
 
-console.log(longestSubstringWithoutRepeatingChars("abcabcbb")); //* 3
-console.log(longestSubstringWithoutRepeatingChars("bbbbb")); //* 1
-console.log(longestSubstringWithoutRepeatingChars("pwwkew")); //* 3
+console.log(lengthOfLongestSubstring("abcabcbb")); //* 3
+console.log(lengthOfLongestSubstring("bbbbb")); //* 1
+console.log(lengthOfLongestSubstring("pwwkew")); //* 3
 
 //* Time: O(n) - We have to process every element in the string
 //* So the time taken scales with the input size
 
-//* Space: O(k) - In the worst case, we store every unique character within the map
+//* Spaec: O(k) - In the worst case, every character is unique
+//* So the set's size can become "n", but here, "k" means the number of unique characters.
