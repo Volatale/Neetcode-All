@@ -1,31 +1,35 @@
-//* We need substrings of length k, so use a sliding window of size k
-//* If s[end] is a vowel, then increment "vowels"
-//* When the size of the window is greater than k, remove the leftmost character from the window
-//* It may have been a vowel; if it was, decrement "vowels"
-function maximumNumberOfVowels(s, k) {
+//* The goal is to return the maximum number of vowels in a substring of length "k"
+//* We could do this in a brute force manner and simply check every substring of length k
+//* However, this is inefficient since we do a lot of repeated work
+//* Instead, the optimal thing to do is to use a sliding window approach
+//* We only ever need to process substrings of length "k", so use a fixed length sliding window
+//* If the character entering the window is a vowel, increment the vowel count
+//* If the character leaving the window is a vowel, decrement the vowel count
+//* Every other character can be ignored
+function maxVowels(s, k) {
+  //* Pointers for the sliding window boundaries
   let start = 0;
   let end = 0;
 
-  let maxVowels = 0;
-  let vowels = 0;
+  let vowelCount = 0;
+  let vowelMax = 0;
 
   while (end < s.length) {
-    if (isVowel(s[end])) vowels++;
+    if (isVowel(s[end])) vowelCount++;
 
-    //* If there are more than k elements in the window
+    //* There are more than "k" elements in the window
     if (end - start + 1 > k) {
-      if (isVowel(s[start])) vowels--;
+      if (isVowel(s[start])) vowelCount--;
       start++;
     }
 
-    maxVowels = Math.max(maxVowels, vowels);
+    vowelMax = Math.max(vowelMax, vowelCount);
     end++;
   }
 
-  return maxVowels;
+  return vowelMax;
 }
 
-//* Switches are very fast, and use less space than a set
 function isVowel(char) {
   switch (char.charCodeAt(0)) {
     case 97:
@@ -39,12 +43,12 @@ function isVowel(char) {
   }
 }
 
-console.log(maximumNumberOfVowels("abc", 1)); //* 1
-console.log(maximumNumberOfVowels("abciiidef", 3)); //* 3
-console.log(maximumNumberOfVowels("aeiou", 2)); //* 2
-console.log(maximumNumberOfVowels("leetcode", 3)); //* 2
-console.log(maximumNumberOfVowels("aeiouaeiou", 10)); //* 10
+console.log(maxVowels("abc", 1)); //* 1
+console.log(maxVowels("abciiidef", 3)); //* 3
+console.log(maxVowels("aeiou", 2)); //* 2
+console.log(maxVowels("leetcode", 3)); //* 2
+console.log(maxVowels("aeiouaeiou", 10)); //* 10
 
-//* Time: O(n * k) - For each outer loop, the inner loop iterates "k" times
+//* Time: O(n) - We iterate over all of the characters twice at most
 
-//* Space: O(1) - We don't use any extra space that scales with input size
+//* Space: O(1) - The memory usage remains constant since there are always 5 vowel characters
