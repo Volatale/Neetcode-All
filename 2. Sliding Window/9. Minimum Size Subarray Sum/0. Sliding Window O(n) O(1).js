@@ -1,20 +1,27 @@
-//* Take a sliding window of variable size
-//* Keep increasing the window of values while sum < target
-//* While sum >= target, we have found a valid subarray
-//* Record the number of values within the window (end - start + 1)
-//* Then subtract the leftmost element in the window from the sum (to remove it from the window)
-function minimumSizeSubarraySum(target, nums) {
+//* Find the MINIMAL LENGTH of a subarray whose sum >= target
+//* If there isn't one, we need to return 0
+//* The order of the elements matters here, so we cannot sort the array
+//* We should pessimistically assume its impossible to find a subarray that sums to target
+//* Then, when we are returning from the function, we can return 0 if "minLength" === Infinity
+//! The key here is that the array contains POSITIVE integers only
+//* Therefore, we know that the sum can only ever increase (any value < 1 is not present in the array)
+//* We can use a (dynamic) sliding window approach instead of a brute force approach
+//* If the sum of the window is >= target, then just record the value
+//*     - We want the MINIMUM size vaid subarray, so extending does not help our case
+//* Otherwise, we need to keep extending the window
+function minSubArrayLen(target, nums) {
   let start = 0;
   let end = 0;
 
+  //* Assume its impossible to find a valid subarray
+  let minLength = Infinity;
   let sum = 0;
-  let minLength = Infinity; //* Infinity can be beaten by any value, we can't start at 0
 
   while (end < nums.length) {
+    //* Add the element to the window
     sum += nums[end];
 
-    //* If the sum >= target, we don't need to add any more values
-    //* Adding more values beyond this does not help us, it gets us further from the goal
+    //* If the sum >= target, we don't need to add any more values (shrink the window)
     while (sum >= target) {
       minLength = Math.min(minLength, end - start + 1);
       sum -= nums[start++];
@@ -23,16 +30,16 @@ function minimumSizeSubarraySum(target, nums) {
     end++;
   }
 
-  //* We return 0 if we didn't find a subarray >= sum
+  //* If minLength is infinity, we did not find a valid subarray
   return minLength < Infinity ? minLength : 0;
 }
 
-console.log(minimumSizeSubarraySum(7, [2, 3, 1, 2, 4, 3])); //* 2
-console.log(minimumSizeSubarraySum(4, [1, 4, 4])); //* 1
-console.log(minimumSizeSubarraySum(11, [1, 1, 1, 1, 1, 1, 1, 1])); //* 0
-console.log(minimumSizeSubarraySum(1, [5, 4, 3])); //* 1
-console.log(minimumSizeSubarraySum(10, [10])); //* 1
+console.log(minSubArrayLen(7, [2, 3, 1, 2, 4, 3])); //* 2
+console.log(minSubArrayLen(4, [1, 4, 4])); //* 1
+console.log(minSubArrayLen(11, [1, 1, 1, 1, 1, 1, 1, 1])); //* 0
+console.log(minSubArrayLen(1, [5, 4, 3])); //* 1
+console.log(minSubArrayLen(10, [10])); //* 1
 
-//* Time: O(n) - The time taken to iterate through the array scales with the length of the input
+//* Time: O(n) - The time taken scales with the input size (n)
 
-//* Space: O(1) - We don't use any space that scales with the input size
+//* Space: O(1) - The memory usage remains constant regardless of input size
