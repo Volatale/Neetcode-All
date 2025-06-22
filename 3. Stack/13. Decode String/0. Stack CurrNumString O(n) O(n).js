@@ -1,43 +1,49 @@
-//* currNum represents the number of times we need to repeat the string
-//* currString represents what we have in total
-//* Whenever we encounter a "[", push currNum and currString to the stack
-//* This resembles a recursive call because we need to solve the subproblems FIRST
-//* Reset both to their defaults pushing both
-//* If you encounter a "]", pop the top two elements
-//* Then, concatenate the prevString with the repeated currString using prevNum
-//* If you found a number (something that isn't NaN), we want to add this to the currNum
-//* But we are told "k" ranges from [1, 300], so we need to handle more digits
-//* Take 294:
-//* 0 * 10 + 2 = 2
-//* 2 * 10 + 9 = 29
-//* 29 * 10 + 4 = 249, so we want to multiply by 10 each time
+//* Given an encoded string, we need to decode it
+//* The encoding is that if we have a number "k" followed by [encodedString]
+//*     - The "encodedString" is repeated "k" times
+//* The "encodedString" will never contain any digits, but they can be nested
+//* Essentially, this is a parentheses problem
+//! Parentheses problems should either be handled via recursion, or an explicit stack
+//* We need to track a few things:
+//*     - The string of characters that are found (within the current nesting level)
+//*     - The number of repetitions that need to happen
+//*         - Note that "k" can be a multi-digit number, so place value must be handled
+//* If we encounter a character, add it to the current encoded string
+//* If we encounter a digit, add its place value in the repetition count variable
+//* Upon encountering a "[", we have a new level of nesting
+//*     - Push the current encoded string, and the repeated count onto the stack (so we can revisit it later)
+//* Upon encountering a "]", we are decreasing the level of nesting
+//*     - Pop both the repeat count and the encoded string and concatenate the repeated version onto the global string
 function decodeString(s) {
-  const stack = [];
+  const isNumeric = (input) => /[0-9]/gi.test(input);
 
-  //* Represents what we have for THIS group of brackets
+  const stack = [];
   let currString = "";
   let currNum = 0;
 
   for (let i = 0; i < s.length; i++) {
     const char = s[i];
 
-    //* Resembles a recursive call -> solve the subproblems first
     if (char === "[") {
+      //* Store the state of the current string
       stack.push(currString);
       stack.push(currNum);
 
-      //* Reset these so we can start fresh in the next subproblem
+      //* Fresh variables to track the new nested level
       currString = "";
       currNum = 0;
     } else if (char === "]") {
-      const prevNum = stack.pop();
+      //* Get the previous string so we can add `this` string to it
+      const repeatCount = stack.pop();
       const prevString = stack.pop();
 
-      currString = prevString + currString.repeat(prevNum);
-    } else if (!isNaN(char)) {
+      currString = prevString + currString.repeat(repeatCount);
+    } else if (isNumeric(char)) {
+      //* Handle place value; there could be multiple consecutive digits
       currNum = currNum * 10 + parseInt(char);
     } else {
-      currString += char; //* It is just a regular char
+      //* Add the character to the current encoded string
+      currString += char;
     }
   }
 
@@ -48,11 +54,7 @@ console.log(decodeString("3[a]2[bc]")); //* aaabcbc
 console.log(decodeString("3[a2[c]]")); //* accaccacc
 console.log(decodeString("2[abc]3[cd]ef")); //* abcabccdcdcdef
 
-//* Time: O(n) - We process each element in the input twice at most
-//* So O(2n) simplifies to O(n)
+//* Time: O(nk) - There are "n" characters in the input string, which means "n" characters to process
+//* However, we are using the `repeat()` function, which has a time complexity of "k" in our case
 
-//* Space: O(n) - The size of the output scales with the input size on average
-//* It really depends on what the max of "K" is
-//* You could have "300[a]", then the output would be "a" * 300
-//* But if it was "5[ab3[x]]" then it is "abxxxabxxxabxxxabxxxabxxx" so it is hard to analyze
-//* So maybe max(k) * n? The above has 25 characters; 5^2 = 25?
+//* Space: O(n) - The memory usage scales with the number of characters in the input string
