@@ -1,34 +1,33 @@
-//* We want to know the most recently found elements - that entails the use of a stack
-//* We basically have to track the state of the string the whole way though
-//* Track what the top of the stack is BEFORE pushing the new element
-//* If prev === top of the stack (after the push), you found an adjacent duplicate
-function removeAllAdjacentDuplicates(s) {
-  //* Used to track the most recently seen elements
+//* We are given a string `s` and we need to make as many "duplicate removals" as possible
+//* A "duplicate" in this case is two adjacent identical characters
+//*     - In "aaabbc", we'd get "ac", since "aa" and "bb" are removed
+//* Since proximity is the key here, we can handle characters left to right or right to left
+//* A stack works here because we know we only remove if the previous character is equal to the current
+//*     - If the top of the stack === s[i], pop the stack and simply move onto the next iteration
+function removeDuplicates(s) {
+  //* Holds the final string and allows us to detect duplicates
   const stack = [];
 
-  for (let i = 0; i < s.length; i++) {
-    //* If the top element is the same as the current, just pop
-    if (stack.length > 0 && stack[stack.length - 1] === s[i]) {
-      stack.pop();
+  for (let char of s) {
+    if (stack.length > 0 && char === stack[stack.length - 1]) {
+      stack.pop(); //* Pop the duplicate, and simply move on
     } else {
-      stack.push(s[i]); //* They don't match, so push
+      stack.push(char); //* Otherwise, add the element to the stack (not a duplicate)
     }
   }
 
-  //* Convert the "stack" to a string
+  //* Whatever is left on the stack becomes our final string
   return stack.join("");
 }
 
-console.log(removeAllAdjacentDuplicates("abbaca")); //* "ca"
-console.log(removeAllAdjacentDuplicates("azxxzy")); //* "ay"
-console.log(removeAllAdjacentDuplicates("aabbcc")); //* ""
-console.log(removeAllAdjacentDuplicates("yx")); //* "yx"
-console.log(removeAllAdjacentDuplicates("paapo")); //* "o"
-console.log(removeAllAdjacentDuplicates("aaaaaa")); //* ""
-console.log(removeAllAdjacentDuplicates("abaabawo")); //* "wo"
+console.log(removeDuplicates("abbaca")); //* "ca"
+console.log(removeDuplicates("azxxzy")); //* "ay"
+console.log(removeDuplicates("aabbcc")); //* ""
+console.log(removeDuplicates("yx")); //* "yx"
+console.log(removeDuplicates("paapo")); //* "o"
+console.log(removeDuplicates("aaaaaa")); //* ""
+console.log(removeDuplicates("abaabawo")); //* "wo"
 
-//* Time: O(n) - We have to iterate through the entire array once
-//* It takes α(1) time to push to an array, and O(1) to pop
+//* Time: O(n) - The time taken scales with the size of the input
 
-//* Space: O(n) - In the worst case, every element is unique
-//* So we would push everything, and never pop at all
+//* Space: O(n) - The memory usage scales with the input size
