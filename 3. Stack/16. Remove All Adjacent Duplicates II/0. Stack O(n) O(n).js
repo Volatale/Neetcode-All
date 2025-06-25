@@ -1,51 +1,53 @@
-//* We are trying to detect the most recent character found on the stack
-//* Then compare that with the ith character
-//* If they match, increment the frequency of the top element
-//* If the frequency === k, that means you found 3 of that character in a row
-//* So pop it from the stack
-//* If they don't match, just push a new tuple of [char, 1] because its not in a row
-//* Then, we need to iterate through the stack and rebuild the string
-function removeAllAdjacentDuplicates(s, k) {
-  //* Track the consecutive frequency of characters found so far
-  //* This lets us track the state of [char, count]
-  const stack = [];
+//* We are given a string `s` and an integer `k`
+//* The goal is to make repeated removals of `k` adjacent duplicate characters
+//*     - Keep repeating removals until it is no longer possible
+//* A removal can, in and of itself, create further removals
+//*     - For example: "aabbcccbcc", k = 3
+//*     - The "ccc" is removed, which leaves us with "aabbbcc"
+//*     - Since "bbb" is "k-adjacent", we need to remove those too, but we couldn't until "ccc" was removed first
+//* So in other words, some removals are dependent on other removals happening first
+//* Since we are working with adjacency, we can handle this using a stack
+//* But "k" can essentially be any number >= 1, so we should track the number of adjacent duplicates of the current character
+//*     - "aabbba", k = 3 would result in "" after all removals are done
+//* All we have to do is push tuples of the character itself, along with the no. of consecutive occurrences up to index "i"
+//*     - Like so: [char, adjacentOccurrences]
+//*     - "aaabb": at index 1, we'd have [["a", 2]]
+//*     - Then, at index 2, we'd have [["a", 3]], so we need to pop the "a"
+//* Since we are working with tuples, we can simply iterate over the stack's elements at the very end and .repeat() the occurrences
+function removeDuplicates(s, k) {
+  const stack = []; //* Stores tuples of [char, adjacentOccurrences]
+  const string = []; //* String builder (more efficient than repeated string concatenation)
 
-  for (let i = 0; i < s.length; i++) {
-    //* If the top char of the stack matches the current char
-    if (stack.length > 0 && s[i] === stack[stack.length - 1][0]) {
-      stack[stack.length - 1][1]++; //* Update the consecutive frequency of this char
+  for (let char of s) {
+    if (stack.length > 0 && char === stack[stack.length - 1][0]) {
+      stack[stack.length - 1][1]++; //* Add an occurrence
 
-      //* If the consecutive count === k, pop this element
+      //* Remove the character(s) if there are `k` adjacent occurrences
       if (stack[stack.length - 1][1] === k) {
         stack.pop();
       }
     } else {
-      stack.push([s[i], 1]); //* New element, so push a new state to track
+      stack.push([char, 1]); //* Found an occurrence of a "new" character
     }
   }
 
-  //* Rebuild the string using the stack's contents
-  const string = [];
-
-  for (let [char, count] of stack) {
-    string.push(char.repeat(count));
+  //* Concatenate all of the occurrences of the remaining characters
+  for (let [char, occurrences] of stack) {
+    string.push(char.repeat(occurrences));
   }
 
+  //* Concatenate all of the characters in one operation
   return string.join("");
 }
 
-console.log(removeAllAdjacentDuplicates("aaa", 3)); //* "x"
-console.log(removeAllAdjacentDuplicates("aabbbax", 3)); //* "x"
-console.log(removeAllAdjacentDuplicates("abcd", 2)); //* "abcd"
-console.log(removeAllAdjacentDuplicates("adeeeddad", 3)); //* "aa"
-console.log(removeAllAdjacentDuplicates("deeedbbcccbdaa", 3)); //* "aa"
-console.log(removeAllAdjacentDuplicates("abcd", 2)); //* "pbbcggttciiippooaais"
+console.log(removeDuplicates("aaa", 3)); //* ""
+console.log(removeDuplicates("aabbbax", 3)); //* "x"
+console.log(removeDuplicates("abcd", 2)); //* "abcd"
+console.log(removeDuplicates("adeeeddad", 3)); //* "aa"
+console.log(removeDuplicates("deeedbbcccbdaa", 3)); //* "aa"
+console.log(removeDuplicates("abcd", 2)); //* "abcd"
 
-//* Time: O(n) - We keep track of the consecutive frequencies in the stack
-//* It takes α(1) time to push to the stack, and O(1) to pop from it
-//* Then we have another loop to rebuild the string - at worst, this takes O(n) time
+//* Time: O(n) - The time taken scales with the input size
+//* In the worst case, no removals happen, and the stack holds up to `n` characters
 
-//* Space: O(n) - At worst, the input is entirely unique
-//* That means the stack would have "n" elements
-//* "sonic" -> [["s", 1], ["o", 1], ["n", 1], ["i", 1], ["c", 1]]
-//* Length 5
+//* Space: O(n) - The memory usage scales with the input size in the worst case
