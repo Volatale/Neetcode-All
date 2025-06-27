@@ -1,45 +1,46 @@
-function baseballGame(operations) {
-  //* A stack guarantees we process elements in a LIFO order
-  const record = [];
+//* We are given a string[], where operation[i] determines the action we have to take
+//*     - Integer "x" means we record a new score of x
+//*     - Character "D" means we record a new score that is DOUBLE the previous score
+//*         - Do not get rid of the previous one
+//*     - Character "+" means record a new score that is the sum of the two previous scores
+//*     - Character "C" means we invalidate the previous score, removing it from the record
+//! Notice that all of the operations work based on the most recent elements/
+//* So we should use a stack data structure (the elements are processed in LIFO order)
+function calPoints(operations) {
+  const record = []; //* Acts as a stack for LIFO processing
+  let sum = 0; //* Track the score as we go
 
-  let sum = 0;
-
-  for (let i = 0; i < operations.length; i++) {
-    switch (operations[i]) {
-      case "C":
-        const popped = record.pop();
-        sum -= popped;
+  for (let char of operations) {
+    switch (char) {
+      case "+":
+        const value = record[record.length - 1] + record[record.length - 2];
+        record.push(value);
+        sum += value;
         break;
       case "D":
-        const top = record[record.length - 1];
-        const double = top * 2;
+        const double = record[record.length - 1] * 2;
         record.push(double);
         sum += double;
         break;
-      case "+":
-        const first = record[record.length - 1];
-        const second = record[record.length - 2];
-        const addition = first + second;
-        record.push(first + second);
-        sum += addition;
+      case "C":
+        sum -= record.pop();
         break;
-      //* Anything that isn't "C", "D" or "+", so any integer
       default:
-        const val = parseInt(operations[i]);
-        sum += val;
-        record.push(val);
+        const newRecord = parseInt(char);
+        record.push(newRecord);
+        sum += newRecord;
+        break;
     }
   }
 
+  //* Tracking the cumulative sum means not needing to calculate it later
   return sum;
 }
 
-console.log(baseballGame(["5", "2", "C", "D", "+"])); //* 30
-console.log(baseballGame(["5", "-2", "4", "C", "D", "9", "+", "+"])); //* 27
-console.log(baseballGame(["1", "C"])); //* 0
+console.log(calPoints(["5", "2", "C", "D", "+"])); //* 30
+console.log(calPoints(["5", "-2", "4", "C", "D", "9", "+", "+"])); //* 27
+console.log(calPoints(["1", "C"])); //* 0
 
-//* Time: O(n) - We process each element once
-//* Elements that are integers are added to the stack
+//* Time: O(n) - We need to process every element in the input array
 
-//* Space: O(n) - If every element is an integer, we add every element to the stack
-//* ["5", "2", "1"] -> [5, 2, 1]
+//* Space: O(n) - In the worst case, the stack's size is equal to the input array's length
