@@ -1,74 +1,54 @@
-//* Push integers to the stack
-//* Apply the correct calculation when needed
-//* We do second -> first because we do the calculations from left to right
-//* The stack pops the "first" element though
-//* It only really affects subtraction & division since they are not commutative (A + B) = (B + A)
-//* Push the result to the stack
-function reversePolishNotation(tokens) {
+//* The goal is to evaluate an expression that was written in Reverse Polish Notation (RPN)
+//* The only valid operators are: "+", "-", "*" and "/"
+//* However, there are some important notes to understand:
+//*     - Each operand is either an integer or one of the above operators
+//*     - Division between integers always truncates toward 0 (round down)
+//*     - Division by 0 is not allowed (so we don't need to handle that case)
+//*     - The answer and all intermediate calculations will fit in a 32-bit integer (so no overflow)
+//! Both evaluating expressions and RPN hint to the use of a stack data structure
+//* Whenever we see an open parenthesis "(" we know that "this" subexpression must be handled first
+//* We can simulate this process by using stacks, since the most recent operands will be the most recent
+//! The stack will only store the integers themselves
+//* Whenever we encounter a non-integer, we should immediately process the current operation
+function evalRPN(tokens) {
   const stack = [];
 
-  for (let i = 0; i < tokens.length; i++) {
-    switch (tokens[i]) {
-      case "+": {
-        const first = stack.pop();
-        const second = stack.pop();
-        stack.push(second + first);
+  for (let char of tokens) {
+    switch (char) {
+      case "+":
+        stack.push(stack.pop() + stack.pop());
         break;
-      }
       case "-": {
-        const first = stack.pop();
         const second = stack.pop();
-
+        const first = stack.pop();
         stack.push(second - first);
         break;
       }
-      case "*": {
-        const first = stack.pop();
-        const second = stack.pop();
-
-        stack.push(second * first);
+      case "*":
+        stack.push(stack.pop() * stack.pop());
         break;
-      }
       case "/": {
-        const first = stack.pop();
         const second = stack.pop();
-
-        //* Division is supposed to be truncated
-        stack.push(Math.trunc(second / first));
+        const first = stack.pop();
+        stack.push(Math.trunc(first / second));
         break;
       }
-      //* We know that anything that is NOT an operator is an integer
       default:
-        stack.push(parseInt(tokens[i]));
+        stack.push(parseInt(char));
         break;
     }
   }
 
+  //* The result is the only element left in the stack
   return stack[0];
 }
 
-console.log(reversePolishNotation(["2", "1", "+", "3", "*"])); //* 9
-console.log(reversePolishNotation(["4", "13", "5", "/", "+"])); //* 6
+console.log(evalRPN(["2", "1", "+", "3", "*"])); //* 9
+console.log(evalRPN(["4", "13", "5", "/", "+"])); //* 6
 console.log(
-  reversePolishNotation([
-    "10",
-    "6",
-    "9",
-    "3",
-    "+",
-    "-11",
-    "*",
-    "/",
-    "*",
-    "17",
-    "+",
-    "5",
-    "+",
-  ])
+  evalRPN(["10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"])
 ); //* 22
 
-//* Time: O(n) - It takes O(n) to iterate through every element in the input
-//* Popping from an array takes O(1) time
+//* Time: O(n) - The time taken scales with the size of the input string's length
 
-//* Space: O(n) - We are guaranteed to always have a valid input
-//* But the space usage of the map on average, scales with the size of the input
+//* Space: O(n) - The size of the stack also scales with the input string's length
