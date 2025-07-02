@@ -5,6 +5,9 @@ class ListNode {
   }
 }
 
+//* We can simulate a Stack using a Queue by simply reversing the Queue itself
+//* A stack is technically just a reversed queue, and a queue is a reversed stack
+//* So doing an explicit reversal essentially just gives you the other
 class MyQueue {
   constructor(values = []) {
     this.front = null;
@@ -27,7 +30,7 @@ class MyQueue {
   enqueue(val) {
     const newNode = new ListNode(val);
 
-    if (this.length === 0) {
+    if (this.front === null && this.back === null) {
       this.front = newNode;
       this.back = newNode;
     } else {
@@ -42,7 +45,7 @@ class MyQueue {
   dequeue() {
     if (this.length === 0) return undefined;
 
-    const dequeued = this.front;
+    const front = this.front;
 
     if (this.length === 1) {
       this.front = null;
@@ -52,39 +55,39 @@ class MyQueue {
     }
 
     this.length--;
-
-    return dequeued.val;
+    return front.val;
   }
 }
 
 class MyStack {
+  #queue;
+
   constructor() {
-    this.queue = new MyQueue();
+    this.#queue = new MyQueue();
   }
 
   empty() {
-    return this.queue.length === 0;
+    return this.#queue.length === 0;
   }
 
-  //* Enqueue the element
-  //* Then reverse the queue since a stack exits the other way
   push(x) {
-    const size = this.queue.length;
-    this.queue.enqueue(x);
+    const size = this.#queue.length;
+    this.#queue.enqueue(x);
 
+    //* Reverse the queue (to simulate the stack)
     for (let i = 0; i < size; i++) {
-      this.queue.enqueue(this.queue.dequeue());
+      this.#queue.enqueue(this.#queue.dequeue());
     }
 
     return x;
   }
 
-  pop() {
-    return this.queue.dequeue();
+  top() {
+    return this.#queue.peek();
   }
 
-  top() {
-    return this.queue.front.val;
+  pop() {
+    return this.#queue.dequeue();
   }
 }
 
@@ -93,5 +96,5 @@ const stack = new MyStack();
 console.log(stack.push(1));
 console.log(stack.push(2));
 console.log(stack.top());
-console.log(stack.pop());
+console.log(stack.top());
 console.log(stack.empty());
