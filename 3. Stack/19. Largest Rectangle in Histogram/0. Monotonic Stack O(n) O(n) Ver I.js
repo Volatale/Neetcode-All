@@ -1,53 +1,56 @@
-//* Use a Monotonically Increasing Stack to find values that work
-//* The moment you find an element < top of stack, pop
-//* You can't extend the area in an example like [5, 4]
-//* The calculation j - i gives us the number of bars to include (width)
-//* But we have to subtract 1 because we don't want to include THIS bar in the calculation
-
-//* Sentinel Value:
-//* This will FORCE the while loop to activate if it hasn't already
-//* [1, 2, 3, 4, 5], here, no smaller element is added, so we would return 0
-//* Instead, by pushing a 0, we get a result of 5: 1 (height) * (5 - 0) = 5
-function largestRectangleInHistogram(heights) {
+//* We are given an int[] heights representing a histogram's bar height
+//*     - The width of each bar is 1
+//* The goal is to return the area of the LARGEST rectangle in the histogram
+//*     - The area of a rectangle is L * W
+//*     - In our case, the bar height === length, so simply replace the value in the equation
+//* We need to handle bottlenecks in our choices
+//* If we have [5, 6], then we can take 5 on its own, 6 on its own, or both 5 and 6
+//*     - 5 * 1 = 5
+//*     - 6 * 1 = 6
+//*     - 5 * 2 = 10
+//! Why is it 10? Because the MINIMUM between our choices is 5
+//* We want to maximize the width while keeping the height as high as possible
+//* Since bottlenecks are a thing, if we DO extend the subarray, then we need to check if the new value is < the previous value
+//* There may be times where we have to sacrifice height for the sake of maximizing width (like above)
+//*     - If we greedily focus on height, we'd keep 6 on top, but we know (1 * 6) < (2 * 5)
+//* It is possible to solve this using a nested for loop, however, this is inefficient
+//* Instead, since we are repeating work, we can use a monotonic stack
+//* The stack will track indices we can use as valid "start" points
+//*     - Then we can pop the stack to get the "i", and use the current index as the "j" (j - stack.pop()) to get the width
+//! Specifically, we are using a Next Smaller Element approach
+//*     - The moment we find a value < top of stack, pop the stack and process the element(s)
+//* Essentially, we want to extend the width as much as possible, and
+//* Since we're only going to be calculating results within the inner while loop, we need sentinel values
+//*     - The sentinel values will ensure that the edge cases are handled (not popping means no calculation)
+//*         - Push a 0 to the heights array
+//*         - And initialize the stack with -1 (there are no negative values in heights)
+function largestRectangle(heights) {
   let maxArea = 0;
 
-  //* -1 so that the stack is not empty for width calculations
-  const stack = [-1];
-
-  //* Sentinel Value so that in cases like [1, 2, 3] we can still calculate the width
-  heights.push(0);
+  const stack = [-1]; //* Monotonically Increasing Stack (stores indices)
+  heights.push(0); //* Sentinel value to ensure that the while loop is triggered at least once
 
   for (let i = 0; i < heights.length; i++) {
-    //* If you find a value < top of the stack, you can't extend the width any more, so pop
+    //* Find the next smaller element for each index
     while (stack.length > 0 && heights[i] < heights[stack[stack.length - 1]]) {
       const height = heights[stack.pop()];
+      const width = i - stack[stack.length - 1] - 1; //* -1 because we don't want to include the current element
 
-      //* Its like j - i, but exclude the CURRENT element (-1)
-      //* [4, 1] would result in 1 - (-1) - 1. So we are saying there is ONE bar of width
-      const width = i - stack[stack.length - 1] - 1;
       maxArea = Math.max(maxArea, height * width);
     }
 
-    //* Push the index because we can still access the height
+    //* Push indices, not the values themselves
     stack.push(i);
   }
 
   return maxArea;
 }
 
-console.log(largestRectangleInHistogram([2, 1, 2])); //* 3
-console.log(largestRectangleInHistogram([2, 1, 5, 6, 2, 3])); //* 10
-console.log(largestRectangleInHistogram([2, 4])); //* 4
-console.log(largestRectangleInHistogram([1, 1, 1])); //* 3
-console.log(largestRectangleInHistogram([3, 6, 2, 1])); //* 6
-console.log(largestRectangleInHistogram([10, 10])); //* 20
-console.log(largestRectangleInHistogram([8, 5, 6, 7, 8, 9])); //* 30
+debugger;
+console.log(largestRectangle([2, 1, 5, 6, 2, 3])); //* 10
+console.log(largestRectangle([2, 4])); //* 4
+console.log(largestRectangle([1, 1, 1])); //* 3
 
-//* Time: O(n) - At worst, we push and pop each element twice
-//* So that ends up being O(2n), but we drop constants in Big O, so O(n)
-//* By accumulating "bars", we avoid having to redo work
+//* Time: O(n) - In the worst case, each element is processed twice, so the time taken scales linearly
 
-//* Space: O(n) - In the worst case, you have an input like [1, 2, 3]
-//* This would mean the stack IS monotonically decreasing the whole way through
-//* Which means that the while loop is never processed (thus, we have a sentinel value)
-//* The input would be [1, 2, 3], and then stack is [1, 2, 3], both have a length of 3
+//* Space: O(n) - The memory usage scales with the size of the input
