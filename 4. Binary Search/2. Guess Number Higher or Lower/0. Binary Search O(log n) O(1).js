@@ -1,25 +1,32 @@
-//* Search Space ranges from 1 to n
-//* 1 to "n" is sorted in Ascending Order
-//* We know we call function that returns a number that tells us the direction to go in
-//* Based on this information, we can use Binary Search to solve this efficiently
+//* A number is picked in the range [1..n]
+//* Each guess, we are told whether we guessed too high, too low, or if we were correct
+//! In other words, we are provided with a heuristic we can use to determine the general search direction
+//*     - We are not necessarily aimlessly searching
+//* In addition, the range [1..n] is technically sorted
+//! Thus, we can say the search space exhibits monotonicity
+//*     - It is sorted in ascending roder
+//* In a brute force manner, we could simply call guess() on every number
+//* However, we can "optimize" our search and the number of iterations using binary search
 function guessNumber(n) {
-  //* Numbers ranging from 1 to n, so that is the search space
+  //* The search space is the numbers in the range [1, n]
   let left = 1;
   let right = n;
 
   while (left < right) {
-    let mid = left + ((right - left) >> 1); //* Avoid overflow, divide by 2, trunctate decimals
+    //* "mid" represents the number we are guessing
+    const mid = left + ((right - left) >> 1);
 
     if (guess(mid) <= 0) {
-      right = mid; //* Number is GREATER than the pick, eliminate right side
+      right = mid; //* Find a smaller number (or, we guessed correctly)
     } else {
-      left = mid + 1;
+      left = mid + 1; //* Find a larger number
     }
   }
 
+  //* "left" represents the correct number
   return left;
 }
 
-//* Time: O(log n) - We eliminate half of the search space every iteration of the loop
+//* Time: O(log n) - Each iteration, the search space is halved, so the time taken scales logarithmically (base 2)
 
-//* Space: O(1) - We don't use any space that scales with the input size
+//* Space: O(1) - The memory usage remains constant regardless of input size
