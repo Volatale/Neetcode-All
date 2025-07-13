@@ -1,15 +1,14 @@
-//* Square each element
-//* Sort the element before returning
-function squaresOfSortedArray(nums) {
-  return nums.map((val) => val * val).sort((a, b) => a - b);
+//* We are given an integer array sorted in NON-DECREASING order
+//* The goal is to return an array of the squares of each number sorted in non-decreasing order
+//* We can simply apply .map to the input array and square each number
+//*     - This will give us a new array
+//* Then, we can sort the new array
+function sortedSquares(nums) {
+  return nums.map((num) => num * num).sort((a, b) => a - b);
 }
 
-console.log(squaresOfSortedArray([-4, -1, 0, 3, 10]));
-console.log(squaresOfSortedArray([-7, -3, 2, 3, 11]));
+//* Time: O(n log n) - The .map method takes O(n) since it does "n" iterations (where n is the input size)
+//* Then, we sort the array, which will likely use an algorithm in the range of O(n log n) a (merge, quick, heap) sort
 
-//* Time: O(n log n)
-//* It takes O(n) time to iterate over the entire input squaring everything
-//* Then it takes O(n log n) to sort the array (depends on the sorting algorithm used)
-
-//* Space: O(n) - We ultimately create a new array of "n" length (to avoid modifying the input)
-//* Then, depending on the sorting algorithm used, merge sort uses O(n) space, or quick sort is O(log n) space
+//* Space: O(n) - The map method returns a new array of `n` size
+//* Additionally, if merge sort is used under the hood, that also uses O(n) memory

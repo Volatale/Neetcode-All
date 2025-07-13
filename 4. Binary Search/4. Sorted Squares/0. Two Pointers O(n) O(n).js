@@ -1,32 +1,40 @@
-//* Negative * Negative = Positive
-//* -a * -b = c
-
-//* The left and right portions of the array result in larger squares than the middle
-//* [-4, 5], -4 * -4 = 16, 5 * 5 = 25. So 16 is a smaller square, which means that 25 would go first in the array
+//* We are given an integer array sorted in NON-DECREASING order
+//* The goal is to return an array of the squares of each number sorted in non-decreasing order
+//! Observe that squaring a negative number results in a positive
+//* Thus, even if we have negative numbers, we can't ASSUME they'll remain in the left portion of the array
+//* If we had an array like [-4, 1, 4], then we'd get:
+//*     - [16, 1, 16], which is not sorted
+//* Additionally, the leftmost and rightmost elements represent the absolutes (the minimum and maximum possible value range)
+//*     - Every other element will fit within this range somewhere
+//* Therefore, a two pointer approach can be used to determine what the "next" smallest element should be
+//* Instead of actually squaring each element, we can take the absolute value
+//*     - (-1)^2 will return 1
+//*     - But so will taking the absolute value of the element
+//! Iterate backwards, because as was stated above, we could potentially start with the LARGEST elements
+//*     - If we are comparing -3 and 4, then we get 9 and 16. 16 is the largest, so it should go last
+//*     - Every other element (within this index range) will be smaller than 16 since the other extreme (-3) is
 function sortedSquares(nums) {
-  const squares = [];
+  const result = new Array(nums.length).fill(0);
 
-  //* Two Pointers - Sstart on both sides
+  //* The smallest/largest possible values exist in the first and last indices
   let left = 0;
   let right = nums.length - 1;
 
-  //* Iterate backwards so we start with the LARGER values
-  for (let i = nums.length - 1; i >= 0; i--)
-    //* Test the absolute value because that is faster than squaring for tests
-    if (Math.abs(nums[left]) > Math.abs(nums[right])) {
-      squares[i] = nums[left] * nums[left];
+  //* Iterate backwards to ensure we find the LARGEST element(s) first
+  for (let i = nums.length - 1; i >= 0; i--) {
+    if (Math.abs(nums[left]) < Math.abs(nums[right])) {
+      result[i] = nums[left] * 2;
       left++;
     } else {
-      squares[i] = nums[right] * nums[right];
+      result[i] = nums[right] * 2;
       right--;
     }
+  }
 
-  return squares;
+  return result;
 }
 
-console.log(sortedSquares([-4, -1, 0, 3, 10])); //* [0, 1, 9, 16, 100]
-console.log(sortedSquares([-7, -3, 2, 3, 11])); //* [4, 9, 9, 49, 121]
+//* Time: O(n) - It takes O(n) to create the auxillary array
+//* It also takes O(n) to iterate through the input array
 
-//* Time: O(n) - It takes O(n) time to iterate through the entire array
-
-//*Space: O(n) - The squares array scales in size proportionally with the input size
+//* Space: O(n) - The memory usage scales with the input size (n)
