@@ -1,49 +1,46 @@
-//* Bananas per second = Piles[i] / speed
-//* We want to round UP because Koko can't eat a decimal of a banana
-//* We could also just subtract from piles[i], the speed and keep doing that while piles[i] > 0
-//* But that would take scale worse than just doing division
-//* There exists a point in the array that transitions from failed values to successful values
-//* Therefore monotonicity exists within the problem statement
-//* The search space is between 1 and max(piles) bananas
-function kokoEatingBananas(piles, h) {
-  function canEatInTime(speed) {
+//* There are `n` piles of bananas, and the ith pile has piles[i] bananas
+//* The bananas need to be eaten within `h` hours
+//* Our goal is to find the MINIMUM banana eating speed such that hoursTaken <= h
+//* In a brute force manner, we could just increase the bananas per hour speed by 1 each iteration
+//*     - Within each iteration, we can try to see if it is possible to eat all of the bananas in time
+//*     - If not, simply increase the BPH (bananas per hour)
+//* The "search space" can be considered to be the range [1, max(piles)]
+//*     - Our "minimum" BPH exists somewhere in this range
+//* Since the search space is technically "sorted", we can apply binary search
+//* The formula for Bananas Per Second is (bananas / speed)
+//*     - In our case, `speed` is represented by `mid` (the binary searched value)
+//* If the result is a decimal, we'll round it up (ceil) because we need whole numbers
+function minEatingSpeed(piles, h) {
+  function canEat(speed) {
     let hours = 0;
 
     for (let bananas of piles) {
-      //* Koko can't eat a decimal of a banana, so round up
       hours += Math.ceil(bananas / speed);
     }
 
-    //* If hours <= h, we can eat the bananas before the guards get back
     return hours <= h;
   }
 
-  //* The minimum bananas we can eat is 1, the max is the largest pile
+  //* The minimum/maximum banana pile sizes are 1 and max(piles)
   let left = 1;
   let right = Math.max(...piles);
 
   while (left < right) {
-    //* Mid represents the bananas per second speed
-    let mid = left + ((right - left) >> 1);
+    //* `mid` represents the current bananas per hour (speed)
+    const mid = left + ((right - left) >> 1);
 
-    if (canEatInTime(mid)) {
-      right = mid; //* Mid was successful, don't eliminate it
+    if (canEat(mid)) {
+      right = mid; //* We were successful
     } else {
-      left = mid + 1; //* Mid was not successful, eliminate left portion
+      left = mid + 1;
     }
   }
 
-  //* Minimum bananas per second
   return left;
 }
 
-console.log(kokoEatingBananas([3, 6, 7, 11], 8)); //* 4
-console.log(kokoEatingBananas([11], 8)); //* 2
-console.log(kokoEatingBananas([30, 11, 23, 4, 20], 5)); //* 30
-console.log(kokoEatingBananas([15, 12, 5], 7)); //* 6
+//* Time: O(n log m) - Where `m` is the max(piles)
+//* Our search space ranges from [1, max(piles)]
+//* And within each binary search iteration, we perform an O(n) loop
 
-//* Time: O(n log (m)) - Where m is the max(piles)
-//* The search space ranges from 1 to Math.max(piles)
-//* Within each binary search iteration, we do an O(n) iteration through the piles array
-
-//* Space: O(1) - The space usage remains constant regardless of the input size
+//* Space: O(1) - The memory usage remains constant regardless of the input size
