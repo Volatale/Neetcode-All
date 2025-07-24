@@ -1,20 +1,24 @@
-//* Just do a linear search and try to find the element
-//* If it doesn't exist, return - 1 since it doesn't exist in the array
-function searchInRotatedSortedArray(nums, target) {
+//* We have an int[] that is sorted and distinct
+//* The array was sorted some number of times and our goal is to find the index of `target`
+//* If it doesn't exist, we return -1
+//* In a brute force manner, we can simply perform a linear search and scan for the element in question
+function search(nums, target) {
   for (let i = 0; i < nums.length; i++) {
-    if (nums[i] === target) return i;
+    if (nums[i] === target) {
+      return i;
+    }
   }
 
+  //* Target does not exist
   return -1;
 }
 
-console.log(searchInRotatedSortedArray([4, 5, 6, 7, 0, 1, 2], 0)); //* 4
-console.log(searchInRotatedSortedArray([4, 5, 6, 7, 0, 1, 2], 3)); //* -1
-console.log(searchInRotatedSortedArray([1], 0)); //* -1
-console.log(searchInRotatedSortedArray([3, 1, 2], 2)); //* 2
-console.log(searchInRotatedSortedArray([55, 50, 51, 52, 53, 54], 50)); //* 1
+console.log(search([4, 5, 6, 7, 0, 1, 2], 0)); //* 4
+console.log(search([4, 5, 6, 7, 0, 1, 2], 3)); //* -1
+console.log(search([1], 0)); //* -1
+console.log(search([3, 1, 2], 2)); //* 2
+console.log(search([55, 50, 51, 52, 53, 54], 50)); //* 1
 
-//* Time: O(n) - We do a linear search through the input
-//* So the time taken scales with the size of the input
+//* Time: O(n) - We simply perform a linear (n) search on the array
 
-//* Space: O(1) - The space usage remains the same regardless of the input size
+//* Space: O(1) - The memory usage remains constant regardless of input size
