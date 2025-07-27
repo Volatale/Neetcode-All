@@ -1,40 +1,47 @@
-//* This problem is almost the same as Search in Rotated Sorted Array
-//* Except elements are not guaranteed to be unique
-//* Imagine we have an input like [1, 1, 0, 1]
-//* That means left === mid, and mid === right
-//* So all we have to do here is increment left and decrement right
-//* Essentially, just skip these elements
-//* We are unable to make a decision on where to move if we DON'T skip left and right
-function searchInRotatedSortedArrayII(nums, target) {
-  //* Find the "pivot" element (the minimum in the rotated sorted array)
-  //* Tells us what side of the array we are on
+//* We have an int[] sorted in non-decreasing order
+//*     - The array is not necessarily distinct (can contain duplicates)
+//* The array is rotated at some index k (0 <= k < nums.length)
+//* Our goal is to determine if `target` exists in the array post-rotation
+//* Since the array exhibits monotonicity, and we are searching the array itself...
+//! We can apply a binary search approach
+//* ONE of the partitions of the array will contain a monotonically non-decreasing subarray
+//* Thus, we just need to determine which side our "mid" value is
+//*     - Mid represents the index we are checking
+//* Essentially, we want to be able to check whether the value could "possibly" exist in a partition
+//* Once we do that, we can decide which side to eliminate from the search space
+//* if nums[mid] <= target AND target <= nums[right]
+//!     - Then the target COULD exist on the right subarray
+//*     - The same cannot be said for the left, so eliminate it
+//* else if nums[left] <= target AND target <= nums[mid]
+//!     - Then the target COULD exist on the left subarray
+//*     - The same cannot be said for the right, so eliminate it
+//! There is an edge case wherein all three pointers (left, mid, right) hold the same value
+//*     - As in, [5, 5, 5]. To alieviate this, increment left and decrement right
+//*     - Either way, both values are useless since they prevent us from being able to binary search
+//*         - If not, we lose the heuristic that binary search relies on
+function search(nums, target) {
+  //* Our search space is the array itself
   let left = 0;
   let right = nums.length - 1;
 
   while (left < right) {
-    //* Mid represents the index of the element we are testing
-    let mid = left + ((right - left) >> 1);
+    //* `mid` represents the index we are checking
+    const mid = left + ((right - left) >> 1);
 
-    //* We can't make a decision in this case since they are all equal; skip both left & right
     if (nums[left] === nums[mid] && nums[mid] === nums[right]) {
       left++;
       right--;
-    }
-    //* If true, left to mid is an INCREASING subaray
-    else if (nums[mid] >= nums[left]) {
-      //* If target exists within these bounds, we are on the correct side
-      if (target >= nums[left] && target <= nums[mid]) {
-        right = mid;
+    } else if (nums[left] <= nums[mid]) {
+      if (nums[left] <= target && target <= nums[mid]) {
+        right = mid; //* Eliminate the right (target COULD exist on the left)
       } else {
-        left = mid + 1; //* We are on the wrong side
+        left = mid + 1; //* Target definetely does not exist on the left
       }
-      //* Mid to Right is an INCREASING subarray
     } else if (nums[mid] <= nums[right]) {
-      //* If target exists within these bounds, we are on the correct side
-      if (target >= nums[mid] && target <= nums[right]) {
-        left = mid;
+      if (nums[mid] <= target && target <= nums[right]) {
+        left = mid; //* Eliminate the left (target COULD exist on the right)
       } else {
-        right = mid - 1; //* We are on the wrong side
+        right = mid - 1; //* Target definetely does not exist on the right
       }
     }
   }
@@ -42,19 +49,17 @@ function searchInRotatedSortedArrayII(nums, target) {
   return nums[left] === target ? true : false;
 }
 
-console.log(searchInRotatedSortedArrayII([2, 5, 6, 0, 0, 1, 2], 0)); //* True
-console.log(searchInRotatedSortedArrayII([2, 5, 6, 0, 0, 1, 2], 3)); //* False
-console.log(searchInRotatedSortedArrayII([0, 0, 0, 3], 1)); //* False
-console.log(searchInRotatedSortedArrayII([0, 0, 0, 3], 3)); //* True
-console.log(searchInRotatedSortedArrayII([4, 5, 1, 2, 3], 3)); //* True
-console.log(searchInRotatedSortedArrayII([4, 5, 1, 2, 3, 4], 4)); //* True
-console.log(searchInRotatedSortedArrayII([1], 1)); //* True
-console.log(searchInRotatedSortedArrayII([1, 0], 0)); //* True
-console.log(searchInRotatedSortedArrayII([1, 0, 1, 1, 1], 0)); //* True
+console.log(search([2, 5, 6, 0, 0, 1, 2], 0)); //* True
+console.log(search([2, 5, 6, 0, 0, 1, 2], 3)); //* False
+console.log(search([0, 0, 0, 3], 1)); //* False
+console.log(search([0, 0, 0, 3], 3)); //* True
+console.log(search([4, 5, 1, 2, 3], 3)); //* True
+console.log(search([4, 5, 1, 2, 3, 4], 4)); //* True
+console.log(search([1], 1)); //* True
+console.log(search([1, 0], 0)); //* True
+console.log(search([1, 0, 1, 1, 1], 0)); //* True
+console.log(search([5, 5, 5], 2)); //* False
 
-//* Time: O(n) - Binary search itself halves the search space each iteration
-//* But take an array like [1, 1, 1, 1, 1, 1] and target = 4
-//* nums[left] === nums[right] the whole way through, which means left++, right--
-//* Essentially, we process each element in the array and the search space reductions don't happen at all
+//* Time: O(log n) - The search space is halved each iteration, so the algorithm scales logarithmically (base 2)
 
-//* Space: O(1) - The space usage remains constant regardless of the input size
+//* Space: O(1) - The memory usage remains constant regardless of input size
