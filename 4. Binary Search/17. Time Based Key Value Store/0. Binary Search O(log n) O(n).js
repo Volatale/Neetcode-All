@@ -1,51 +1,56 @@
+//* The task is to design a time based key-value store
+//*     - It should be able to store multiple values for the same key at different timestamps
+//*     - It should also be able to retrieve the keys at specific timestamps
+//* We need to store values that are associated with the provided timestamp
+//* Thus, it makes sense to use a pair datastructure
+//*     - JavaScript -> [value, timestamp]
+//*     - Python -> [value, timestamp]
+//*     - C++ ->
+//* When we `get`, we always want the LARGEST possible timestamp'd value such that:
+//*     - timestampPrev <= timestamp
+//*     - In other words, if "timestamp" is > the largest timestamp for this key, the largest timestamp'd value will suffice
+//* Due to the above, when it comes to setting, we can simply push tuples
 class TimeMap {
   constructor() {
-    //* Key: [value, timestamp]
-    this.map = {};
+    this.map = {}; //* Objects > Maps when we don't need rapid sets/deletes
   }
 
-  //* Timestamps are in order (sorted), so 1 appears first, then 3 etc
+  //* Timestamps are sorted in non-decreasing order
   set(key, value, timestamp) {
     if (!this.map[key]) {
       this.map[key] = [];
     }
 
-    //* Push a tuple of [value, timestamp] to the map
-    //* foo: [["bar", 1], ["bar", 2], ["bar2"]]
+    //* Push tuples of [value, timestamp]. foo: [["bar", 1], ["baz", 2], ["maz", 2]]
     this.map[key].push([value, timestamp]);
   }
 
-  //* Since the timestamps are (technically) in sorted order
-  //* "timestamp_prev <= timestamp"
-  //* So we can binary search for our target
-  //* We want to find the LARGEST value with a timestamp <= timestamp
+  //* Timestamps are sorted in non-decreasing order; we can binary search
   get(key, timestamp) {
-    //* Get a reference to the correct array (so the array of tuples stored at "key")
-    const tuples = this.map[key];
+    //* Get all of the tuples (array pairs) associated with this key
+    const pairs = this.map[key];
 
-    //* If key does NOT exist, we have nothing to search for
-    if (!tuples) return "";
+    if (!pairs) return "";
+
+    //* The search space is the range of possible values
+    let left = 0; //* The smallest timestamp in the set of values
+    let right = pairs.length - 1; //* The largest timestamp in the set of values
 
     let result = "";
 
-    //* Binary Search on the value at "key" itself
-    let left = 0;
-    let right = tuples.length - 1;
-
     while (left <= right) {
-      //* Mid represents the tuple we are testing
-      let mid = left + ((right - left) >> 1);
+      //* `mid` represents the tuple we are searching
+      const mid = left + ((right - left) >> 1);
 
-      //* If true, we found a "new" best
-      if (tuples[mid][1] <= timestamp) {
-        result = tuples[mid][0];
-        left = mid + 1; //* Tested timestamp is too small, eliminate mid
+      if (pairs[mid][1] <= timestamp) {
+        result = pairs[mid][0]; //* Found candidate
+        left = mid + 1; //* Try to find a larger one in the right subarray
       } else {
-        right = mid - 1; //* Search the LEFT side (don't eliminate mid, could be the return value)
+        right = mid - 1; //* The timestamp exists in the left subarray
       }
     }
 
-    //* If the element does NOT exist, we return ""
+    //* The value associated with the key at `timestamp` timestamp
     return result;
   }
 }
@@ -56,6 +61,7 @@ const timeMap = new TimeMap();
 timeMap.set("foo", "bar", 1);
 
 console.log(timeMap.get("foo", 1)); //* "bar"
+debugger;
 console.log(timeMap.get("foo", 3)); //* "bar" (3 does not exist yet, so look back)
 
 timeMap.set("foo", "bar2", 4);
@@ -83,3 +89,7 @@ console.log(timeMap3.get("love", 10)); //* "high"
 console.log(timeMap3.get("love", 15)); //* "high"
 console.log(timeMap3.get("love", 20)); //* "low"
 console.log(timeMap3.get("love", 25)); //* "low"
+
+//* Time: O(log n) - The search space is halved within each iteration
+
+//* Space: O(k) - The memory usage scales with the number of unique keys passed to TimeMap
