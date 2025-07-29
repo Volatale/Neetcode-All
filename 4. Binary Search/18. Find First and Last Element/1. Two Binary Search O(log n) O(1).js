@@ -27,12 +27,12 @@ function leftBisect(nums, target) {
   let left = 0;
   let right = nums.length - 1;
 
-  while (left < right) {
+  while (left <= right) {
     //* `mid` represents the index of the element we are checking
     const mid = left + ((right - left) >> 1);
 
     if (nums[mid] >= target) {
-      right = mid;
+      right = mid - 1;
     } else {
       left = mid + 1;
     }
@@ -46,11 +46,11 @@ function rightBisect(nums, target) {
   let left = 0;
   let right = nums.length - 1;
 
-  while (left < right) {
-    const mid = left + ((right - left + 1) >> 1);
+  while (left <= right) {
+    const mid = left + ((right - left) >> 1);
 
     if (nums[mid] <= target) {
-      left = mid;
+      left = mid + 1;
     } else {
       right = mid - 1;
     }
