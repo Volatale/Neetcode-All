@@ -1,38 +1,37 @@
-//* We want to find the MAXIMUM "k" that allows us to still fulfill the condition
-//* Removables tells us how many elements we can remove in the worst case (every element in removables)
-//* So if we binary search from 0 to removables.length
-//* Then we can use that as the search space
-//* To remove elements from the string, we should create an array from "s"
-//* Use THAT to remove the elements themselves (by setting that character to "#")
-//* "mid" represents the number of elements we are trying to remove
-//* Remove "mid" (k) elements by iterating over "letters" BEFORE checking for a subsequence
-//* Removable is NOT sorted, so [3, 1, 0] and skipping each index would be odd
-//* By setting characters to "#" beforehand, we ensure that we remove the first "k" characters
-//* If that number is successful, we found a new "best"
-//* Else, you removed too many so p was not a subsequence anymore
-//* Regardless, after testing, we reverse the removals using "s" (which was un-modified)
-function maximumNoOfRemovableChars(s, p, removable) {
+//* We are given two strings `s` and `p`, where `p` is a SUBSEQUENCE of `s`
+//* We are also given an int[] `removable` containing a subset of indices of `s`
+//* The goal is to remove the MAXIMUM number of characters `k` from `s`, such that `p` is STILL a subsequence of `s`
+//* So this is an optimization problem that involves checking the validity of subsequences
+//*     - To check for subsequences, we can simply use a two pointer approach
+//*     - Match each character in `s` against characters in `p`
+//* Removable essentially tells us how many characters we have to remove in the worst case
+//* So all we have to do is perform a binary search on the range [0, removable.length]
+//*     - We already know the range of possible `k` is within this
+//*     - 0 <= k <= removable.length
+//* Therefore, we can say that each of the indices of removable follows this ideology:
+//*     - 0 <= k <= removable.length
+//*     - 0 <= i < removable.length -> represents `k` and subsequently `mid`
+//* Essentially, we can binary search on the indices of removable because they map directly to `k`
+function maximumRemovals(s, p, removable) {
   function isSubsequence(s, p, k, letters) {
-    //* Remove the first "k" characters from the string
+    //* Remove the first `k` characters from s
     for (let i = 0; i < k; i++) {
       letters[removable[i]] = "#";
     }
 
-    //* Check whether p is a subsequence of s
+    //* Two pointers to validate subsequence (p -> s)
     let j = 0;
 
-    for (let i = 0; i < s.length; i++) {
+    for (let i = 0; i < s.length && j < p.length; i++) {
       if (letters[i] === p[j]) {
         j++;
-
-        if (j === p.length) break;
       }
     }
 
-    //* If true, p is a subsequence of s
+    //* Validate potential success
     if (j === p.length) return true;
 
-    //* Otherwise, reverse the removals
+    //* Failed, so reverse the removals
     for (let i = 0; i < k; i++) {
       letters[removable[i]] = s[removable[i]];
     }
@@ -40,38 +39,35 @@ function maximumNoOfRemovableChars(s, p, removable) {
     return false;
   }
 
-  //* Strings are immutable so we need
+  //* Allows us to pass the "string" by reference in JS
   const letters = s.split("");
 
-  //* The search space is the number of removals we can do
-  //* The maximum number of removals is the number of elements in removable
+  //* The search space of possible `k` is in the range 0 <= k <= removable.length
   let left = 0;
   let right = removable.length;
 
   while (left < right) {
-    //* Mid represents the number of removals we will do
-    //* Right-biased mid because we want the MAXIMUM, not the minimum
-    let mid = left + ((right - left + 1) >> 1);
+    //* `mid` represents the number of removals (`k`)
+    const mid = left + ((right - left + 1) >> 1);
 
     if (isSubsequence(s, p, mid, letters)) {
-      left = mid;
+      left = mid; //* We were successful, don't eliminate current candidate
     } else {
-      right = mid - 1; //* Too many removals being made, decrease search space
+      right = mid - 1; //* We need a fewer number of removals
     }
   }
 
+  //* The optimal number of removals
   return left;
 }
 
-console.log(maximumNoOfRemovableChars("abcd", "ad", [1, 2, 3])); //* 2
-console.log(maximumNoOfRemovableChars("abcacb", "ab", [3, 1, 0])); //* 2
-console.log(maximumNoOfRemovableChars("abcbddddd", "abcd", [3, 2, 1, 4, 5, 6])); //* 1
-console.log(maximumNoOfRemovableChars("abcab", "abc", [0, 1, 2, 3, 4])); //* 0
+console.log(maximumRemovals("abcd", "ad", [1, 2, 3])); //* 2
+console.log(maximumRemovals("abcacb", "ab", [3, 1, 0])); //* 2
+console.log(maximumRemovals("abcbddddd", "abcd", [3, 2, 1, 4, 5, 6])); //* 1
+console.log(maximumRemovals("abcab", "abc", [0, 1, 2, 3, 4])); //* 0
 
-//* Time: O(n log k) - We do a binary search that ranges from 0 to n (removables.length)
-//* In each iteration of binary search, we call a function
-//* This function causes an O(n) loop through s in the worst case
-//* There are also two O(k) loops within the call, but n is always > k
+//* Time: O(s log(r)) - Where `s` = s.length, and `r` = removable.length
+//* The search space is halved in each iteration and within each iteration, we do O(n) work
 
-//* Space: O(n) - We have to create an array out of "s" beause strings are immutable
-//* So this array scales in size linearly with s itself
+//* Space: O(r) - The memory used scales with the `removable` input length (we used `split()`)
+//* In a language that has mutable strings (C, C++, Rust etc.) this would be O(1) memory usage
