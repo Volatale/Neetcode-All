@@ -1,69 +1,94 @@
-//* We want to find the kth smallest distance (difference)
-//* We are given an array to find distances with
-//* In order to MINIMIZE the distance between each element, we sort
-//* Since we have a sorted array now, the minimum distance we can have is 0
-//* The maximum is the difference between the largest and smallest elements
-//* We can do a binary search on the range of differences we can have
-//* Take "mid" to represent the maxDistance that a pair can have
-//* Then we can use a sliding window to count the number of pairs we can create
-function findKthSmallestPairDistance(nums, k) {
-  function canMakeKPairs(maxDistance) {
-    //* Sliding Window
+//* We are given an int[] `nums` and an int `k`
+//* The goal is to find the `kth` SMALLEST distance among all pairs (i, j) where:
+//*     - 0 <= i < j < nums.length
+//! The "distance" in this case is defined as the absolute difference between nums[i] and nums[j]
+//* Since we need to find the KTH SMALLEST, this hints toward this being an optimization problem
+//* In essence, we have a range of possible distances among all pairs, indicated by the smallest and largest values in nums
+//* For example:
+//*     - [1, 1, 2, 3, 4, 5], k = 2
+//*     - Smallest = 1
+//*         - Smallest difference possible is 0
+//*         - (1 - 1) = 0
+//*     - Largest = 5
+//*         - Largest difference is nums[0], nums[n-1] (largest - smallest)
+//*         - (5 - 1) = 4
+//* Our optimal (kth smallest) pair distance lies within this range
+//! Additionally, the range of values is monotonically non-decreasing
+//* Thus, we can likely apply binary search
+//*     - Our search space is the range of pair distances
+//*     - And the range of pair distances is monotonically non-decreasing
+//* Specifically, our `mid` value will represent the MAXIMUM possible pair distance
+//! When it comes to narrowing our search, we can apply sliding window
+//*     - Why? Because the same index can be reused for MULTIPLE pairs
+//*     - Using sliding window allows us to compute ALL of those possible pairs immediately
+//* The main intuition behind the extremes of the array (nums[n-1] - nums[0]) applies here too
+//*     - Due to the way that pairs work, if the extremes of an array (or subarray) are valid, so are the pairs WITHIN the subarray
+//*     - Lets say we have [1, 2, 3, 4] and start = 0, end = 3
+//*         - If (4 - 1) = 3 is valid, then we can pair 1 with EVERY other element in the array (subarray)
+//*         - Because as start and end converge, the difference between the values decreases
+//*             - Thus, as the distance between start and end increases, so does the difference between the values
+//*         - So if nums[end] - nums[start] is valid, so is nums[end] - nums[start + 1]
+//* In other words, if nums[start] - nums[end] is valid
+//*     - So is EVERY pair in the range [start..end]
+//*     - Hence, we can immediately account for every pair in the range
+//! The sliding window constraint here is:
+//*     - nums[end] - nums[start] <= maxDistance
+//*     - Otherwise, we need to shrink the window
+//! Additionally, we should SORT the array to ensure monotonicty exists within the array
+//*     - This way, we can simply perform a calculation like (nums[j] - nums[i])
+//*       as opposed to Math.abs(nums[j] - nums[i])
+function smallestDistancePair(nums, k) {
+  function canMake(maxDistance) {
+    //* Pointers for sliding window
     let start = 0;
     let end = 0;
 
     let pairs = 0;
 
     while (end < nums.length) {
-      //* The distance is too large, breaks the constraint
-      //* We know numbers -> are GREATER, so the distance will decrease monotonically
+      //* Distance is too larger, breaks the constraint
       while (nums[end] - nums[start] > maxDistance) {
         start++;
       }
 
-      //* 1 - 0 = 1, so 1 pair etc, 2 - 0 = 2, so 2 pairs
+      //* Immediately account for all the pairs within the current range
       pairs += end - start;
       end++;
     }
 
-    //* Whether or not we could make at least "k" pairs with this constraint
     return pairs >= k;
   }
 
-  //* Sort so the distance between each element is MINIMIZED
+  //* Sort the array into monotonically non-decreasing order
   nums.sort((a, b) => a - b);
 
-  //* The search space is the MINIMUM and MAXIMUM difference between elements
-  //* Take [4, 7, 9], the minimum would be 4 - 4, and the maximum is 9 - 4
+  //* The search space is the range of possible pair differences
   let left = 0;
   let right = nums[nums.length - 1] - nums[0];
 
   while (left < right) {
-    //* Mid represents the maxDistance allowed per pair
-    let mid = left + ((right - left) >> 1);
+    //* `mid` represents the maximum pair distance for the current test
+    const mid = left + ((right - left) >> 1);
 
-    //* Whether or not we can make "k" pairs with this maxDistance
-    if (canMakeKPairs(mid)) {
-      right = mid; //* We want the kth SMALLEST, so we want to NARROW the values on the right
+    if (canMake(mid)) {
+      right = mid; //* Found successful candidate; don't eliminate from search space
     } else {
-      left = mid + 1; //* Unable to make >= k pairs using this constraint
+      left = mid + 1; //* We need a larger maximum pair distance
     }
   }
 
-  //* The kth smallest
+  //* Kth Smallest Distance
   return left;
 }
 
-console.log(findKthSmallestPairDistance([1, 3, 1], 1)); //* 0
-console.log(findKthSmallestPairDistance([10, 5], 0)); //* 0
-console.log(findKthSmallestPairDistance([1, 1, 1], 2)); //* 0
-console.log(findKthSmallestPairDistance([1, 6, 1], 2)); //* 5
-console.log(findKthSmallestPairDistance([1, 8, 2, 4], 3)); //* 3
+console.log(smallestDistancePair([1, 3, 1], 1)); //* 0
+console.log(smallestDistancePair([10, 5], 0)); //* 0
+console.log(smallestDistancePair([1, 1, 1], 2)); //* 0
+console.log(smallestDistancePair([1, 6, 1], 2)); //* 5
+console.log(smallestDistancePair([1, 8, 2, 4], 3)); //* 3
 
-//* Time: O(n log k) + O(n log n) - Where "k" is the difference between the max and min element in the array
-//* It takes O(n log n) to sort the input array
-//* We do a binary search O(log k), then within each iteration, we call a function
-//* That function does an O(n) iteration through the nums array
+//* Time: O(n log n + n log r) - Where `r` is the no. of values in the range [0, nums[n-1] - nums[0]]
+//* The array is sorted, which likely takes O(n log n) time
+//* Within each binary search iteration (log r), we perform O(n) work
 
-//* Space: O(n) or O(1) - If we count the space usage from the sort (probably merge sort)
-//* The space usage is O(n), but if not, then we use no extra space that scales with "n"
+//* Space: O(n) - The memory usage scales with the size of the input due to the sorting algorithm
