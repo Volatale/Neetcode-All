@@ -1,39 +1,43 @@
-//* We need to make some observations:
-//!     - The array contains MULTIPLE peaks, so we can return ANY of them
-//!     - Out of bounds elements are treated as -infinity
-//*         - So in bounds elements are ALWAYS considered to be larger than out of bounds elements
-//* For an array to have a peak element, we cannot have any adjacent duplicates
-//*     - For example, [1] DOES have a peak element (1 is greater than both its neighbors)
-//*     - But [1, 1] does NOT have a peak element: the ones are greater than -infinity, but 1 === 1
-//! So another observation we can make is that:
-//*     nums[i] !== nums[i + 1] for all i
-//* The array is not necessarily FULLY sorted, but it is PARTIALLY sorted into segments
-//*     - Since we know nums[i] !== nums[i + 1], at least ONE of the neighbors of an element is larger
-//* Ultimately, we want to move in the direction of the LARGER element
-//* Remember, there are MULTIPLE peaks, and we can return any of them
-//* If nums[mid + 1] > nums[mid], then we should move in that direction
-//!     - We already know nums[mid + 1] is greater than nums[mid - 1], so nums[mid + 1] > one of two neighbors
-//*     - If the NEXT element after nums[mid + 1] is out of bounds, or that element is greater than ITS neighbor
-//*         - Then we know that element is a peak element
-//! We can make this observation solely because out of bounds elements are always treated as -infinity
+//* We are given an int[] `nums` and the goal is to find a peak element and then return its index
+//*     - A peak element is an element that is strictly greater (>) than its neighbors
+//*     - We can return ANY of the peaks if there exists more than one
+//! Out of bounds elements are considered to be LESS than the adjacent in bounds elements
+//*     - That is, nums[-1] === -Infinity, and nums[n] === -Infinity
+//! The array is guaranteed to contain at least a single peak element
+//*     - Thus, this guarantees that nums[i] !== nums[i + 1] for all `i`
+//! Logically speaking, we should always travel toward the larger element
+//*     - Why? Because in the worst case, the "peak" element is the first or last
+//*     - If it exists as the first or last element, we know for sure that element is greater than at least ONE of its neighbors
+//*     - And since we always travel TO larger elements, we know that we already passed the SMALLER element
+//* The existence of a peak element implies that there are monotonically increasing subarrays within the array
+//*     - Imagine we have [1, 2, 3, 4, 3], the subarrays are:
+//*         - [1, 2, 3, 4] and [3, 4] (if we reversed it)
+//*     - In other words, each "peak" element is part of TWO subarrays simultaneously
+//*     - So all we have to do is keep moving toward the largest element in each subarray and we find the peak
+//* And we are searching for a peak element (index) WITHIN the array itself
+//! Thus, we can apply a binary search approach
+//*     - The search space is the range of indices [0, n - 1]
+//*     - And the range of indices is monotonically increasing (therefore we have a sorted search space)
+//* `mid` represents the current element we are checking
+//*     - If nums[mid] > nums[mid + 1], then we know nums[mid] is LARGER
+//*     - Otherwise, nums[mid - 1] is larger than nums[mid], so search left
 function findPeakElement(nums) {
-  //* The search space is the array itself
+  //* The search space is the range of valid indices [0, n - 1]
   let left = 0;
   let right = nums.length - 1;
 
   while (left < right) {
-    //* "mid" represents the index we're testing (to see if nums[mid] is a peak)
+    //* `mid` represents the index we (currently) think is a peak
     const mid = left + ((right - left) >> 1);
 
-    //* Move in the direction of the larger neighbor
-    if (nums[mid] < nums[mid + 1]) {
-      left = mid + 1; //* There is a larger neighbor to the right
+    if (mid + 1 < nums.length && nums[mid] >= nums[mid + 1]) {
+      right = mid; //* This is a potential canddiate (peek)
     } else {
-      right = mid; //* This is potentially a peak element; don't remove it from the search space
+      left = mid + 1; //* A larger element exists on the right portion
     }
   }
 
-  //* The index of one of the array's peak elements
+  //* The index of a peak element
   return left;
 }
 
@@ -43,6 +47,6 @@ console.log(findPeakElement([1, 2, 1, 3, 5, 6, 4])); //* 5
 console.log(findPeakElement([5])); //* 0
 console.log(findPeakElement([3, 2])); //* 0
 
-//* Time: O(log n) - We eliminate half of the search space every iteration
+//* Time: O(log n) - The search space is halved each iteration
 
 //* Space: O(1) - The memory usage remains constant regardless of input size
