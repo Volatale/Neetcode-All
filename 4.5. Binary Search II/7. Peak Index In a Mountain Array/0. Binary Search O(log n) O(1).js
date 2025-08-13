@@ -1,31 +1,30 @@
-//! We can apply Binary Search since the search space is "sorted" (even if the sorting is partial)
-//* Values increase to a peak, then they decrease, thus, the array is both:
-//*     - Monotonically increasing
-//*     - AND Monotonically decreasing
-//! How do we define a mountain array?
-//*     - A mountain array is guaranteed to have three or more elements
-//*         - We can always look at the NEXT element over (mid + 1) and not risk going out of bounds
-//*     - On top of that, the array can't have adjacent duplicates
-//*         - Thus, it is easy to determine which direction we need to travel in
-
-//* Mid represents the index of the element we THINK stores the peak
-//* If the element to the RIGHT of mid is smaller, then the peak element exists on the left somewhere
-//!     - OR, the current element is the peak, so don't necessarily eliminate "mid" from the search space
-//* If the element to RIGHT of mid is LARGER, the peak exists on the right
-//* Ultimately, we want to travel in the direction of the peak
+//* We are given a mountain array `nums` (int[])
+//*     - The values INCREASE to a peak, after which they will DECREASE
+//* The goal is to return the index of the peak
+//! The array therefore exhibits a monotonic property
+//*     - The array is monotonically INCREASING up to the peak index
+//*     - And then after the peak, the values DECREASE
+//! Therefore, the array can be said to be sorted (subarray-wise)
+//* We are specifically searching for an INDEX within the array
+//*     - Thus, our search space is the range of array indices [0, n - 1]
+//*     - The range of indices is also monotonically sorted
+//* With all of these observations, we can apply a binary search approach
+//* Logically speaking, we ALWAYS want to travel in the direction of the LARGER element
+//* But the direction we search in flips depending on what side of the array we are on (increasing vs decreasing)
+//* We can use the adjacent values to determine what side of the array we are on and then act accordingly
 function peakIndexInMountainArray(arr) {
-  //* The search space is the array itself
+  //* The search space is the range of indices [0, n - 1]
   let left = 0;
   let right = arr.length - 1;
 
   while (left < right) {
-    //* Index we are checking to see if it holds the peak
+    //* `mid` represents the index we (currently) think is the peak
     const mid = left + ((right - left) >> 1);
 
-    if (arr[mid] < arr[mid + 1]) {
-      left = mid + 1; //* The peak element exists on the right
+    if (mid + 1 < arr.length && arr[mid] > arr[mid + 1]) {
+      right = mid; //* Found a potential candidate, or it exists on the left
     } else {
-      right = mid; //* We either found the peak element, or it exists on the left
+      left = mid + 1; //* Peak element exists on the right
     }
   }
 
@@ -43,6 +42,6 @@ console.log(peakIndexInMountainArray([5, 6, 5])); //* 1
 console.log(peakIndexInMountainArray([5, 6, 5, 4])); //* 1
 console.log(peakIndexInMountainArray([5, 6, 7, 4])); //* 2
 
-//* Time: O(log n) - We eliminate half of the search space every iteration
+//* Time: O(log n) - The search space is halved each iteration
 
 //* Space: O(1) - The memory usage remains constant regardless of input size
