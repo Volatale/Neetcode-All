@@ -1,49 +1,57 @@
-//* A continous array can be defined as follows:
-//*     - All of the element is unique (frequency of 1)
-//*     - The difference between the max and minimum elements is equal to nums.length - 1
-//! Another way to word this is that, when sorted, nums follows the following formula:
-//*     - [x...x + n - 1]
-//*     - Where "x" is the minimum element
-//* For example, the following arrays are continuous:
-//*     - [1, 2, 3]
-//*     - As is [4, 5, 6, 7, 8]
-//! [1, 4, 5] is NOT continous
-//*     - It must follow the range [x...x + n - 1]
-//! We can apply Binary Search in our case
-//* Eliminate the duplicates from the array (convert it into a set), then sort it
-//*     - But before doing so, get the length of the pre-modified array
-//* Then, remember that since the array is SORTED, and contains no duplicates
-//!     - The array exhibits a monotonically increasing pattern
-//* We know the formula for a valid continuous array is:
-//*     - [x...x + n - 1] for any starting value "x"
-//*     - [1, 2, 3, 4, 5] -> n = 5, x = 1
-//*         - (5 - 1) = 4
-//*         - (n - 1) === 4, so the array is valid
-//* Instead of using a sliding window approach, we can use binary search
-//* For every element, find what the LAST element in the range should be
-//! Then, use Binary Search to find the insertion index of the last element
-//*     - Since the array contains no duplicates, either left or right bisect will work
-//* The formula (index - i) tells us how many elements are in the range that ACTUALLY exists in the array
-//* Finally, n - (index - i) tells us how many elements we'll need to change given our choice of "x" (the start)
-//*     -
+//* We are given an int[] `nums` and are able to replace any element in nums with any number
+//* Nums is considered to be `continuous` if:
+//*     - All elements in nums are unique
+//*     - max(nums) - min(nums) === nums.length - 1
+//*         - [1, 2, 3] -> (3 - 1) === 2
+//*         - nums.length - 1 === 2
+//* We need to return the MINIMUM number of operations to make `nums` continuous
+//! Logically speaking, since we need continous elements, sorting the array makes sense
+//*     - This introduces a monotonic property to the array in case it didn't already have one
+//* The number of operations we may need to make is in the range [0, n - 1]
+//* Thus, our "search space" also exists within this range
+//! We need to precomute the exact range of values the array must end up with
+//*     - The elements in nums are in the range [x...x + n - 1]
+//*     - Where `x` is the minimum element in nums
+//* For example, if `x` = 4, and the array length is 4
+//*     - Then we need a continous array of [4...7]
+//*     - Which leaves us with [4, 5, 6, 7] in some ordering
+//! In a brute force manner, we can try "starting" with every possible starting point (value)
+//*     - Then, we just take the minimum no. of operations within each iteration
+//*     - Here, sorting makes no difference since we'd use a set to check for missing elements
+//! However, there is no real need to perform these checks in a brute force manner
+//*     - We can instead use a binary search approach
+//* We already know the following:
+//*     - We have an int[], whose length is n
+//*     - The goal is to ensure a valid output by performing [0, n - 1] operations
+//*         - The number of operations is monotonically increasing ([0, 1, 2, 3, 4 ... n - 1])
+//*     - We are able to sort the array to ensure monotonicity
+//* Therefore, we can say that:
+//*     - We have a sorted search space (the number of operations in the range [0, n - 1])
+//! For each "x" (element in nums), we can easily compute what the END value should be
+//*     - For example, if we have [1, 2, 3], then we know for "1", the END value should be 3 ([1, 2, 3])
+//* Therefore, we can simply find the (rightmost) insertion position and determine how many elements are in the correct position
+//* Then, based on this, we know how many operations we need to perform
+//*     - insertionIndex - i
+//! Ensure that the duplicates in the input are removed
+//*
 function minOperations(nums) {
+  //* An array with a single element is continous ([x...x + n - 1])
+  if (nums.length === 1) return 0;
+
   const n = nums.length;
+  let minOperations = n;
 
-  //* The maximum no. of operations is n
-  let operations = nums.length;
-
-  //* Remove the duplicates, and sort the array so we can binary search
+  //* Remove the duplicates from the array and sort to enforce monotonicity
   nums = [...new Set(nums)].sort((a, b) => a - b);
 
-  //* For every element x, the "valid" range is [x...x + n - 1], use binary search (monotonically increasing)
   for (let i = 0; i < nums.length; i++) {
-    const last = nums[i] + n - 1; //* The last value in the "valid" range starting at x
-    const index = rightBisect(nums, last); //* The index of the last value
-    const rangeLength = index - i; //* The count of elements that are continuous ([1, 2, 3] = 3)
-    operations = Math.min(operations, n - rangeLength); //* No. of Elements that are NOT continuous (need to be replaced)
+    const last = nums[i] + n - 1; //* The value of the last element in the supposed subarray
+    const index = rightBisect(nums, last); //* Insertion position of where the END value SHOULD be
+    const consecCount = index - i; //* [1, 2, 3] = 3
+    minOperations = Math.min(minOperations, n - consecCount);
   }
 
-  return operations;
+  return minOperations;
 }
 
 function rightBisect(nums, target) {
@@ -51,18 +59,20 @@ function rightBisect(nums, target) {
   let right = nums.length - 1;
 
   while (left <= right) {
+    //* `mid` represents the index we are checking (right-biased mid)
     const mid = left + ((right - left + 1) >> 1);
 
     if (nums[mid] <= target) {
-      left = mid + 1;
+      left = mid + 1; //* Candidate exists toward the right
     } else {
-      right = mid - 1;
+      right = mid - 1; //* Candidate exists toward the left
     }
   }
 
   return left;
 }
 
+console.log(minOperations([1, 2, 3, 4, 5])); //* 0
 console.log(minOperations([4, 2, 5, 3])); //* 0
 console.log(minOperations([1, 2, 3, 5, 6])); //* 1
 console.log(minOperations([1, 10, 100, 1000])); //* 3
@@ -70,8 +80,9 @@ console.log(minOperations([1, 1, 1])); //* 2
 console.log(minOperations([1, 1, 3])); //* 1
 console.log(minOperations([1, 5, 3, 2])); //* 1
 
-//* Time: O(n log n) - Sorting the array takes O(n log n) on average
-//* Then, we iterate through the entire input array in the worst case O(n)
-//* Within each iteration, we binary search (which takes O(log n))
+//* Time: O(n log n) - The time taken scales with the time necessary to sort the array
+//* Additionally, regardless of the sorting algorithm used, we must iterate over the entire array
 
-//* Space: O(n) - In the worst case, every element in nums is unique
+//* Space: O(sort) - The memory usage scales with the sorting algorithm used
+//* In the best case, heap sort is used which results in O(1) space, but merge sort (O(n)) is more likely
+//* Additionally, we create a set of size n, and a copy of size n
